@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AnimeStatus {
+  ONGOING
+  COMPLETED
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  password     String
+  name         String
+  role         Role           @default(USER)
+  favorites    Favorite[]
+  watchHistory WatchHistory[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Anime {
+  id          String      @id @default(cuid())
+  title       String
+  titleEn     String?
+  description String?     @db.Text
+  coverImage  String?
+  bannerImage String?
+  genres      String[]    // e.g. ["Action", "Romance"]
+  status      AnimeStatus @default(ONGOING)
+  releaseYear Int?
+  rating      Float?      @default(0)
+  episodes    Episode[]
+  favorites   Favorite[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Episode {
+  id            String         @id @default(cuid())
+  anime         Anime          @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  animeId       String
+  episodeNumber Int
+  title         String?
+  videoUrl      String         // demo/sample or licensed-content video URL
+  thumbnail     String?
+  duration      Int?           // in seconds
+  watchHistory  WatchHistory[]
+  createdAt     DateTime       @default(now())
+
+  @@unique([animeId, episodeNumber])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  animeId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  episodeId String
+  progress  Int      @default(0) // watched up to this second
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, episodeId])
+}
