@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
