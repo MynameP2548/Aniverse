@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,9 @@ export default async function AnimeDetailPage({ params, searchParams }: Props) {
 
   if (!anime) notFound();
 
-  const currentEpisode = ep
-    ? anime.episodes.find((e) => e.episodeNumber === Number(ep))
-    : anime.episodes[0];
+const currentEpisode = ep
+  ? anime.episodes.find((e: (typeof anime.episodes)[number]) => e.episodeNumber === Number(ep))
+  : anime.episodes[0];
 
   return (
     <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
