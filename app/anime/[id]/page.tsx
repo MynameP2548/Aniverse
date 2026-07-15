@@ -29,7 +29,9 @@ export default async function AnimeDetailPage({ params, searchParams }: Props) {
   if (!anime) notFound();
 
 const currentEpisode = ep
-  ? anime.episodes.find((e: (typeof anime.episodes)[number]) => e.episodeNumber === Number(ep))
+  ? anime.episodes.find(
+      (e: (typeof anime.episodes)[number]) => e.episodeNumber === Number(ep)
+    )
   : anime.episodes[0];
 
   return (
