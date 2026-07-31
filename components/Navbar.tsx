@@ -23,9 +23,14 @@ export default async function Navbar() {
             จบแล้ว
           </Link>
           {session?.user && (
-            <Link href="/favorites" className="hover:text-[#e8e6f0] transition">
-              รายการโปรด
-            </Link>
+            <>
+              <Link href="/favorites" className="hover:text-[#e8e6f0] transition">
+                รายการโปรด
+              </Link>
+              <Link href="/profile" className="hover:text-[#e8e6f0] transition">
+                โปรไฟล์
+              </Link>
+            </>
           )}
         </nav>
 
