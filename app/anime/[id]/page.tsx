@@ -1,8 +1,9 @@
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
+import FavoriteButton from "@/components/FavoriteButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Prisma } from "@prisma/client";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ type Props = {
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { ep } = await searchParams;
+  const session = await auth();
 
   const anime = await prisma.anime.findUnique({
     where: { id },
@@ -106,10 +108,11 @@ const currentEpisode = ep
             ))}
           </div>
           {anime.description && (
-            <p className="text-[#a8a5bd] text-sm leading-relaxed max-w-3xl">
+            <p className="text-[#a8a5bd] text-sm leading-relaxed max-w-3xl mb-5">
               {anime.description}
             </p>
           )}
+          <FavoriteButton animeId={anime.id} isLoggedIn={!!session?.user} />
         </div>
 
         {/* Episode list */}
