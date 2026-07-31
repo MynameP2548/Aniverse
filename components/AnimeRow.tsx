@@ -6,6 +6,9 @@ type AnimeItem = {
   coverImage?: string | null;
   releaseYear?: number | null;
   status: "ONGOING" | "COMPLETED";
+  genres?: string[];
+  rating?: number | null;
+  description?: string | null;
 };
 
 type Props = {
@@ -23,7 +26,7 @@ export default function AnimeRow({ title, items }: Props) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex gap-4 overflow-x-auto pb-2 snap-x scrollbar-hide">
+        <div className="flex gap-4 overflow-x-auto overflow-y-visible py-6 -my-6 snap-x scrollbar-hide">
           {items.map((anime) => (
             <AnimeCard key={anime.id} anime={anime} />
           ))}
