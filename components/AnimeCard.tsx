@@ -15,9 +15,19 @@ type Props = {
 
 export default function AnimeCard({ anime }: Props) {
   return (
-    <div className="flex-shrink-0 w-[180px] md:w-[220px] self-start">
-      <Link href={`/anime/${anime.id}`} className="group block">
-
+    <div
+      className="
+        flex-shrink-0
+        w-[170px]
+        md:w-[190px]
+        xl:w-[210px]
+        2xl:w-[230px]
+      "
+    >
+      <Link
+        href={`/anime/${anime.id}`}
+        className="group block"
+      >
         <div
           className="
             relative
@@ -25,13 +35,13 @@ export default function AnimeCard({ anime }: Props) {
             overflow-hidden
             rounded-2xl
             border
-            border-[#232335]
+            border-white/10
             bg-[#131320]
             transition-all
             duration-300
             group-hover:-translate-y-2
             group-hover:border-[#ff5d73]/60
-            group-hover:shadow-2xl
+            group-hover:shadow-[0_18px_45px_rgba(0,0,0,.45)]
           "
         >
           {anime.coverImage ? (
@@ -49,29 +59,59 @@ export default function AnimeCard({ anime }: Props) {
               "
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-[#3a3a52]">
+            <div className="flex h-full items-center justify-center text-xs text-white/40">
               ไม่มีรูปปก
             </div>
           )}
 
-          {/* Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
 
           {/* Status */}
           {anime.status === "ONGOING" && (
-            <div className="absolute top-3 left-3 rounded-full bg-[#0b0b12]/70 backdrop-blur-md border border-[#5ee6a0]/30 px-3 py-1 text-[10px] font-semibold text-[#5ee6a0]">
+            <div
+              className="
+                absolute
+                left-3
+                top-3
+                rounded-full
+                border
+                border-[#5ee6a0]/40
+                bg-black/60
+                px-3
+                py-1
+                text-[10px]
+                font-semibold
+                text-[#5ee6a0]
+                backdrop-blur-md
+              "
+            >
               ● กำลังฉาย
             </div>
           )}
 
           {/* Rating */}
           {anime.rating && anime.rating > 0 && (
-            <div className="absolute bottom-3 left-3 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-[#ffc857]">
+            <div
+              className="
+                absolute
+                bottom-3
+                left-3
+                rounded-full
+                bg-black/60
+                px-3
+                py-1
+                text-xs
+                font-bold
+                text-[#ffc857]
+                backdrop-blur-md
+              "
+            >
               ★ {anime.rating.toFixed(1)}
             </div>
           )}
 
-          {/* Play Overlay */}
+          {/* Play */}
           <div
             className="
               absolute
@@ -83,15 +123,15 @@ export default function AnimeCard({ anime }: Props) {
               opacity-0
               transition-all
               duration-300
-              group-hover:bg-black/35
+              group-hover:bg-black/30
               group-hover:opacity-100
             "
           >
             <div
               className="
                 flex
-                h-14
-                w-14
+                h-16
+                w-16
                 items-center
                 justify-center
                 rounded-full
@@ -104,7 +144,7 @@ export default function AnimeCard({ anime }: Props) {
               "
             >
               <svg
-                className="h-6 w-6 ml-1"
+                className="ml-1 h-7 w-7"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -115,23 +155,35 @@ export default function AnimeCard({ anime }: Props) {
         </div>
 
         {/* Info */}
-        <div className="pt-3">
+        <div className="pt-4">
 
           <h3
             className="
               line-clamp-2
               text-[15px]
-              font-semibold
-              leading-5
+              md:text-base
+              font-bold
+              leading-6
               text-white
               transition-colors
+              duration-300
               group-hover:text-[#ff5d73]
             "
           >
             {anime.title}
           </h3>
 
-          <div className="mt-2 flex items-center gap-2 text-xs text-white/60">
+          <div
+            className="
+              mt-2
+              flex
+              flex-wrap
+              items-center
+              gap-2
+              text-xs
+              text-white/60
+            "
+          >
             {anime.releaseYear && (
               <span>{anime.releaseYear}</span>
             )}
@@ -150,7 +202,6 @@ export default function AnimeCard({ anime }: Props) {
           </div>
 
         </div>
-
       </Link>
     </div>
   );
