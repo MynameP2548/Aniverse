@@ -17,40 +17,65 @@ export default function Hero({ anime }: Props) {
   const backdrop = anime.bannerImage || anime.coverImage;
 
   return (
-    <section className="relative w-full h-[78vh] min-h-[480px] overflow-hidden">
+    <section className="relative w-full h-[90vh] min-h-[640px] overflow-hidden">
       {backdrop && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={backdrop}
           alt={anime.title}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover scale-105"
         />
       )}
 
-      {/* gradient stack: gives the poster a "cut from the frame" feel */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b12] via-[#0b0b12]/40 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b12] via-[#0b0b12]/10 to-transparent" />
+      {/* Netflix Style Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/55 to-transparent" />
+      <div className="absolute inset-0 bg-black/20" />
 
-      <div className="relative max-w-7xl mx-auto px-6 h-full flex flex-col justify-end pb-16">
-        <div className="max-w-xl">
-          {anime.rating ? (
-            <div className="flex items-center gap-1.5 mb-3">
-              <span className="text-[#ffc857] text-sm">★</span>
-              <span className="text-[#ffc857] text-sm font-semibold">{anime.rating.toFixed(1)}</span>
-              <span className="text-[#5a5770] text-sm">· {anime.releaseYear}</span>
-            </div>
-          ) : null}
+      {/* Bottom Blur */}
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#09090f] to-transparent" />
 
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#e8e6f0] leading-[1.05] mb-4">
+      <div className="relative h-full max-w-7xl mx-auto flex items-end px-8 md:px-16 pb-24">
+        <div className="max-w-[560px]">
+
+          {/* Badge */}
+          <div className="inline-flex items-center rounded-md bg-[#ff5d73] px-3 py-1 text-[11px] font-bold tracking-[0.2em] uppercase text-white mb-6 shadow-lg">
+            ANIVERSE
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-3 mb-5 text-white/90">
+            {anime.rating && (
+              <>
+                <span className="text-[#ffc857] text-lg">★</span>
+                <span className="font-bold text-lg">
+                  {anime.rating.toFixed(1)}
+                </span>
+              </>
+            )}
+
+            {anime.releaseYear && (
+              <>
+                <span className="text-white/40">•</span>
+                <span className="text-white/70">
+                  {anime.releaseYear}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Title */}
+          <h1 className="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,.65)] mb-6">
             {anime.title}
           </h1>
 
+          {/* Genres */}
           {anime.genres.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-6">
               {anime.genres.slice(0, 3).map((g) => (
                 <span
                   key={g}
-                  className="text-xs px-2.5 py-1 rounded-full border border-[#2a2a3d] text-[#8a87a3]"
+                  className="rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-3 py-1 text-xs text-white"
                 >
                   {g}
                 </span>
@@ -58,28 +83,38 @@ export default function Hero({ anime }: Props) {
             </div>
           )}
 
+          {/* Description */}
           {anime.description && (
-            <p className="text-[#a8a5bd] text-sm md:text-base leading-relaxed line-clamp-3 mb-6">
+            <p className="text-base md:text-lg leading-8 text-white/80 line-clamp-4 mb-10">
               {anime.description}
             </p>
           )}
 
-          <div className="flex gap-3">
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-4">
+
             <Link
               href={`/anime/${anime.id}`}
-              className="bg-[#ff5d73] hover:bg-[#ff738a] transition text-[#0b0b12] font-bold px-6 py-3 rounded-lg text-sm flex items-center gap-2"
+              className="inline-flex items-center gap-3 rounded-xl bg-white px-8 py-4 text-black font-bold transition-all duration-300 hover:scale-105 hover:bg-gray-100 shadow-xl"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M6 4l10 6-10 6V4z" />
               </svg>
+
               ดูเลย
             </Link>
+
             <Link
               href={`/anime/${anime.id}`}
-              className="bg-[#131320]/80 border border-[#2a2a3d] hover:border-[#3a3a52] transition text-[#e8e6f0] font-semibold px-6 py-3 rounded-lg text-sm"
+              className="inline-flex items-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md px-8 py-4 text-white font-semibold transition-all duration-300 hover:bg-white/20 hover:scale-105"
             >
               รายละเอียด
             </Link>
+
           </div>
         </div>
       </div>
