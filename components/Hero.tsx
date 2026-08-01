@@ -17,104 +17,164 @@ export default function Hero({ anime }: Props) {
   const backdrop = anime.bannerImage || anime.coverImage;
 
   return (
-    <section className="relative h-[82vh] min-h-[650px] overflow-hidden">
-
-      {/* Background */}
+    <section className="relative w-full h-[82vh] min-h-[560px] overflow-hidden">
       {backdrop && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={backdrop}
           alt={anime.title}
-          className="absolute inset-0 h-full w-full object-cover scale-105"
+          className="absolute inset-0 w-full h-full object-cover scale-[1.03] transition-transform duration-700"
         />
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/45" />
+      <div className="absolute inset-0 bg-black/25" />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/45 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/30 to-transparent" />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/55 to-transparent" />
 
-      <div className="relative mx-auto flex h-full max-w-7xl items-center px-10">
+      <div className="relative max-w-7xl mx-auto h-full flex flex-col justify-end px-8 md:px-16 pb-24">
+        <div className="max-w-[720px]">
 
-        <div className="max-w-[760px]">
+          {anime.rating && anime.rating > 0 ? (
+            <div className="flex items-center gap-2 mb-5">
 
-          {/* Rating */}
+              <span className="text-yellow-400 text-base">
+                ★
+              </span>
 
-          <div className="mb-5 flex items-center gap-3 text-white/80">
+              <span className="text-yellow-400 font-bold text-base">
+                {anime.rating.toFixed(1)}
+              </span>
 
-            {anime.rating &&
-              anime.rating > 0 && (
+              {anime.releaseYear && (
                 <>
-                  <span className="text-yellow-400">★</span>
+                  <span className="text-white/40">•</span>
 
-                  <span className="font-semibold">
-                    {anime.rating.toFixed(1)}
+                  <span className="text-white/70 text-base">
+                    {anime.releaseYear}
                   </span>
-
-                  <span>•</span>
                 </>
               )}
 
-            {anime.releaseYear && (
-              <>
-                <span>{anime.releaseYear}</span>
-                <span>•</span>
-              </>
-            )}
+            </div>
+          ) : anime.releaseYear ? (
+            <div className="flex items-center gap-2 mb-5">
 
-            {anime.genres.slice(0, 1).map((g) => (
-              <span key={g}>{g}</span>
-            ))}
+              <span className="text-white/70 text-base">
+                {anime.releaseYear}
+              </span>
 
-          </div>
+            </div>
+          ) : null}
 
-          {/* Title */}
-
-          <h1 className="mb-7 max-w-[760px] text-5xl font-black leading-[1.05] tracking-tight text-white drop-shadow-2xl md:text-7xl">
+          <h1
+            className="
+              text-5xl
+              md:text-7xl
+              font-black
+              tracking-tight
+              leading-[1]
+              text-white
+              mb-6
+              drop-shadow-[0_6px_30px_rgba(0,0,0,.7)]
+            "
+          >
             {anime.title}
           </h1>
 
-          {/* Description */}
+          {anime.genres.length > 0 && (
+            <div className="flex flex-wrap gap-3 mb-6">
+              {anime.genres.slice(0, 3).map((g) => (
+                <span
+                  key={g}
+                  className="
+                    rounded-full
+                    border
+                    border-white/20
+                    bg-white/10
+                    backdrop-blur-sm
+                    px-3
+                    py-1
+                    text-xs
+                    font-medium
+                    text-white
+                  "
+                >
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
 
           {anime.description && (
-            <p className="mb-8 max-w-[620px] text-lg leading-8 text-white/80 line-clamp-3">
+            <p
+              className="
+                max-w-[620px]
+                text-base
+                md:text-lg
+                leading-8
+                text-white/80
+                line-clamp-3
+                mb-10
+              "
+            >
               {anime.description}
             </p>
           )}
 
-          {/* Info */}
-
-          <div className="mb-10 flex flex-wrap gap-3">
-
-            <div className="rounded-full bg-[#ff5d73] px-4 py-2 text-sm font-semibold text-white">
-              กำลังฉาย
-            </div>
-
-            <div className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white">
-              Full HD
-            </div>
-
-            <div className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white">
-              ซับไทย
-            </div>
-
-          </div>
-
-          {/* Buttons */}
-
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
 
             <Link
               href={`/anime/${anime.id}`}
-              className="flex items-center gap-3 rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:scale-105"
+              className="
+                inline-flex
+                items-center
+                gap-3
+                rounded-xl
+                bg-white
+                px-8
+                py-4
+                text-black
+                font-bold
+                shadow-xl
+                transition-all
+                duration-300
+                hover:scale-105
+                hover:bg-gray-100
+              "
             >
-              ▶ ดูเลย
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M6 4l10 6-10 6V4z" />
+              </svg>
+
+              ดูเลย
             </Link>
 
             <Link
               href={`/anime/${anime.id}`}
-              className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur transition hover:bg-white/20"
+              className="
+                inline-flex
+                items-center
+                rounded-xl
+                border
+                border-white/20
+                bg-white/10
+                backdrop-blur-md
+                px-8
+                py-4
+                text-white
+                font-semibold
+                transition-all
+                duration-300
+                hover:scale-105
+                hover:bg-white/20
+              "
             >
               รายละเอียด
             </Link>
@@ -122,9 +182,7 @@ export default function Hero({ anime }: Props) {
           </div>
 
         </div>
-
       </div>
-
     </section>
   );
 }
