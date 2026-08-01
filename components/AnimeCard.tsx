@@ -15,58 +15,142 @@ type Props = {
 
 export default function AnimeCard({ anime }: Props) {
   return (
-    <div className="flex-shrink-0 w-[160px] md:w-[190px] self-start">
+    <div className="flex-shrink-0 w-[180px] md:w-[220px] self-start">
       <Link href={`/anime/${anime.id}`} className="group block">
-        <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden bg-[#131320] border border-[#232335] group-hover:border-[#ff5d73]/50 transition-colors">
+
+        <div
+          className="
+            relative
+            aspect-[2/3]
+            overflow-hidden
+            rounded-2xl
+            border
+            border-[#232335]
+            bg-[#131320]
+            transition-all
+            duration-300
+            group-hover:-translate-y-2
+            group-hover:border-[#ff5d73]/60
+            group-hover:shadow-2xl
+          "
+        >
           {anime.coverImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={anime.coverImage}
               alt={anime.title}
-              className="w-full h-full object-cover"
+              className="
+                h-full
+                w-full
+                object-cover
+                transition-transform
+                duration-500
+                group-hover:scale-110
+              "
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[#3a3a52] text-xs">
+            <div className="flex h-full items-center justify-center text-xs text-[#3a3a52]">
               ไม่มีรูปปก
             </div>
           )}
 
+          {/* Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+
+          {/* Status */}
           {anime.status === "ONGOING" && (
-            <span className="absolute top-2 left-2 text-[10px] font-semibold bg-[#0b0b12]/80 text-[#5ee6a0] px-2 py-0.5 rounded-full border border-[#5ee6a0]/30">
-              กำลังฉาย
-            </span>
+            <div className="absolute top-3 left-3 rounded-full bg-[#0b0b12]/70 backdrop-blur-md border border-[#5ee6a0]/30 px-3 py-1 text-[10px] font-semibold text-[#5ee6a0]">
+              ● กำลังฉาย
+            </div>
           )}
 
-          {/* Play icon fades in on hover, sits inside the image (no overflow) */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff5d73]">
-              <svg className="w-4 h-4 text-[#0b0b12]" fill="currentColor" viewBox="0 0 20 20">
+          {/* Rating */}
+          {anime.rating && anime.rating > 0 && (
+            <div className="absolute bottom-3 left-3 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-[#ffc857]">
+              ★ {anime.rating.toFixed(1)}
+            </div>
+          )}
+
+          {/* Play Overlay */}
+          <div
+            className="
+              absolute
+              inset-0
+              flex
+              items-center
+              justify-center
+              bg-black/0
+              opacity-0
+              transition-all
+              duration-300
+              group-hover:bg-black/35
+              group-hover:opacity-100
+            "
+          >
+            <div
+              className="
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-full
+                bg-white
+                text-black
+                shadow-2xl
+                transition-transform
+                duration-300
+                group-hover:scale-110
+              "
+            >
+              <svg
+                className="h-6 w-6 ml-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path d="M6 4l10 6-10 6V4z" />
               </svg>
-            </span>
+            </div>
           </div>
         </div>
 
-        <p className="mt-2 text-sm text-[#e8e6f0] font-medium truncate group-hover:text-[#ff5d73] transition-colors">
-          {anime.title}
-        </p>
+        {/* Info */}
+        <div className="pt-3">
 
-        {/* Collapsed by default (max-h-0), expands downward in real layout on hover.
-            No absolute positioning / no transform-scale, so it never triggers the
-            browser's auto-scrollbar behavior inside a horizontally scrolling row. */}
-        <div className="max-h-0 group-hover:max-h-16 overflow-hidden transition-all duration-300 ease-out">
-          <div className="flex items-center gap-2 text-[11px] pt-1">
-            {anime.rating ? (
-              <span className="text-[#ffc857] font-semibold">★ {anime.rating.toFixed(1)}</span>
-            ) : null}
-            {anime.releaseYear && <span className="text-[#8a87a3]">{anime.releaseYear}</span>}
+          <h3
+            className="
+              line-clamp-2
+              text-[15px]
+              font-semibold
+              leading-5
+              text-white
+              transition-colors
+              group-hover:text-[#ff5d73]
+            "
+          >
+            {anime.title}
+          </h3>
+
+          <div className="mt-2 flex items-center gap-2 text-xs text-white/60">
+            {anime.releaseYear && (
+              <span>{anime.releaseYear}</span>
+            )}
+
+            {anime.releaseYear &&
+              anime.genres &&
+              anime.genres.length > 0 && (
+                <span>•</span>
+              )}
+
+            {anime.genres && anime.genres.length > 0 && (
+              <span className="truncate">
+                {anime.genres.slice(0, 2).join(" • ")}
+              </span>
+            )}
           </div>
-          {anime.genres && anime.genres.length > 0 && (
-            <p className="text-[11px] text-[#5a5770] truncate">
-              {anime.genres.slice(0, 2).join(" · ")}
-            </p>
-          )}
+
         </div>
+
       </Link>
     </div>
   );
