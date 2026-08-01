@@ -20,10 +20,11 @@ type Props = {
   searchParams: Promise<{ ep?: string }>;
 };
 
+import type { Metadata } from "next";
+
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
-
   const { id } = await params;
 
   const anime = await prisma.anime.findUnique({
@@ -33,44 +34,52 @@ export async function generateMetadata(
   if (!anime) {
     return {
       title: "ไม่พบอนิเมะ | Aniverse",
+      description: "ไม่พบข้อมูลอนิเมะ",
     };
   }
 
-  return {
-    title: `${anime.title} พากย์ไทย ซับไทย | Aniverse`,
+  const title = `${anime.title} พากย์ไทย ซับไทย | Aniverse`;
 
-    description:
-      anime.description ??
-      `ดู ${anime.title} พากย์ไทย ซับไทย ออนไลน์ฟรี`,
+  const description =
+    anime.description ??
+    `ดู ${anime.title} พากย์ไทย ซับไทย ออนไลน์ฟรี คุณภาพสูง`;
+
+  const url = `https://aniverse-wheat.vercel.app/anime/${anime.id}`;
+
+  return {
+    title,
+    description,
 
     keywords: [
       anime.title,
+      anime.titleEn ?? "",
+      "Aniverse",
       "Anime",
-      "อนิเมะ",
       "ดูอนิเมะ",
+      "อนิเมะ",
       "พากย์ไทย",
       "ซับไทย",
-      ...(anime.genres ?? []),
+      ...anime.genres,
     ],
 
     alternates: {
-      canonical: `https://aniverse-wheat.vercel.app/anime/${anime.id}`,
+      canonical: url,
     },
 
     openGraph: {
-      title: anime.title,
-      description:
-        anime.description ??
-        `ดู ${anime.title} ออนไลน์`,
-
-      url: `https://aniverse-wheat.vercel.app/anime/${anime.id}`,
-
-      type: "video.tv_show",
-
+      title,
+      description,
+      url,
+      siteName: "Aniverse",
+      locale: "th_TH",
+      type: "website",
       images: anime.coverImage
         ? [
             {
               url: anime.coverImage,
+              width: 1200,
+              height: 630,
+              alt: anime.title,
             },
           ]
         : [],
@@ -78,10 +87,9 @@ export async function generateMetadata(
 
     twitter: {
       card: "summary_large_image",
-      title: anime.title,
-      description:
-        anime.description ??
-        `ดู ${anime.title} ออนไลน์`,
+      title,
+      description,
+      images: anime.coverImage ? [anime.coverImage] : [],
     },
   };
 }
