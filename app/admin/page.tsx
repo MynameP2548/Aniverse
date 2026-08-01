@@ -292,7 +292,21 @@ export default function AdminPage() {
           </h2>
 
           {loading ? (
-            <p className="text-[#8a87a3] text-sm">กำลังโหลด...</p>
+            <div className="grid gap-3 animate-pulse">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-[#131320] border border-[#232335] rounded-xl p-4 flex gap-4"
+                >
+                  <div className="w-16 h-20 bg-[#1a1a28] rounded-lg flex-shrink-0" />
+                  <div className="flex-1 space-y-2 py-1">
+                    <div className="h-4 w-1/3 rounded bg-[#1a1a28]" />
+                    <div className="h-3 w-1/4 rounded bg-[#1a1a28]" />
+                    <div className="h-3 w-2/3 rounded bg-[#1a1a28]" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : animeList.length === 0 ? (
             <p className="text-[#8a87a3] text-sm">ยังไม่มีอนิเมะในระบบ เพิ่มเรื่องแรกได้จากฟอร์มด้านซ้าย</p>
           ) : (
