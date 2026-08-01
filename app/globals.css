@@ -1,33 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #09090f;
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090f;
+    --foreground: #ffffff;
   }
+}
+
+/* ===========================
+   Base
+=========================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ===========================
-   Hide Horizontal Scrollbars
-   (Netflix Style)
+   Hide Scrollbars
 =========================== */
 
 .scrollbar-hide {
@@ -39,23 +56,50 @@ body {
   display: none;
 }
 
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
+/* ===========================
+   Selection
+=========================== */
 
-/* Selection Color */
 ::selection {
   background: #ff5d73;
   color: white;
 }
 
-/* Remove blue tap highlight (มือถือ) */
+/* ===========================
+   Mobile
+=========================== */
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Fade Animation */
+/* ===========================
+   Smooth Images
+=========================== */
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ===========================
+   Smooth Buttons
+=========================== */
+
+button,
+a {
+  transition:
+    background-color .25s ease,
+    color .25s ease,
+    border-color .25s ease,
+    transform .25s ease,
+    opacity .25s ease;
+}
+
+/* ===========================
+   Animations
+=========================== */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -66,4 +110,22 @@ html {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.fade-in {
+  animation: fadeIn .6s ease forwards;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(1.05);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.zoom-in {
+  animation: zoomIn 1s ease forwards;
 }
