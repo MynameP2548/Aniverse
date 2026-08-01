@@ -4,7 +4,9 @@ import FavoriteButton from "@/components/FavoriteButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
+import type { Metadata } from "next";
 
+export default async function AnimeDetailPage(...)
 export const dynamic = "force-dynamic";
 
 // Direct video files (e.g. .mp4 demo/sample clips) need a <video> tag.
@@ -17,6 +19,72 @@ type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ ep?: string }>;
 };
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+
+  const { id } = await params;
+
+  const anime = await prisma.anime.findUnique({
+    where: { id },
+  });
+
+  if (!anime) {
+    return {
+      title: "ไม่พบอนิเมะ | Aniverse",
+    };
+  }
+
+  return {
+    title: `${anime.title} พากย์ไทย ซับไทย | Aniverse`,
+
+    description:
+      anime.description ??
+      `ดู ${anime.title} พากย์ไทย ซับไทย ออนไลน์ฟรี`,
+
+    keywords: [
+      anime.title,
+      "Anime",
+      "อนิเมะ",
+      "ดูอนิเมะ",
+      "พากย์ไทย",
+      "ซับไทย",
+      ...(anime.genres ?? []),
+    ],
+
+    alternates: {
+      canonical: `https://aniverse-wheat.vercel.app/anime/${anime.id}`,
+    },
+
+    openGraph: {
+      title: anime.title,
+      description:
+        anime.description ??
+        `ดู ${anime.title} ออนไลน์`,
+
+      url: `https://aniverse-wheat.vercel.app/anime/${anime.id}`,
+
+      type: "video.tv_show",
+
+      images: anime.coverImage
+        ? [
+            {
+              url: anime.coverImage,
+            },
+          ]
+        : [],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: anime.title,
+      description:
+        anime.description ??
+        `ดู ${anime.title} ออนไลน์`,
+    },
+  };
+}
 
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
