@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import type { Metadata } from "next";
 
-export default async function AnimeDetailPage(...)
 export const dynamic = "force-dynamic";
 
 // Direct video files (e.g. .mp4 demo/sample clips) need a <video> tag.
@@ -19,8 +18,6 @@ type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ ep?: string }>;
 };
-
-import type { Metadata } from "next";
 
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> }
