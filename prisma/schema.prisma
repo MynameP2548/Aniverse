@@ -26,6 +26,7 @@ model User {
   name         String
   role         Role           @default(USER)
   favorites    Favorite[]
+  reviews      Review[]
   watchHistory WatchHistory[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -44,6 +45,7 @@ model Anime {
   rating      Float?      @default(0)
   episodes    Episode[]
   favorites   Favorite[]
+  reviews     Review[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -70,6 +72,20 @@ model Favorite {
   anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
   animeId   String
   createdAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  animeId   String
+  rating    Int      // 1-5 stars
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, animeId])
 }
