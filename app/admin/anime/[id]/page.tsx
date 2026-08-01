@@ -224,7 +224,17 @@ export default function ManageEpisodesPage() {
         </h2>
 
         {loading ? (
-          <p className="text-[#8a87a3] text-sm">กำลังโหลด...</p>
+          <div className="grid gap-2 animate-pulse">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-[#131320] border border-[#232335] rounded-lg p-3 flex items-center gap-3"
+              >
+                <div className="w-10 h-4 rounded bg-[#1a1a28] flex-shrink-0" />
+                <div className="flex-1 h-4 rounded bg-[#1a1a28]" />
+              </div>
+            ))}
+          </div>
         ) : episodes.length === 0 ? (
           <p className="text-[#8a87a3] text-sm">ยังไม่มีตอนในเรื่องนี้</p>
         ) : (
