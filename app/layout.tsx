@@ -13,10 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import type { Metadata } from "next";
-
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aniverse-wheat.vercel.app/"),
+  metadataBase: new URL("https://aniverse-wheat.vercel.app"),
 
   title: {
     default: "Aniverse",
@@ -33,13 +31,13 @@ export const metadata: Metadata = {
     "อนิเมะ",
     "Anime Online",
     "พากย์ไทย",
-    "ซับไทย"
+    "ซับไทย",
   ],
 
   openGraph: {
     title: "Aniverse",
     description: "เว็บไซต์ดูอนิเมะออนไลน์",
-    url: "https://aniverse-wheat.vercel.app/",
+    url: "https://aniverse-wheat.vercel.app",
     siteName: "Aniverse",
     locale: "th_TH",
     type: "website",
@@ -51,13 +49,3 @@ export const metadata: Metadata = {
     description: "เว็บไซต์ดูอนิเมะออนไลน์",
   },
 };
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="th">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
-}
