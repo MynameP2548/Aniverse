@@ -28,16 +28,16 @@ export default function Hero({ anime }: Props) {
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/25" />
+      <div className="absolute inset-0 bg-black/30" />
 
       {/* Bottom */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/25 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
 
       {/* Left */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent" />
 
       {/* Right */}
-      <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-l from-black/25 via-transparent to-transparent" />
 
       <div
         className="
@@ -47,21 +47,20 @@ export default function Hero({ anime }: Props) {
           h-full
           w-full
           max-w-[1500px]
-          items-end
+          items-center
           px-6
-          pb-24
           md:px-8
           lg:px-12
           xl:px-16
           2xl:px-20
         "
       >
-        <div className="max-w-[760px]">
+        <div className="max-w-[680px]">
 
           {/* Rating */}
 
           {(anime.rating || anime.releaseYear) && (
-            <div className="mb-6 flex items-center gap-3 text-base">
+            <div className="mb-5 flex items-center gap-3 text-base">
 
               {anime.rating && anime.rating > 0 && (
                 <>
@@ -88,16 +87,16 @@ export default function Hero({ anime }: Props) {
 
           <h1
             className="
-              max-w-[900px]
-              text-5xl
+              max-w-[720px]
+              text-4xl
+              sm:text-5xl
+              lg:text-6xl
+              xl:text-7xl
               font-black
-              leading-[1.02]
+              leading-[1.08]
               tracking-tight
               text-white
-              drop-shadow-2xl
-              md:text-6xl
-              xl:text-7xl
-              2xl:text-8xl
+              drop-shadow-[0_8px_30px_rgba(0,0,0,.75)]
             "
           >
             {anime.title}
@@ -119,7 +118,7 @@ export default function Hero({ anime }: Props) {
                     py-1.5
                     text-sm
                     text-white
-                    backdrop-blur-sm
+                    backdrop-blur-md
                   "
                 >
                   {g}
@@ -133,9 +132,9 @@ export default function Hero({ anime }: Props) {
           {anime.description && (
             <p
               className="
-                mt-8
-                max-w-[680px]
-                text-[17px]
+                mt-7
+                max-w-[620px]
+                text-[16px]
                 leading-8
                 text-white/80
                 line-clamp-3
@@ -163,7 +162,9 @@ export default function Hero({ anime }: Props) {
                 text-base
                 font-bold
                 text-black
-                transition
+                transition-all
+                duration-300
+                hover:scale-105
                 hover:bg-neutral-200
               "
             >
@@ -193,14 +194,17 @@ export default function Hero({ anime }: Props) {
                 font-semibold
                 text-white
                 backdrop-blur-md
-                transition
+                transition-all
+                duration-300
                 hover:bg-white/20
+                hover:scale-105
               "
             >
               รายละเอียด
             </Link>
 
           </div>
+
         </div>
       </div>
     </section>
