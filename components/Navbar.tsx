@@ -5,42 +5,84 @@ export default async function Navbar() {
   const session = await auth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Blur Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/60 to-transparent backdrop-blur-md" />
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/70 to-transparent backdrop-blur-xl" />
 
-      <div className="relative max-w-7xl mx-auto h-20 px-8 flex items-center justify-between">
+      <div
+        className="
+        relative
+        mx-auto
+        flex
+        h-20
+        w-full
+        max-w-[1500px]
+        items-center
+        justify-between
+        px-6
+        md:px-8
+        xl:px-12
+        2xl:px-16
+      "
+      >
+        {/* ================= Logo ================= */}
 
-        {/* Logo */}
-        <Link href="/" className="group flex items-center">
-          <span className="text-3xl font-black tracking-tight text-white transition">
+        <Link href="/" className="group flex items-center shrink-0">
+          <span className="text-2xl md:text-3xl font-black tracking-tight text-white">
             ANI
           </span>
 
-          <span className="ml-1 rounded-md bg-[#ff5d73] px-2 py-0.5 text-3xl font-black tracking-tight text-white transition-all duration-300 group-hover:bg-[#ff738a]">
+          <span
+            className="
+            ml-1
+            rounded-md
+            bg-[#ff5d73]
+            px-2
+            py-0.5
+            text-2xl
+            md:text-3xl
+            font-black
+            tracking-tight
+            text-white
+            transition-all
+            duration-300
+            group-hover:bg-[#ff738a]
+          "
+          >
             VERSE
           </span>
         </Link>
 
-        {/* Menu */}
-        <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
+        {/* ================= Menu ================= */}
+
+        <nav
+          className="
+          hidden
+          lg:flex
+          items-center
+          gap-8
+          xl:gap-10
+          text-sm
+          font-medium
+        "
+        >
           <Link
             href="/"
-            className="text-white hover:text-[#ff5d73] transition"
+            className="text-white hover:text-[#ff5d73] transition-colors"
           >
             หน้าแรก
           </Link>
 
           <Link
             href="/browse?status=ongoing"
-            className="text-white/70 hover:text-[#ff5d73] transition"
+            className="text-white/70 hover:text-[#ff5d73] transition-colors"
           >
             กำลังฉาย
           </Link>
 
           <Link
             href="/browse?status=completed"
-            className="text-white/70 hover:text-[#ff5d73] transition"
+            className="text-white/70 hover:text-[#ff5d73] transition-colors"
           >
             จบแล้ว
           </Link>
@@ -49,14 +91,14 @@ export default async function Navbar() {
             <>
               <Link
                 href="/favorites"
-                className="text-white/70 hover:text-[#ff5d73] transition"
+                className="text-white/70 hover:text-[#ff5d73] transition-colors"
               >
                 รายการโปรด
               </Link>
 
               <Link
                 href="/profile"
-                className="text-white/70 hover:text-[#ff5d73] transition"
+                className="text-white/70 hover:text-[#ff5d73] transition-colors"
               >
                 โปรไฟล์
               </Link>
@@ -64,16 +106,23 @@ export default async function Navbar() {
           )}
         </nav>
 
-        {/* Right */}
-        <div className="flex items-center gap-5">
+        {/* ================= Right ================= */}
+
+        <div className="flex items-center gap-3 md:gap-5">
 
           {/* Search */}
-          <form action="/search" className="relative hidden md:block">
+
+          <form
+            action="/search"
+            className="relative hidden md:block"
+          >
             <input
               name="q"
               placeholder="ค้นหาอนิเมะ..."
               className="
-                w-64
+                w-56
+                lg:w-64
+                xl:w-72
                 rounded-full
                 border
                 border-white/10
@@ -89,7 +138,8 @@ export default async function Navbar() {
                 transition-all
                 duration-300
                 focus:border-[#ff5d73]
-                focus:w-80
+                focus:w-72
+                xl:focus:w-80
               "
             />
 
@@ -109,6 +159,7 @@ export default async function Navbar() {
           </form>
 
           {/* Login */}
+
           {session?.user ? (
             <form
               action={async () => {
@@ -125,8 +176,10 @@ export default async function Navbar() {
                   px-4
                   py-2
                   text-sm
+                  font-medium
                   text-white
-                  transition
+                  transition-all
+                  duration-300
                   hover:bg-[#ff5d73]
                 "
               >
@@ -144,7 +197,8 @@ export default async function Navbar() {
                 text-sm
                 font-semibold
                 text-white
-                transition
+                transition-all
+                duration-300
                 hover:bg-[#ff738a]
               "
             >
