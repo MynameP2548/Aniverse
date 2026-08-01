@@ -17,89 +17,109 @@ export default function Hero({ anime }: Props) {
   const backdrop = anime.bannerImage || anime.coverImage;
 
   return (
-    <section className="relative w-full h-[82vh] min-h-[560px] overflow-hidden">
+    <section className="relative h-[82vh] min-h-[620px] w-full overflow-hidden">
       {backdrop && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={backdrop}
           alt={anime.title}
-          className="absolute inset-0 w-full h-full object-cover scale-[1.03] transition-transform duration-700"
+          className="absolute inset-0 h-full w-full object-cover scale-[1.03]"
         />
       )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/25" />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/30 to-transparent" />
+      {/* Bottom */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/25 to-transparent" />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/55 to-transparent" />
+      {/* Left */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
 
-      <div className="relative max-w-7xl mx-auto h-full flex flex-col justify-end px-8 md:px-16 pb-24">
-        <div className="max-w-[720px]">
+      {/* Right */}
+      <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-transparent to-transparent" />
 
-          {anime.rating && anime.rating > 0 ? (
-            <div className="flex items-center gap-2 mb-5">
+      <div
+        className="
+          relative
+          mx-auto
+          flex
+          h-full
+          w-full
+          max-w-[1500px]
+          items-end
+          px-6
+          pb-24
+          md:px-8
+          lg:px-12
+          xl:px-16
+          2xl:px-20
+        "
+      >
+        <div className="max-w-[760px]">
 
-              <span className="text-yellow-400 text-base">
-                ★
-              </span>
+          {/* Rating */}
 
-              <span className="text-yellow-400 font-bold text-base">
-                {anime.rating.toFixed(1)}
-              </span>
+          {(anime.rating || anime.releaseYear) && (
+            <div className="mb-6 flex items-center gap-3 text-base">
 
-              {anime.releaseYear && (
+              {anime.rating && anime.rating > 0 && (
                 <>
-                  <span className="text-white/40">•</span>
+                  <span className="text-yellow-400">★</span>
 
-                  <span className="text-white/70 text-base">
-                    {anime.releaseYear}
+                  <span className="font-bold text-yellow-400">
+                    {anime.rating.toFixed(1)}
                   </span>
+
+                  <span className="text-white/40">•</span>
                 </>
               )}
 
-            </div>
-          ) : anime.releaseYear ? (
-            <div className="flex items-center gap-2 mb-5">
-
-              <span className="text-white/70 text-base">
-                {anime.releaseYear}
-              </span>
+              {anime.releaseYear && (
+                <span className="text-white/70">
+                  {anime.releaseYear}
+                </span>
+              )}
 
             </div>
-          ) : null}
+          )}
+
+          {/* Title */}
 
           <h1
             className="
+              max-w-[900px]
               text-5xl
-              md:text-7xl
               font-black
+              leading-[1.02]
               tracking-tight
-              leading-[1]
               text-white
-              mb-6
-              drop-shadow-[0_6px_30px_rgba(0,0,0,.7)]
+              drop-shadow-2xl
+              md:text-6xl
+              xl:text-7xl
+              2xl:text-8xl
             "
           >
             {anime.title}
           </h1>
 
+          {/* Genres */}
+
           {anime.genres.length > 0 && (
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="mt-6 flex flex-wrap gap-3">
               {anime.genres.slice(0, 3).map((g) => (
                 <span
                   key={g}
                   className="
                     rounded-full
                     border
-                    border-white/20
+                    border-white/15
                     bg-white/10
-                    backdrop-blur-sm
-                    px-3
-                    py-1
-                    text-xs
-                    font-medium
+                    px-4
+                    py-1.5
+                    text-sm
                     text-white
+                    backdrop-blur-sm
                   "
                 >
                   {g}
@@ -108,23 +128,27 @@ export default function Hero({ anime }: Props) {
             </div>
           )}
 
+          {/* Description */}
+
           {anime.description && (
             <p
               className="
-                max-w-[620px]
-                text-base
-                md:text-lg
+                mt-8
+                max-w-[680px]
+                text-[17px]
                 leading-8
                 text-white/80
                 line-clamp-3
-                mb-10
+                xl:text-lg
               "
             >
               {anime.description}
             </p>
           )}
 
-          <div className="flex flex-wrap gap-4">
+          {/* Buttons */}
+
+          <div className="mt-10 flex flex-wrap gap-4">
 
             <Link
               href={`/anime/${anime.id}`}
@@ -136,17 +160,15 @@ export default function Hero({ anime }: Props) {
                 bg-white
                 px-8
                 py-4
-                text-black
+                text-base
                 font-bold
-                shadow-xl
-                transition-all
-                duration-300
-                hover:scale-105
-                hover:bg-gray-100
+                text-black
+                transition
+                hover:bg-neutral-200
               "
             >
               <svg
-                className="w-5 h-5"
+                className="h-5 w-5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -163,16 +185,15 @@ export default function Hero({ anime }: Props) {
                 items-center
                 rounded-xl
                 border
-                border-white/20
+                border-white/15
                 bg-white/10
-                backdrop-blur-md
                 px-8
                 py-4
-                text-white
+                text-base
                 font-semibold
-                transition-all
-                duration-300
-                hover:scale-105
+                text-white
+                backdrop-blur-md
+                transition
                 hover:bg-white/20
               "
             >
@@ -180,7 +201,6 @@ export default function Hero({ anime }: Props) {
             </Link>
 
           </div>
-
         </div>
       </div>
     </section>
