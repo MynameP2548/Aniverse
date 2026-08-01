@@ -2,10 +2,13 @@ import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import AnimeRow from "@/components/AnimeRow";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic"; // always show latest admin-added anime
 
 export default async function HomePage() {
+  const session = await auth();
+
   const animeList = await prisma.anime.findMany({
     orderBy: { createdAt: "desc" },
   });
@@ -42,12 +45,34 @@ export default async function HomePage() {
 
   const ongoing = animeList.filter((a) => a.status === "ONGOING");
 
+  // Continue watching: most recently watched episodes for this user, one per anime
+  let continueWatching: typeof animeList = [];
+  if (session?.user) {
+    const history = await prisma.watchHistory.findMany({
+      where: { userId: session.user.id },
+      orderBy: { updatedAt: "desc" },
+      include: { episode: { include: { anime: true } } },
+      take: 20,
+    });
+    const seen = new Set<string>();
+    for (const h of history) {
+      if (!seen.has(h.episode.animeId)) {
+        seen.add(h.episode.animeId);
+        continueWatching.push(h.episode.anime);
+      }
+    }
+    continueWatching = continueWatching.slice(0, 10);
+  }
+
   return (
     <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
       <Navbar />
       <Hero anime={featured} />
 
       <div className="pt-4 pb-16">
+        {continueWatching.length > 0 && (
+          <AnimeRow title="ดูต่อ" items={continueWatching} />
+        )}
         <AnimeRow title="มาใหม่ล่าสุด" items={animeList} />
         {ongoing.length > 0 && <AnimeRow title="กำลังฉาย" items={ongoing} />}
         {Array.from(genreMap.entries()).map(([genre, items]) => (
