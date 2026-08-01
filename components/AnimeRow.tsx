@@ -26,36 +26,57 @@ export default function AnimeRow({ title, items }: Props) {
 
   const scroll = (dir: number) => {
     rowRef.current?.scrollBy({
-      left: dir * 700,
+      left: dir * 850,
       behavior: "smooth",
     });
   };
 
   return (
-    <section className="relative mb-14">
+    <section className="relative mb-16">
 
-      <div className="mx-auto mb-5 flex max-w-7xl items-center justify-between px-8">
+      {/* Header */}
+      <div className="flex items-center justify-between px-8 md:px-12 lg:px-16 mb-5">
 
-        <h2 className="text-2xl font-bold tracking-tight text-white">
-          {title}
-        </h2>
+        <div className="flex items-center gap-4">
 
-        <div className="flex gap-2">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white">
+            {title}
+          </h2>
+
+          <button
+            className="
+              hidden
+              md:block
+              text-sm
+              font-medium
+              text-zinc-400
+              transition
+              hover:text-[#ff5d73]
+            "
+          >
+            ดูทั้งหมด →
+          </button>
+
+        </div>
+
+        <div className="flex items-center gap-2">
 
           <button
             onClick={() => scroll(-1)}
             className="
               flex
-              h-10
-              w-10
+              h-9
+              w-9
               items-center
               justify-center
               rounded-full
               bg-white/10
               text-white
-              backdrop-blur
-              transition
+              backdrop-blur-md
+              transition-all
+              duration-200
               hover:bg-[#ff5d73]
+              hover:scale-110
             "
           >
             ‹
@@ -65,44 +86,50 @@ export default function AnimeRow({ title, items }: Props) {
             onClick={() => scroll(1)}
             className="
               flex
-              h-10
-              w-10
+              h-9
+              w-9
               items-center
               justify-center
               rounded-full
               bg-white/10
               text-white
-              backdrop-blur
-              transition
+              backdrop-blur-md
+              transition-all
+              duration-200
               hover:bg-[#ff5d73]
+              hover:scale-110
             "
           >
             ›
+
           </button>
 
         </div>
 
       </div>
 
+      {/* Row */}
       <div className="relative">
 
         {/* Left Fade */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-[#09090f] to-transparent" />
+        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[#09090f] via-[#09090f]/80 to-transparent" />
 
         {/* Right Fade */}
-        <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-[#09090f] to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[#09090f] via-[#09090f]/80 to-transparent" />
 
         <div
           ref={rowRef}
           className="
             flex
-            gap-5
+            gap-6
             overflow-x-auto
             overflow-y-hidden
-            px-8
-            pb-4
             scroll-smooth
             scrollbar-hide
+            px-8
+            md:px-12
+            lg:px-16
+            pb-5
           "
         >
           {items.map((anime) => (
