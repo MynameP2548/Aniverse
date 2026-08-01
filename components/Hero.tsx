@@ -36,7 +36,7 @@ export default function Hero({ anime }: Props) {
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#09090f] to-transparent" />
 
       <div className="relative h-full max-w-7xl mx-auto flex items-center px-8 md:px-16 pt-24 md:pt-32">
-        <<div className="max-w-[700px]">
+        <div className="max-w-xl">
 
           {/* Rating */}
           <div className="flex items-center gap-3 mb-5 text-white/90">
