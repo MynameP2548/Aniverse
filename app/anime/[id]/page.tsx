@@ -1,10 +1,10 @@
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
-import FavoriteButton from "@/components/FavoriteButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
-import type { Metadata } from "next";
+import TrackWatch from "@/components/TrackWatch";
+import ReviewSection from "@/components/ReviewSection";
 
 export const dynamic = "force-dynamic";
 
@@ -18,78 +18,6 @@ type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ ep?: string }>;
 };
-
-export async function generateMetadata(
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Metadata> {
-  const { id } = await params;
-
-  const anime = await prisma.anime.findUnique({
-    where: { id },
-  });
-
-  if (!anime) {
-    return {
-      title: "ไม่พบอนิเมะ | Aniverse",
-      description: "ไม่พบข้อมูลอนิเมะ",
-    };
-  }
-
-  const title = `${anime.title} พากย์ไทย ซับไทย | Aniverse`;
-
-  const description =
-    anime.description ??
-    `ดู ${anime.title} พากย์ไทย ซับไทย ออนไลน์ฟรี คุณภาพสูง`;
-
-  const url = `https://aniverse-wheat.vercel.app/anime/${anime.id}`;
-
-  return {
-    title,
-    description,
-
-    keywords: [
-      anime.title,
-      anime.titleEn ?? "",
-      "Aniverse",
-      "Anime",
-      "ดูอนิเมะ",
-      "อนิเมะ",
-      "พากย์ไทย",
-      "ซับไทย",
-      ...anime.genres,
-    ],
-
-    alternates: {
-      canonical: url,
-    },
-
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: "Aniverse",
-      locale: "th_TH",
-      type: "website",
-      images: anime.coverImage
-        ? [
-            {
-              url: anime.coverImage,
-              width: 1200,
-              height: 630,
-              alt: anime.title,
-            },
-          ]
-        : [],
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: anime.coverImage ? [anime.coverImage] : [],
-    },
-  };
-}
 
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
@@ -115,6 +43,11 @@ const currentEpisode = ep
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-6 pt-24 pb-16">
+        {/* Silently records that the logged-in user watched this episode */}
+        {currentEpisode && (
+          <TrackWatch episodeId={currentEpisode.id} isLoggedIn={!!session?.user} />
+        )}
+
         {/* Video player */}
         <div className="w-full aspect-video bg-[#131320] border border-[#232335] rounded-xl overflow-hidden mb-6">
           {currentEpisode ? (
@@ -181,11 +114,10 @@ const currentEpisode = ep
             ))}
           </div>
           {anime.description && (
-            <p className="text-[#a8a5bd] text-sm leading-relaxed max-w-3xl mb-5">
+            <p className="text-[#a8a5bd] text-sm leading-relaxed max-w-3xl">
               {anime.description}
             </p>
           )}
-          <FavoriteButton animeId={anime.id} isLoggedIn={!!session?.user} />
         </div>
 
         {/* Episode list */}
@@ -223,6 +155,12 @@ const currentEpisode = ep
             </div>
           )}
         </section>
+
+        <ReviewSection
+          animeId={anime.id}
+          isLoggedIn={!!session?.user}
+          currentUserId={session?.user?.id}
+        />
       </main>
     </div>
   );
