@@ -34,10 +34,10 @@ export default function AnimeRow({ title, items }: Props) {
   };
 
   return (
-    <section className="relative mb-20 group">
+    <section className="relative mb-20">
 
       {/* Header */}
-      <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-6 md:px-8 xl:px-12 2xl:px-16 mb-6">
+      <div className="mx-auto mb-6 flex w-full max-w-[1500px] items-center justify-between px-6 md:px-8 xl:px-12 2xl:px-16">
 
         <div className="flex items-center gap-4">
 
@@ -63,7 +63,8 @@ export default function AnimeRow({ title, items }: Props) {
 
       </div>
 
-      <div className="relative">
+      {/* Row Area */}
+      <div className="relative group">
 
         {/* Left Fade */}
         <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-24 bg-gradient-to-r from-[#09090f] via-[#09090f]/85 to-transparent" />
@@ -79,20 +80,19 @@ export default function AnimeRow({ title, items }: Props) {
             left-3
             top-1/2
             z-30
-            hidden
+            flex
+            h-12
+            w-12
             -translate-y-1/2
             items-center
             justify-center
             rounded-full
             bg-black/60
-            backdrop-blur-md
             text-white
-            h-12
-            w-12
+            backdrop-blur-md
             opacity-0
             transition-all
             duration-300
-            group-hover:flex
             group-hover:opacity-100
             hover:bg-[#ff5d73]
           "
@@ -108,20 +108,19 @@ export default function AnimeRow({ title, items }: Props) {
             right-3
             top-1/2
             z-30
-            hidden
+            flex
+            h-12
+            w-12
             -translate-y-1/2
             items-center
             justify-center
             rounded-full
             bg-black/60
-            backdrop-blur-md
             text-white
-            h-12
-            w-12
+            backdrop-blur-md
             opacity-0
             transition-all
             duration-300
-            group-hover:flex
             group-hover:opacity-100
             hover:bg-[#ff5d73]
           "
@@ -140,10 +139,10 @@ export default function AnimeRow({ title, items }: Props) {
             scroll-smooth
             scrollbar-hide
             px-6
+            pb-5
             md:px-8
             xl:px-12
             2xl:px-16
-            pb-5
           "
         >
           {items.map((anime) => (
