@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     "ซับไทย",
   ],
 
+  verification: {
+    google: "98Egu2DAhSne2gwKwlU9egURt0dKsIpSN",
+  },
+
   openGraph: {
     title: "Aniverse",
     description: "เว็บไซต์ดูอนิเมะออนไลน์",
