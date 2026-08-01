@@ -17,7 +17,7 @@ export default function Hero({ anime }: Props) {
   const backdrop = anime.bannerImage || anime.coverImage;
 
   return (
-    <section className="relative w-full h-[90vh] min-h-[640px] overflow-hidden">
+    <section className="relative w-full h-[82vh] min-h-[640px] overflow-hidden">
       {backdrop && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -38,14 +38,11 @@ export default function Hero({ anime }: Props) {
       <div className="relative h-full max-w-7xl mx-auto flex items-center px-8 md:px-16 pt-24 md:pt-32">
         <div className="max-w-[560px]">
 
-          {/* Badge */}
-          <div className="inline-flex items-center rounded-md bg-[#ff5d73] px-3 py-1 text-[11px] font-bold tracking-[0.2em] uppercase text-white mb-6 shadow-lg">
-            ANIVERSE
-          </div>
-
           {/* Rating */}
           <div className="flex items-center gap-3 mb-5 text-white/90">
-            {anime.rating && (
+            {anime.rating !== null &&
+             anime.rating !== undefined &&
+             anime.rating > 0 && (
               <>
                 <span className="text-[#ffc857] text-lg">★</span>
                 <span className="font-bold text-lg">
@@ -65,7 +62,7 @@ export default function Hero({ anime }: Props) {
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,.65)] mb-6">
+          <h1 className="text-4xl md:text-6xl font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,.65)] mb-6">
             {anime.title}
           </h1>
 
