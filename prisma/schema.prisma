@@ -33,21 +33,28 @@ model User {
 }
 
 model Anime {
-  id          String      @id @default(cuid())
-  title       String
-  titleEn     String?
-  description String?     @db.Text
-  coverImage  String?
-  bannerImage String?
-  genres      String[]    // e.g. ["Action", "Romance"]
-  status      AnimeStatus @default(ONGOING)
-  releaseYear Int?
-  rating      Float?      @default(0)
-  episodes    Episode[]
-  favorites   Favorite[]
-  reviews     Review[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           String      @id @default(cuid())
+  title        String
+  titleEn      String?
+  description  String?     @db.Text
+  coverImage   String?
+  bannerImage  String?
+  genres       String[]
+  status       AnimeStatus @default(ONGOING)
+  releaseYear  Int?
+  rating       Float?      @default(0)
+
+  featured     Boolean     @default(false)
+  heroTrailer  String?
+  heroLogo     String?
+  heroOrder    Int         @default(0)
+
+  episodes     Episode[]
+  favorites    Favorite[]
+  reviews      Review[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Episode {
