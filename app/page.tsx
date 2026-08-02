@@ -32,7 +32,14 @@ export default async function HomePage() {
   }
 
   // Featured = whichever anime has a banner image, otherwise the newest one
-  const featured = animeList.find((a) => a.bannerImage) || animeList[0];
+// สุ่มเฉพาะอนิเมะที่มีรูป Banner
+const heroPool = animeList.filter(
+  (a) => a.bannerImage || a.coverImage
+);
+
+const featured =
+  heroPool[Math.floor(Math.random() * heroPool.length)] ??
+  animeList[0];
 
   // Group the rest by genre for the horizontal rows
   const genreMap = new Map<string, typeof animeList>();
