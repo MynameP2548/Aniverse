@@ -129,3 +129,13 @@ a {
 .zoom-in {
   animation: zoomIn 1s ease forwards;
 }
+
+@keyframes heroProgress {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}

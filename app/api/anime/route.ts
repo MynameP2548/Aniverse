@@ -19,23 +19,75 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, titleEn, description, coverImage, bannerImage, genres, status, releaseYear } = body;
+const {
+  title,
+  titleEn,
+  description,
+
+  coverImage,
+  bannerImage,
+
+  genres,
+
+  status,
+
+  releaseYear,
+
+  rating,
+
+  featured,
+
+  heroTrailer,
+
+  heroLogo,
+
+  heroOrder,
+} = body;
 
     if (!title) {
       return NextResponse.json({ error: "กรุณากรอกชื่อเรื่อง" }, { status: 400 });
     }
 
     const anime = await prisma.anime.create({
-      data: {
-        title,
-        titleEn,
-        description,
-        coverImage,
-        bannerImage,
-        genres: genres || [],
-        status: status || "ONGOING",
-        releaseYear: releaseYear ? Number(releaseYear) : null,
-      },
+data: {
+  title,
+
+  titleEn,
+
+  description,
+
+  coverImage,
+
+  bannerImage,
+
+  genres: genres || [],
+
+  status: status || "ONGOING",
+
+  releaseYear: releaseYear
+    ? Number(releaseYear)
+    : null,
+
+  rating:
+    rating !== null &&
+    rating !== undefined &&
+    rating !== ""
+      ? Number(rating)
+      : null,
+
+  featured: featured ?? false,
+
+  heroTrailer,
+
+  heroLogo,
+
+  heroOrder:
+    heroOrder !== null &&
+    heroOrder !== undefined &&
+    heroOrder !== ""
+      ? Number(heroOrder)
+      : 0,
+},
     });
 
     return NextResponse.json(anime, { status: 201 });

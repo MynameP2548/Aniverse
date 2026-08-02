@@ -1,67 +1,308 @@
-import Link from "next/link";
+"use client";
 
-type Props = {
-  anime: {
-    id: string;
-    title: string;
-    description?: string | null;
-    bannerImage?: string | null;
-    coverImage?: string | null;
-    genres: string[];
-    releaseYear?: number | null;
-    rating?: number | null;
-  };
+import Link from "next/link";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+export type HeroAnime = {
+  id: string;
+
+  title: string;
+
+  description?: string | null;
+
+  bannerImage?: string | null;
+
+  coverImage?: string | null;
+
+  genres: string[];
+
+  releaseYear?: number | null;
+
+  rating?: number | null;
+
+  heroTrailer?: string | null;
+
+  heroLogo?: string | null;
 };
 
-export default function Hero({ anime }: Props) {
-  const backdrop = anime.bannerImage || anime.coverImage;
+type Props = {
+  heroes: HeroAnime[];
+};
 
-  return (
-    <section className="relative h-[82vh] min-h-[620px] w-full overflow-hidden">
-      {backdrop && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={backdrop}
-          alt={anime.title}
-          className="absolute inset-0 h-full w-full object-cover scale-[1.03]"
+export default function Hero({
+  heroes,
+}: Props) {
+  const list = useMemo(
+    () => heroes.filter(Boolean),
+    [heroes]
+  );
+
+  const [index, setIndex] = useState(0);
+
+  const [muted, setMuted] =
+    useState(true);
+
+  const [paused, setPaused] =
+    useState(false);
+  const [fade, setFade] =
+    useState(false);
+
+  const videoRef =
+    useRef<HTMLVideoElement>(null);
+  const heroRef =
+    useRef<HTMLElement>(null);
+
+  useEffect(() => {
+  if (list.length <= 1) return;
+  if (paused) return;
+
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  const intervalId = setInterval(() => {
+    setFade(true);
+
+    timeoutId = setTimeout(() => {
+      setIndex((prev) => (prev + 1) % list.length);
+      setFade(false);
+    }, 450);
+  }, 15000);
+
+  return () => {
+    clearInterval(intervalId);
+    clearTimeout(timeoutId);
+  };
+}, [list.length, paused]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = muted;
+    }
+  }, [muted]);
+useEffect(() => {
+  if (!videoRef.current) return;
+
+  videoRef.current.load();
+
+  videoRef.current.play().catch(() => {});
+}, [index]);
+  useEffect(() => {
+  if (!heroRef.current || !videoRef.current) return;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!videoRef.current) return;
+
+      if (entry.isIntersecting) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    },
+    {
+      threshold: 0.35,
+    }
+  );
+
+  observer.observe(heroRef.current);
+
+  return () => observer.disconnect();
+}, []);
+
+  const anime =
+    list[index] ?? list[0];
+
+  if (!anime) return null;
+
+  const backdrop =
+    anime.bannerImage ||
+    anime.coverImage;
+
+  const trailer =
+    anime.heroTrailer;
+    const prevHero = () => {
+  setFade(true);
+
+  setTimeout(() => {
+    setIndex((prev) =>
+      prev === 0 ? list.length - 1 : prev - 1
+    );
+
+    setFade(false);
+  }, 300);
+};
+
+const nextHero = () => {
+  setFade(true);
+
+  setTimeout(() => {
+    setIndex((prev) =>
+      (prev + 1) % list.length
+    );
+
+    setFade(false);
+  }, 300);
+};
+    
+      return (
+    <section
+      ref={heroRef}
+      className="relative h-[82vh] min-h-[620px] w-full overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {trailer ? (
+        <video
+          ref={videoRef}
+          key={anime.id}
+          className="absolute inset-0 h-full w-full object-cover scale-[1.03] transition-opacity duration-700"
+          src={trailer}
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
+          preload="auto"
         />
+      ) : (
+        backdrop && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={backdrop}
+            alt={anime.title}
+            className="absolute inset-0 h-full w-full object-cover scale-[1.03]"
+          />
+        )
       )}
 
+{list.length > 1 && (
+  <button
+    onClick={prevHero}
+    className="
+      absolute
+      left-6
+      top-1/2
+      z-40
+      -translate-y-1/2
+      flex
+      h-14
+      w-14
+      items-center
+      justify-center
+      rounded-full
+      border
+      border-white/20
+      bg-black/30
+      text-2xl
+      text-white
+      backdrop-blur-md
+      transition-all
+      duration-300
+      hover:bg-black/70
+      hover:scale-110
+    "
+  >
+    ❮
+  </button>
+)}
+
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/18" />
 
       {/* Bottom */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/10 to-transparent" />
 
       {/* Left */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
 
       {/* Right */}
       <div className="absolute inset-0 bg-gradient-to-l from-black/25 via-transparent to-transparent" />
 
-      <div
+{list.length > 1 && (
+  <button
+    onClick={nextHero}
+    className="
+      absolute
+      right-6
+      top-1/2
+      z-40
+      -translate-y-1/2
+      flex
+      h-14
+      w-14
+      items-center
+      justify-center
+      rounded-full
+      border
+      border-white/20
+      bg-black/30
+      text-2xl
+      text-white
+      backdrop-blur-md
+      transition-all
+      duration-300
+      hover:bg-black/70
+      hover:scale-110
+    "
+  >
+    ❯
+  </button>
+)}
+
+      <button
+        onClick={() => setMuted(!muted)}
         className="
-          relative
-          mx-auto
+          absolute
+          bottom-8
+          right-8
+          z-30
           flex
-          h-full
-          w-full
-          max-w-[1500px]
+          h-12
+          w-12
           items-center
-          px-6
-          md:px-8
-          lg:px-12
-          xl:px-16
-          2xl:px-20
+          justify-center
+          rounded-full
+          border
+          border-white/20
+          bg-black/40
+          text-white
+          backdrop-blur-md
+          transition
+          hover:bg-black/70
         "
       >
+        {muted ? "🔇" : "🔊"}
+      </button>
+
+<div
+  className={`
+    relative
+    mx-auto
+    flex
+    h-full
+    w-full
+    max-w-[1500px]
+    items-center
+    px-6
+    md:px-8
+    lg:px-12
+    xl:px-16
+    2xl:px-20
+    transition-all
+    duration-500
+    ${
+      fade
+        ? "opacity-0 scale-[0.98]"
+        : "opacity-100 scale-100"
+    }
+  `}
+>
         <div className="max-w-[680px]">
-
-          {/* Rating */}
-
           {(anime.rating || anime.releaseYear) && (
             <div className="mb-5 flex items-center gap-3 text-base">
-
               {anime.rating && anime.rating > 0 && (
                 <>
                   <span className="text-yellow-400">★</span>
@@ -79,32 +320,41 @@ export default function Hero({ anime }: Props) {
                   {anime.releaseYear}
                 </span>
               )}
-
             </div>
           )}
 
-          {/* Title */}
-
-          <h1
-            className="
-              max-w-[720px]
-              text-4xl
-              sm:text-5xl
-              lg:text-6xl
-              xl:text-7xl
-              font-black
-              leading-[1.08]
-              tracking-tight
-              text-white
-              drop-shadow-[0_8px_30px_rgba(0,0,0,.75)]
-            "
-          >
-            {anime.title}
-          </h1>
-
-          {/* Genres */}
-
-          {anime.genres.length > 0 && (
+          {anime.heroLogo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={anime.heroLogo}
+              alt={anime.title}
+              className="
+                mb-6
+                max-h-56
+                lg:max-h-64
+                w-auto
+                object-contain
+                drop-shadow-[0_20px_40px_rgba(0,0,0,.9)]
+              "
+            />
+          ) : (
+            <h1
+              className="
+                max-w-[720px]
+                text-4xl
+                sm:text-5xl
+                lg:text-6xl
+                xl:text-7xl
+                font-black
+                leading-[1.08]
+                tracking-tight
+                text-white
+              "
+            >
+              {anime.title}
+            </h1>
+          )}
+                    {anime.genres.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-3">
               {anime.genres.slice(0, 3).map((g) => (
                 <span
@@ -127,8 +377,6 @@ export default function Hero({ anime }: Props) {
             </div>
           )}
 
-          {/* Description */}
-
           {anime.description && (
             <p
               className="
@@ -145,10 +393,7 @@ export default function Hero({ anime }: Props) {
             </p>
           )}
 
-          {/* Buttons */}
-
           <div className="mt-10 flex flex-wrap gap-4">
-
             <Link
               href={`/anime/${anime.id}`}
               className="
@@ -202,11 +447,49 @@ export default function Hero({ anime }: Props) {
             >
               รายละเอียด
             </Link>
-
           </div>
-
         </div>
       </div>
+
+{list.length > 1 && (
+  <div
+    className="
+      absolute
+      bottom-6
+      left-1/2
+      z-50
+      flex
+      -translate-x-1/2
+      items-center
+      gap-3
+    "
+  >
+    {list.map((_, i) => (
+      <button
+        key={i}
+        onClick={() => {
+          setFade(true);
+
+          setTimeout(() => {
+            setIndex(i);
+            setFade(false);
+          }, 250);
+        }}
+        className={`
+          h-2.5
+          rounded-full
+          transition-all
+          duration-300
+          ${
+            i === index
+              ? "w-10 bg-[#ff5d73]"
+              : "w-2.5 bg-white/40 hover:bg-white/70"
+          }
+        `}
+      />
+    ))}
+  </div>
+)}
     </section>
   );
 }

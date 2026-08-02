@@ -33,14 +33,33 @@ export default async function HomePage() {
 
   // Featured = whichever anime has a banner image, otherwise the newest one
 // สุ่มเฉพาะอนิเมะที่มีรูป Banner
-const heroPool = animeList.filter(
-  (a) => a.bannerImage || a.coverImage
-);
+// -----------------------------
+// Netflix Hero
+// -----------------------------
+
+const featuredList = await prisma.anime.findMany({
+  where: {
+    featured: true,
+  },
+
+  orderBy: {
+    heroOrder: "asc",
+  },
+});
+
+const heroPool =
+  featuredList.length > 0
+    ? featuredList
+    : animeList.filter(
+        (a) => a.bannerImage || a.coverImage
+      );
 
 const featured =
-  heroPool[Math.floor(Math.random() * heroPool.length)] ??
-  animeList[0];
-
+  heroPool[
+    Math.floor(
+      Math.random() * heroPool.length
+    )
+  ] ?? animeList[0];
   // Group the rest by genre for the horizontal rows
   const genreMap = new Map<string, typeof animeList>();
   for (const anime of animeList) {
@@ -74,7 +93,7 @@ const featured =
   return (
     <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
       <Navbar />
-      <Hero anime={featured} />
+      <Hero heroes={heroPool} />
 
       <div className="pt-4 pb-16">
         {continueWatching.length > 0 && (

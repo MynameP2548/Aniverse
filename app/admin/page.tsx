@@ -5,13 +5,29 @@ import { signOut } from "next-auth/react";
 
 type Anime = {
   id: string;
+
   title: string;
   titleEn?: string;
   description?: string;
+
   coverImage?: string;
+  bannerImage?: string;
+
   genres: string[];
+
   status: "ONGOING" | "COMPLETED";
+
   releaseYear?: number;
+
+  rating?: number;
+
+  featured?: boolean;
+
+  heroTrailer?: string;
+
+  heroLogo?: string;
+
+  heroOrder?: number;
 };
 
 const GENRE_OPTIONS = [
@@ -35,10 +51,25 @@ const emptyForm = {
   title: "",
   titleEn: "",
   description: "",
+
   coverImage: "",
+  bannerImage: "",
+
   genres: [] as string[],
+
   status: "ONGOING" as "ONGOING" | "COMPLETED",
+
   releaseYear: "",
+
+  rating: "",
+
+  featured: false,
+
+  heroTrailer: "",
+
+  heroLogo: "",
+
+  heroOrder: "",
 };
 
 export default function AdminPage() {
@@ -68,15 +99,41 @@ export default function AdminPage() {
 
   function startEdit(anime: Anime) {
     setEditingId(anime.id);
-    setForm({
-      title: anime.title,
-      titleEn: anime.titleEn || "",
-      description: anime.description || "",
-      coverImage: anime.coverImage || "",
-      genres: anime.genres,
-      status: anime.status,
-      releaseYear: anime.releaseYear ? String(anime.releaseYear) : "",
-    });
+setForm({
+  title: anime.title,
+
+  titleEn: anime.titleEn || "",
+
+  description: anime.description || "",
+
+  coverImage: anime.coverImage || "",
+
+  bannerImage: anime.bannerImage || "",
+
+  genres: anime.genres,
+
+  status: anime.status,
+
+  releaseYear: anime.releaseYear
+    ? String(anime.releaseYear)
+    : "",
+
+  rating:
+    anime.rating !== undefined
+      ? String(anime.rating)
+      : "",
+
+  featured: anime.featured ?? false,
+
+  heroTrailer: anime.heroTrailer || "",
+
+  heroLogo: anime.heroLogo || "",
+
+  heroOrder:
+    anime.heroOrder !== undefined
+      ? String(anime.heroOrder)
+      : "",
+});
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -103,15 +160,39 @@ export default function AdminPage() {
     setSaving(true);
     setErrorMsg("");
 
-    const payload = {
-      title: form.title,
-      titleEn: form.titleEn,
-      description: form.description,
-      coverImage: form.coverImage,
-      genres: form.genres,
-      status: form.status,
-      releaseYear: form.releaseYear,
-    };
+const payload = {
+  title: form.title,
+
+  titleEn: form.titleEn,
+
+  description: form.description,
+
+  coverImage: form.coverImage,
+
+  bannerImage: form.bannerImage,
+
+  genres: form.genres,
+
+  status: form.status,
+
+  releaseYear: form.releaseYear
+    ? Number(form.releaseYear)
+    : null,
+
+  rating: form.rating
+    ? Number(form.rating)
+    : null,
+
+  featured: form.featured,
+
+  heroTrailer: form.heroTrailer,
+
+  heroLogo: form.heroLogo,
+
+  heroOrder: form.heroOrder
+    ? Number(form.heroOrder)
+    : 0,
+};
 
     try {
       const url = editingId ? `/api/anime/${editingId}` : "/api/anime";
@@ -216,6 +297,24 @@ export default function AdminPage() {
             </div>
 
             <div>
+  <label className="text-xs text-[#8a87a3] block mb-1">
+    URL Banner
+  </label>
+
+  <input
+    value={form.bannerImage}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        bannerImage: e.target.value,
+      })
+    }
+    className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+    placeholder="https://..."
+  />
+</div>
+
+            <div>
               <label className="text-xs text-[#8a87a3] block mb-2">หมวดหมู่ (เลือกได้หลายอัน)</label>
               <div className="flex flex-wrap gap-2">
                 {GENRE_OPTIONS.map((genre) => {
@@ -238,32 +337,146 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-[#8a87a3] block mb-1">สถานะ</label>
-                <select
-                  value={form.status}
-                  onChange={(e) =>
-                    setForm({ ...form, status: e.target.value as "ONGOING" | "COMPLETED" })
-                  }
-                  className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
-                >
-                  <option value="ONGOING">กำลังฉาย</option>
-                  <option value="COMPLETED">จบแล้ว</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-[#8a87a3] block mb-1">ปีที่ออกฉาย</label>
-                <input
-                  type="number"
-                  value={form.releaseYear}
-                  onChange={(e) => setForm({ ...form, releaseYear: e.target.value })}
-                  className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
-                  placeholder="2024"
-                />
-              </div>
-            </div>
-          </div>
+<div className="grid grid-cols-3 gap-3">
+  <div>
+    <label className="text-xs text-[#8a87a3] block mb-1">สถานะ</label>
+    <select
+      value={form.status}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          status: e.target.value as "ONGOING" | "COMPLETED",
+        })
+      }
+      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+    >
+      <option value="ONGOING">กำลังฉาย</option>
+      <option value="COMPLETED">จบแล้ว</option>
+    </select>
+  </div>
+
+  <div>
+    <label className="text-xs text-[#8a87a3] block mb-1">
+      ปีที่ออกฉาย
+    </label>
+
+    <input
+      type="number"
+      value={form.releaseYear}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          releaseYear: e.target.value,
+        })
+      }
+      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+      placeholder="2024"
+    />
+  </div>
+
+  <div>
+    <label className="text-xs text-[#8a87a3] block mb-1">
+      คะแนน
+    </label>
+
+    <input
+      type="number"
+      min="0"
+      max="10"
+      step="0.1"
+      value={form.rating}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          rating: e.target.value,
+        })
+      }
+      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+      placeholder="9.5"
+    />
+  </div>
+</div>
+
+<hr className="my-5 border-[#232335]" />
+
+<h3 className="mb-4 text-sm font-semibold text-white">
+  Netflix Hero
+</h3>
+
+<label className="mb-4 flex items-center gap-3">
+  <input
+    type="checkbox"
+    checked={form.featured}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        featured: e.target.checked,
+      })
+    }
+  />
+
+  <span className="text-sm text-white">
+    แสดงบน Hero หน้าแรก
+  </span>
+</label>
+
+<div className="space-y-3">
+  <div>
+    <label className="mb-1 block text-xs text-[#8a87a3]">
+      Hero Trailer
+    </label>
+
+    <input
+      value={form.heroTrailer}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          heroTrailer: e.target.value,
+        })
+      }
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      placeholder="/videos/rick.mp4"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-xs text-[#8a87a3]">
+      Hero Logo
+    </label>
+
+    <input
+      value={form.heroLogo}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          heroLogo: e.target.value,
+        })
+      }
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      placeholder="/logos/rick.png"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-xs text-[#8a87a3]">
+      Hero Order
+    </label>
+
+    <input
+      type="number"
+      value={form.heroOrder}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          heroOrder: e.target.value,
+        })
+      }
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      placeholder="0"
+    />
+  </div>
+</div>
+</div>
 
           <div className="flex gap-2 mt-5">
             <button

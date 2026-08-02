@@ -42,125 +42,261 @@ const currentEpisode = ep
     <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-16">
+      <main className="pt-16">
+
+  {/* HERO */}
+  <section className="relative h-[75vh] min-h-[650px] overflow-hidden">
+
+    {(anime.bannerImage || anime.coverImage) && (
+      <>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={anime.bannerImage || anime.coverImage || ""}
+          alt={anime.title}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/30" />
+
+        <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/55 to-transparent" />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
+      </>
+    )}
+
+    <div className="relative z-20 mx-auto flex h-full max-w-7xl items-center px-6">
+
+      <div className="max-w-[700px]">
         {/* Silently records that the logged-in user watched this episode */}
         {currentEpisode && (
           <TrackWatch episodeId={currentEpisode.id} isLoggedIn={!!session?.user} />
         )}
 
-        {/* Video player */}
-        <div className="w-full aspect-video bg-[#131320] border border-[#232335] rounded-xl overflow-hidden mb-6">
-          {currentEpisode ? (
-            isDirectVideoFile(currentEpisode.videoUrl) ? (
-              <video
-                key={currentEpisode.id}
-                src={currentEpisode.videoUrl}
-                controls
-                autoPlay
-                className="w-full h-full bg-black"
-              >
-                เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
-              </video>
-            ) : (
-              <iframe
-                key={currentEpisode.id}
-                src={currentEpisode.videoUrl}
-                title={`${anime.title} EP${currentEpisode.episodeNumber}`}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            )
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-[#5a5770] text-sm">
-              ยังไม่มีตอนให้ดูในเรื่องนี้
-            </div>
-          )}
-        </div>
+{/* Title + Meta */}
+<div className="mb-8">
+  {anime.heroLogo ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={anime.heroLogo}
+      alt={anime.title}
+      className="mb-8 max-h-48 object-contain"
+    />
+  ) : (
+    <h1 className="mb-6 text-6xl font-black text-white">
+      {anime.title}
+    </h1>
+  )}
 
-        {/* Title + meta */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight">{anime.title}</h1>
-            <span
-              className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${
-                anime.status === "ONGOING"
-                  ? "bg-[#1e3a2e] text-[#5ee6a0]"
-                  : "bg-[#2a2a3d] text-[#8a87a3]"
-              }`}
-            >
-              {anime.status === "ONGOING" ? "กำลังฉาย" : "จบแล้ว"}
-            </span>
+  {currentEpisode && (
+    <p className="mb-5 text-base font-semibold text-[#ff5d73]">
+      กำลังดู EP {currentEpisode.episodeNumber}
+      {currentEpisode.title && ` • ${currentEpisode.title}`}
+    </p>
+  )}
+
+  <div className="mb-6 flex flex-wrap items-center gap-4">
+    {anime.rating && (
+      <div className="flex items-center gap-2">
+        <span className="text-xl text-yellow-400">★</span>
+        <span className="font-bold text-yellow-400">
+          {anime.rating.toFixed(1)}
+        </span>
+      </div>
+    )}
+
+    {anime.releaseYear && (
+      <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/80">
+        {anime.releaseYear}
+      </span>
+    )}
+
+    <span
+      className={`rounded-full px-3 py-1 text-sm font-medium ${
+        anime.status === "ONGOING"
+          ? "bg-green-500/20 text-green-300"
+          : "bg-zinc-700 text-zinc-300"
+      }`}
+    >
+      {anime.status === "ONGOING" ? "กำลังฉาย" : "จบแล้ว"}
+    </span>
+  </div>
+
+  <div className="mb-8 flex flex-wrap gap-3">
+    {anime.genres.map((genre) => (
+      <span
+        key={genre}
+        className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white backdrop-blur"
+      >
+        {genre}
+      </span>
+    ))}
+  </div>
+
+  {anime.description && (
+    <p className="mb-8 max-w-[650px] text-lg leading-9 text-white/80">
+      {anime.description}
+    </p>
+  )}
+
+  <div className="flex flex-wrap gap-4">
+    <Link
+      href={`/anime/${anime.id}?ep=1`}
+      className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
+    >
+      ▶ ดูตอนแรก
+    </Link>
+
+    <button
+      className="rounded-xl border border-white/15 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur transition hover:bg-white/20"
+    >
+      + เพิ่มรายการ
+    </button>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+  <div className="max-w-7xl mx-auto px-6 py-12">
+    <section className="mb-14">
+  <h2 className="mb-5 text-2xl font-bold text-white">
+    กำลังรับชม
+  </h2>
+
+  <div className="overflow-hidden rounded-2xl border border-[#232335] bg-black shadow-2xl">
+
+    {currentEpisode ? (
+      isDirectVideoFile(currentEpisode.videoUrl) ? (
+        <video
+          key={currentEpisode.id}
+          src={currentEpisode.videoUrl}
+          controls
+          autoPlay
+          className="aspect-video w-full"
+        >
+          เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+        </video>
+      ) : (
+        <iframe
+          key={currentEpisode.id}
+          src={currentEpisode.videoUrl}
+          title={`${anime.title} EP${currentEpisode.episodeNumber}`}
+          className="aspect-video w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      )
+    ) : (
+      <div className="flex aspect-video items-center justify-center text-white/60">
+        ยังไม่มีตอน
+      </div>
+    )}
+
+  </div>
+
+  {currentEpisode && (
+    <div className="mt-5">
+      <h3 className="text-xl font-bold text-white">
+        EP {currentEpisode.episodeNumber}
+        {currentEpisode.title && ` • ${currentEpisode.title}`}
+      </h3>
+    </div>
+  )}
+</section>
+
+{/* Episode List */}
+<section className="mb-14">
+  <h2 className="mb-6 text-2xl font-bold text-white">
+    รายการตอน ({anime.episodes.length})
+  </h2>
+
+  <div className="space-y-4">
+    {anime.episodes.map((episode) => {
+      const active = currentEpisode?.id === episode.id;
+
+      return (
+        <Link
+          key={episode.id}
+          href={`/anime/${anime.id}?ep=${episode.episodeNumber}`}
+          className={`
+            group
+            flex
+            overflow-hidden
+            rounded-2xl
+            border
+            transition-all
+            duration-300
+            ${
+              active
+                ? "border-[#ff5d73] bg-[#ff5d73]/10 shadow-[0_0_30px_rgba(255,93,115,.15)]"
+                : "border-[#232335] bg-[#131320] hover:border-[#ff5d73]/50 hover:bg-[#181827]"
+            }
+          `}
+        >
+          {/* Thumbnail */}
+          <div className="relative h-32 w-56 shrink-0 overflow-hidden">
+            {episode.thumbnail ? (
+              <img
+                src={episode.thumbnail}
+                alt={episode.title ?? ""}
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-[#1a1a28] text-white/30">
+                ไม่มีรูป
+              </div>
+            )}
+
+            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition" />
+
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-black shadow-xl">
+                ▶
+              </div>
+            </div>
           </div>
-          {currentEpisode && (
-            <p className="text-sm text-[#ff5d73] font-semibold mb-3">
-              กำลังดู: EP{currentEpisode.episodeNumber}
-              {currentEpisode.title ? ` · ${currentEpisode.title}` : ""}
-            </p>
-          )}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {anime.releaseYear && (
-              <span className="text-xs px-2.5 py-1 rounded-full border border-[#2a2a3d] text-[#8a87a3]">
-                {anime.releaseYear}
+
+          {/* Info */}
+          <div className="flex flex-1 items-center justify-between p-6">
+            <div>
+              <div className="mb-2 flex items-center gap-3">
+                <span className="text-xl font-black text-[#ff5d73]">
+                  {episode.episodeNumber.toString().padStart(2, "0")}
+                </span>
+
+                <h3 className="text-lg font-bold text-white">
+                  {episode.title || `Episode ${episode.episodeNumber}`}
+                </h3>
+              </div>
+
+              <p className="line-clamp-2 text-sm text-white/55">
+                {episode.title || "ไม่มีรายละเอียด"}
+              </p>
+            </div>
+
+            {episode.duration && (
+              <span className="text-sm text-white/40">
+                {Math.floor(episode.duration / 60)} นาที
               </span>
             )}
-            {anime.genres.map((g) => (
-              <span
-                key={g}
-                className="text-xs px-2.5 py-1 rounded-full border border-[#2a2a3d] text-[#8a87a3]"
-              >
-                {g}
-              </span>
-            ))}
           </div>
-          {anime.description && (
-            <p className="text-[#a8a5bd] text-sm leading-relaxed max-w-3xl">
-              {anime.description}
-            </p>
-          )}
-        </div>
-
-        {/* Episode list */}
-        <section>
-          <h2 className="text-lg font-bold mb-4">รายการตอน ({anime.episodes.length})</h2>
-          {anime.episodes.length === 0 ? (
-            <p className="text-[#8a87a3] text-sm">ยังไม่มีตอนในเรื่องนี้</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {anime.episodes.map((episode) => {
-                const isActive = currentEpisode?.id === episode.id;
-                return (
-                  <Link
-                    key={episode.id}
-                    href={`/anime/${anime.id}?ep=${episode.episodeNumber}`}
-                    className={`rounded-lg border p-3 transition ${
-                      isActive
-                        ? "border-[#ff5d73] bg-[#ff5d73]/10"
-                        : "border-[#232335] bg-[#131320] hover:border-[#3a3a52]"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm font-bold ${
-                        isActive ? "text-[#ff5d73]" : "text-[#e8e6f0]"
-                      }`}
-                    >
-                      EP {episode.episodeNumber}
-                    </p>
-                    {episode.title && (
-                      <p className="text-xs text-[#8a87a3] truncate mt-1">{episode.title}</p>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </section>
+        </Link>
+      );
+    })}
+  </div>
+</section>
 
         <ReviewSection
           animeId={anime.id}
           isLoggedIn={!!session?.user}
           currentUserId={session?.user?.id}
         />
+
+        </div> {/* ปิด max-w-7xl */}
+
       </main>
     </div>
   );
