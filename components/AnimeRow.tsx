@@ -35,7 +35,7 @@ export default function AnimeRow({ title, items }: Props) {
     <section className="mb-14">
 
       {/* Header */}
-      <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-6 md:px-8 xl:px-12 2xl:px-16 mb-5">
+      <div className="mx-auto flex w-full max-w-[1700px] items-center justify-between px-4 md:px-6 xl:px-8 mb-5">
 
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
           {title}
@@ -98,20 +98,19 @@ export default function AnimeRow({ title, items }: Props) {
 
         <div
           ref={rowRef}
-          className="
-            flex
-            items-start
-            gap-5
-            overflow-x-auto
-            overflow-y-hidden
-            scroll-smooth
-            scrollbar-hide
-            px-6
-            md:px-8
-            xl:px-12
-            2xl:px-16
-            pb-4
-          "
+className="
+flex
+items-start
+gap-5
+overflow-x-auto
+overflow-y-hidden
+scroll-smooth
+scrollbar-hide
+px-4
+md:px-6
+xl:px-8
+pb-4
+"
         >
           {items.map((anime) => (
             <AnimeCard
