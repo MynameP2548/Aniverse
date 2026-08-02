@@ -1,12 +1,121 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  password     String
+  name         String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  favorites    Favorite[]
+  reviews      Review[]
+  watchHistory WatchHistory[]
+}
+
+model Anime {
+  id          String      @id @default(cuid())
+  title       String
+  titleEn     String?
+  description String?
+  coverImage  String?
+  bannerImage String?
+  genres      String[]
+  status      AnimeStatus @default(ONGOING)
+  releaseYear Int?
+  rating      Float?      @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  featured    Boolean     @default(false)
+  heroLogo    String?
+  heroOrder   Int         @default(0)
+  heroTrailer String?
+  seasons     Season[]
+  episodes    Episode[]
+  favorites   Favorite[]
+  reviews     Review[]
+}
+
+model Episode {
+  id String @id @default(cuid())
+
+  animeId String
+  anime   Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  seasonId String?
+  season   Season? @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  episodeNumber Int
+  title         String?
+  videoUrl      String
+  thumbnail     String?
+  duration      Int?
+
+  createdAt DateTime @default(now())
+
+  watchHistory WatchHistory[]
+
+  @@unique([seasonId, episodeNumber])
+}
+
+model Season {
+  id String @id @default(cuid())
+
+  animeId String
+  anime   Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  seasonNumber Int
+  title        String?
+
+  episodes Episode[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([animeId, seasonNumber])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  animeId   String
+  createdAt DateTime @default(now())
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  animeId   String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  episodeId String
+  progress  Int      @default(0)
+  updatedAt DateTime @updatedAt
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
 }
 
 enum Role {
@@ -17,94 +126,4 @@ enum Role {
 enum AnimeStatus {
   ONGOING
   COMPLETED
-}
-
-model User {
-  id           String         @id @default(cuid())
-  email        String         @unique
-  password     String
-  name         String
-  role         Role           @default(USER)
-  favorites    Favorite[]
-  reviews      Review[]
-  watchHistory WatchHistory[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-}
-
-model Anime {
-  id           String      @id @default(cuid())
-  title        String
-  titleEn      String?
-  description  String?     @db.Text
-  coverImage   String?
-  bannerImage  String?
-  genres       String[]
-  status       AnimeStatus @default(ONGOING)
-  releaseYear  Int?
-  rating       Float?      @default(0)
-
-  featured     Boolean     @default(false)
-  heroTrailer  String?
-  heroLogo     String?
-  heroOrder    Int         @default(0)
-
-  episodes     Episode[]
-  favorites    Favorite[]
-  reviews      Review[]
-
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-}
-
-model Episode {
-  id            String         @id @default(cuid())
-  anime         Anime          @relation(fields: [animeId], references: [id], onDelete: Cascade)
-  animeId       String
-  episodeNumber Int
-  title         String?
-  videoUrl      String         // demo/sample or licensed-content video URL
-  thumbnail     String?
-  duration      Int?           // in seconds
-  watchHistory  WatchHistory[]
-  createdAt     DateTime       @default(now())
-
-  @@unique([animeId, episodeNumber])
-}
-
-model Favorite {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
-  animeId   String
-  createdAt DateTime @default(now())
-
-  @@unique([userId, animeId])
-}
-
-model Review {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
-  animeId   String
-  rating    Int      // 1-5 stars
-  comment   String?  @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, animeId])
-}
-
-model WatchHistory {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
-  episodeId String
-  progress  Int      @default(0) // watched up to this second
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, episodeId])
 }
