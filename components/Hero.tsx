@@ -189,34 +189,6 @@ const nextHero = () => {
       )}
 
 {list.length > 1 && (
-  <button
-    onClick={prevHero}
-    className="
-      absolute
-      left-6
-      top-1/2
-      z-40
-      -translate-y-1/2
-      flex
-      h-14
-      w-14
-      items-center
-      justify-center
-      rounded-full
-      border
-      border-white/20
-      bg-black/30
-      text-2xl
-      text-white
-      backdrop-blur-md
-      transition-all
-      duration-300
-      hover:bg-black/70
-      hover:scale-110
-    "
-  >
-    ❮
-  </button>
 )}
 
       {/* Overlay */}
