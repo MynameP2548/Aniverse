@@ -84,11 +84,11 @@ export default function Hero({
     }
   }, [muted]);
 useEffect(() => {
-  if (!videoRef.current) return;
+  const video = videoRef.current;
 
-  videoRef.current.load();
+  if (!video) return;
 
-  videoRef.current.play().catch(() => {});
+  video.load();
 }, [index]);
   useEffect(() => {
   if (!heroRef.current || !videoRef.current) return;
@@ -136,16 +136,11 @@ useEffect(() => {
   }, 300);
 };
 
-const nextHero = () => {
+const prevHero = () => {
   setFade(true);
-
-  setTimeout(() => {
-    setIndex((prev) =>
-      (prev + 1) % list.length
-    );
-
-    setFade(false);
-  }, 300);
+  setIndex((prev) =>
+    prev === 0 ? list.length - 1 : prev - 1
+  );
 };
     
       return (
@@ -156,17 +151,35 @@ const nextHero = () => {
       onMouseLeave={() => setPaused(false)}
     >
       {trailer ? (
-        <video
-          ref={videoRef}
-          key={anime.id}
-          className="absolute inset-0 h-full w-full object-cover scale-[1.03] transition-opacity duration-700"
-          src={trailer}
-          autoPlay
-          muted={muted}
-          loop
-          playsInline
-          preload="auto"
-        />
+<video
+  key={anime.id}
+  ref={videoRef}
+  className="absolute inset-0 h-full w-full object-cover scale-[1.03] transition-opacity duration-500"
+  style={{
+    opacity: fade ? 0 : 1,
+  }}
+  autoPlay
+  muted={muted}
+  loop
+  playsInline
+  preload="metadata"
+  poster={backdrop ?? undefined}
+  onLoadedData={() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // ข้ามอินโทร 2 วินาที (ถ้าไม่ต้องการให้เปลี่ยนเป็น 0)
+    if (video.currentTime < 2) {
+      video.currentTime = 2;
+    }
+
+    video.play().catch(() => {});
+    setFade(false);
+  }}
+>
+  <source src={trailer} type="video/mp4" />
+  เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+</video>
       ) : (
         backdrop && (
           // eslint-disable-next-line @next/next/no-img-element
