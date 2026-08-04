@@ -152,6 +152,7 @@ const nextHero = () => {
   }}
   autoPlay
   muted={muted}
+  loop
   playsInline
   preload="metadata"
   poster={backdrop ?? undefined}
@@ -165,9 +166,6 @@ const nextHero = () => {
     video.play().catch(() => {});
 
     setFade(false);
-  }}
-  onEnded={() => {
-    nextHero();
   }}
 >
   <source src={trailer} type="video/mp4" />
@@ -201,10 +199,10 @@ const nextHero = () => {
 
 {list.length > 1 && (
   <button
-    onClick={nextHero}
+    onClick={prevHero}
     className="
       absolute
-      right-6
+      left-6
       top-1/2
       z-40
       -translate-y-1/2
@@ -226,7 +224,7 @@ const nextHero = () => {
       hover:scale-110
     "
   >
-    ❯
+    ❮
   </button>
 )}
 
