@@ -57,26 +57,17 @@ export default function Hero({
   const heroRef =
     useRef<HTMLElement>(null);
 
-  useEffect(() => {
-  if (list.length <= 1) return;
-  if (paused) return;
+useEffect(() => {
+  const video = videoRef.current;
 
-  let timeoutId: ReturnType<typeof setTimeout>;
+  if (!video) return;
 
-  const intervalId = setInterval(() => {
-    setFade(true);
-
-    timeoutId = setTimeout(() => {
-      setIndex((prev) => (prev + 1) % list.length);
-      setFade(false);
-    }, 450);
-  }, 15000);
-
-  return () => {
-    clearInterval(intervalId);
-    clearTimeout(timeoutId);
-  };
-}, [list.length, paused]);
+  if (paused) {
+    video.pause();
+  } else {
+    video.play().catch(() => {});
+  }
+}, [paused, index]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -126,16 +117,22 @@ useEffect(() => {
     anime.heroTrailer;
 const prevHero = () => {
   setFade(true);
-  setIndex((prev) =>
-    prev === 0 ? list.length - 1 : prev - 1
-  );
+
+  setTimeout(() => {
+    setIndex((prev) =>
+      prev === 0 ? list.length - 1 : prev - 1
+    );
+  }, 250);
 };
 
 const nextHero = () => {
   setFade(true);
-  setIndex((prev) =>
-    (prev + 1) % list.length
-  );
+
+  setTimeout(() => {
+    setIndex((prev) =>
+      (prev + 1) % list.length
+    );
+  }, 250);
 };
     
       return (
@@ -154,29 +151,28 @@ const nextHero = () => {
     opacity: fade ? 0 : 1,
   }}
   autoPlay
+  muted={muted}
   playsInline
-  loop
-  preload="auto"
+  preload="metadata"
   poster={backdrop ?? undefined}
-  muted={false}
-  onCanPlay={(e) => {
-    const video = e.currentTarget;
+  onLoadedData={() => {
+    const video = videoRef.current;
 
-    video.muted = false;
-    video.volume = 1;
+    if (!video) return;
 
-    video
-      .play()
-      .then(() => {
-        console.log("Video playing with sound");
-      })
-      .catch((err) => {
-        console.log("Autoplay with sound blocked:", err);
-      });
+    video.currentTime = 2;
+
+    video.play().catch(() => {});
+
+    setFade(false);
+  }}
+  onEnded={() => {
+    nextHero();
   }}
 >
   <source src={trailer} type="video/mp4" />
 </video>
+
       ) : (
         backdrop && (
           // eslint-disable-next-line @next/next/no-img-element
