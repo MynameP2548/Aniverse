@@ -153,8 +153,8 @@ const nextHero = () => {
   style={{
     opacity: fade ? 0 : 1,
   }}
-  autoPlay
-  muted={muted}
+videoRef.current.muted = false;
+videoRef.current.play();
   loop
   playsInline
   preload="metadata"
