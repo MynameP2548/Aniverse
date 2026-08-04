@@ -153,27 +153,29 @@ const nextHero = () => {
   style={{
     opacity: fade ? 0 : 1,
   }}
-videoRef.current.muted = false;
-videoRef.current.play();
-  loop
+  autoPlay
   playsInline
-  preload="metadata"
+  loop
+  preload="auto"
   poster={backdrop ?? undefined}
-  onLoadedData={() => {
-    const video = videoRef.current;
-    if (!video) return;
+  muted={false}
+  onCanPlay={(e) => {
+    const video = e.currentTarget;
 
-    // ข้ามอินโทร 2 วินาที (ถ้าไม่ต้องการให้เปลี่ยนเป็น 0)
-    if (video.currentTime < 2) {
-      video.currentTime = 2;
-    }
+    video.muted = false;
+    video.volume = 1;
 
-    video.play().catch(() => {});
-    setFade(false);
+    video
+      .play()
+      .then(() => {
+        console.log("Video playing with sound");
+      })
+      .catch((err) => {
+        console.log("Autoplay with sound blocked:", err);
+      });
   }}
 >
   <source src={trailer} type="video/mp4" />
-  เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
 </video>
       ) : (
         backdrop && (
