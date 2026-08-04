@@ -124,22 +124,17 @@ useEffect(() => {
 
   const trailer =
     anime.heroTrailer;
-    const prevHero = () => {
-  setFade(true);
-
-  setTimeout(() => {
-    setIndex((prev) =>
-      prev === 0 ? list.length - 1 : prev - 1
-    );
-
-    setFade(false);
-  }, 300);
-};
-
 const prevHero = () => {
   setFade(true);
   setIndex((prev) =>
     prev === 0 ? list.length - 1 : prev - 1
+  );
+};
+
+const nextHero = () => {
+  setFade(true);
+  setIndex((prev) =>
+    (prev + 1) % list.length
   );
 };
     
