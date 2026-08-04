@@ -44,9 +44,6 @@ export default function Hero({
 
   const [index, setIndex] = useState(0);
 
-  const [muted, setMuted] =
-    useState(true);
-
   const [paused, setPaused] =
     useState(false);
   const [fade, setFade] =
@@ -69,18 +66,6 @@ useEffect(() => {
   }
 }, [paused, index]);
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = muted;
-    }
-  }, [muted]);
-useEffect(() => {
-  const video = videoRef.current;
-
-  if (!video) return;
-
-  video.load();
-}, [index]);
   useEffect(() => {
   if (!heroRef.current || !videoRef.current) return;
 
@@ -151,17 +136,17 @@ const nextHero = () => {
     opacity: fade ? 0 : 1,
   }}
   autoPlay
-  muted={muted}
+  muted={false}
   loop
   playsInline
-  preload="metadata"
+  preload="auto"
   poster={backdrop ?? undefined}
   onLoadedData={() => {
     const video = videoRef.current;
 
     if (!video) return;
 
-    video.currentTime = 2;
+video.currentTime = 0;
 
     video.play().catch(() => {});
 
@@ -181,21 +166,6 @@ const nextHero = () => {
           />
         )
       )}
-
-{list.length > 1 && (
-)}
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/18" />
-
-      {/* Bottom */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/10 to-transparent" />
-
-      {/* Left */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
-
-      {/* Right */}
-      <div className="absolute inset-0 bg-gradient-to-l from-black/25 via-transparent to-transparent" />
 
 {list.length > 1 && (
   <button
@@ -228,30 +198,36 @@ const nextHero = () => {
   </button>
 )}
 
-      <button
-        onClick={() => setMuted(!muted)}
-        className="
-          absolute
-          bottom-8
-          right-8
-          z-30
-          flex
-          h-12
-          w-12
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-white/20
-          bg-black/40
-          text-white
-          backdrop-blur-md
-          transition
-          hover:bg-black/70
-        "
-      >
-        {muted ? "🔇" : "🔊"}
-      </button>
+{list.length > 1 && (
+  <button
+    onClick={nextHero}
+    className="
+      absolute
+      right-6
+      top-1/2
+      z-40
+      -translate-y-1/2
+      flex
+      h-14
+      w-14
+      items-center
+      justify-center
+      rounded-full
+      border
+      border-white/20
+      bg-black/30
+      text-2xl
+      text-white
+      backdrop-blur-md
+      transition-all
+      duration-300
+      hover:bg-black/70
+      hover:scale-110
+    "
+  >
+    ❯
+  </button>
+)}
 
 <div
   className={`
