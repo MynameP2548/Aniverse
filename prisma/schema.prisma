@@ -61,7 +61,7 @@ model Episode {
 
   watchHistory WatchHistory[]
 
-  @@unique([seasonId, episodeNumber])
+  @@unique([animeId, seasonId, episodeNumber])
 }
 
 model Season {

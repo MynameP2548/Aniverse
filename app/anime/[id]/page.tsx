@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import TrackWatch from "@/components/TrackWatch";
 import ReviewSection from "@/components/ReviewSection";
+import SeasonSelector from "@/components/SeasonSelector";
 
 export const dynamic = "force-dynamic";
 
@@ -16,33 +17,72 @@ function isDirectVideoFile(url: string): boolean {
 
 type Props = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ ep?: string }>;
+  searchParams: Promise<{
+  ep?: string;
+  season?: string;
+}>;
 };
 
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
-  const { id } = await params;
-  const { ep } = await searchParams;
-  const session = await auth();
+const { id } = await params;
+const { ep, season } = await searchParams;
 
-  const anime = await prisma.anime.findUnique({
-    where: { id },
-    include: { episodes: { orderBy: { episodeNumber: "asc" } } },
-  });
+const session = await auth();
+const anime = await prisma.anime.findUnique({
+  where: {
+    id,
+  },
+  include: {
+    episodes: {
+      include: {
+        season: true,
+      },
+      orderBy: [
+        {
+          seasonId: "asc",
+        },
+        {
+          episodeNumber: "asc",
+        },
+      ],
+    },
+  },
+});
 
-  if (!anime) notFound();
+if (!anime) notFound();
+const seasons = await prisma.season.findMany({
+  where: {
+    animeId: anime.id,
+  },
+  orderBy: {
+    seasonNumber: "asc",
+  },
+});
+
+const activeSeason =
+  seasons.find((s) => s.id === season) ??
+  seasons[0];
+
+const seasonEpisodes = anime.episodes.filter(
+  (episode) => episode.seasonId === activeSeason?.id
+);
 
 const currentEpisode = ep
-  ? anime.episodes.find(
-      (e: (typeof anime.episodes)[number]) =>
-        e.episodeNumber === Number(ep)
-    )
-  : anime.episodes[0];
+  ? seasonEpisodes.find(
+      (episode) => episode.episodeNumber === Number(ep)
+    ) ?? seasonEpisodes[0]
+  : seasonEpisodes[0];
+  if (!ep && activeSeason && currentEpisode) {
+  redirect(
+    `/anime/${anime.id}?season=${activeSeason.id}&ep=${currentEpisode.episodeNumber}`
+  );
+}
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
-      <Navbar />
+  <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <Navbar />
 
-      <main className="pt-16">
+    <main className="pt-16">
 
   {/* HERO */}
   <section className="relative h-[75vh] min-h-[650px] overflow-hidden">
@@ -140,7 +180,9 @@ const currentEpisode = ep
 
   <div className="flex flex-wrap gap-4">
     <Link
-      href={`/anime/${anime.id}?ep=1`}
+  href={`/anime/${anime.id}?season=${activeSeason?.id}&ep=${
+    seasonEpisodes[0]?.episodeNumber ?? 1
+  }`}
       className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
     >
       ▶ ดูตอนแรก
@@ -161,6 +203,24 @@ const currentEpisode = ep
 </section>
 
   <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="mb-6 flex items-center justify-between">
+  <div>
+    <h2 className="text-2xl font-bold text-white">
+      {activeSeason?.title ??
+        `Season ${activeSeason?.seasonNumber}`}
+    </h2>
+
+    <p className="mt-1 text-sm text-white/50">
+      {seasonEpisodes.length} ตอน
+    </p>
+  </div>
+
+<SeasonSelector
+  animeId={anime.id}
+  seasons={seasons}
+  selected={activeSeason?.id}
+/>
+</div>
     <section className="mb-14">
   <h2 className="mb-5 text-2xl font-bold text-white">
     กำลังรับชม
@@ -210,82 +270,88 @@ const currentEpisode = ep
 {/* Episode List */}
 <section className="mb-14">
   <h2 className="mb-6 text-2xl font-bold text-white">
-    รายการตอน ({anime.episodes.length})
+    รายการตอน ({seasonEpisodes.length})
   </h2>
 
   <div className="space-y-4">
-    {anime.episodes.map((episode) => {
-      const active = currentEpisode?.id === episode.id;
+    {seasonEpisodes.length === 0 ? (
+      <div className="rounded-xl border border-[#232335] bg-[#131320] p-8 text-center text-white/60">
+        Season นี้ยังไม่มีตอน
+      </div>
+    ) : (
+      seasonEpisodes.map((episode) => {
+        const active = currentEpisode?.id === episode.id;
 
-      return (
-        <Link
-          key={episode.id}
-          href={`/anime/${anime.id}?ep=${episode.episodeNumber}`}
-          className={`
-            group
-            flex
-            overflow-hidden
-            rounded-2xl
-            border
-            transition-all
-            duration-300
-            ${
-              active
-                ? "border-[#ff5d73] bg-[#ff5d73]/10 shadow-[0_0_30px_rgba(255,93,115,.15)]"
-                : "border-[#232335] bg-[#131320] hover:border-[#ff5d73]/50 hover:bg-[#181827]"
-            }
-          `}
-        >
-          {/* Thumbnail */}
-          <div className="relative h-32 w-56 shrink-0 overflow-hidden">
-            {episode.thumbnail ? (
-              <img
-                src={episode.thumbnail}
-                alt={episode.title ?? ""}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[#1a1a28] text-white/30">
-                ไม่มีรูป
-              </div>
-            )}
+        return (
+          <Link
+            key={episode.id}
+            href={`/anime/${anime.id}?season=${activeSeason?.id}&ep=${episode.episodeNumber}`}
+            className={`
+              group
+              flex
+              overflow-hidden
+              rounded-2xl
+              border
+              transition-all
+              duration-300
+              ${
+                active
+                  ? "border-[#ff5d73] bg-[#ff5d73]/10 shadow-[0_0_30px_rgba(255,93,115,.15)]"
+                  : "border-[#232335] bg-[#131320] hover:border-[#ff5d73]/50 hover:bg-[#181827]"
+              }
+            `}
+          >
+            {/* Thumbnail */}
+            <div className="relative h-32 w-56 shrink-0 overflow-hidden">
+              {episode.thumbnail ? (
+                <img
+                  src={episode.thumbnail}
+                  alt={episode.title ?? ""}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-[#1a1a28] text-white/30">
+                  ไม่มีรูป
+                </div>
+              )}
 
-            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition" />
+              <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition" />
 
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-black shadow-xl">
-                ▶
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-black shadow-xl">
+                  ▶
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Info */}
-          <div className="flex flex-1 items-center justify-between p-6">
-            <div>
-              <div className="mb-2 flex items-center gap-3">
-                <span className="text-xl font-black text-[#ff5d73]">
-                  {episode.episodeNumber.toString().padStart(2, "0")}
+            {/* Info */}
+            <div className="flex flex-1 items-center justify-between p-6">
+              <div>
+                <div className="mb-2 flex items-center gap-3">
+                  <span className="text-xl font-black text-[#ff5d73]">
+                    {episode.episodeNumber.toString().padStart(2, "0")}
+                  </span>
+
+                  <h3 className="text-lg font-bold text-white">
+                    {episode.title || `Episode ${episode.episodeNumber}`}
+                  </h3>
+                </div>
+
+                <p className="line-clamp-2 text-sm text-white/55">
+                  {episode.title || "ไม่มีรายละเอียด"}
+                </p>
+              </div>
+
+              {episode.duration && (
+                <span className="text-sm text-white/40">
+                  {Math.floor(episode.duration / 60)} นาที
                 </span>
-
-                <h3 className="text-lg font-bold text-white">
-                  {episode.title || `Episode ${episode.episodeNumber}`}
-                </h3>
-              </div>
-
-              <p className="line-clamp-2 text-sm text-white/55">
-                {episode.title || "ไม่มีรายละเอียด"}
-              </p>
+              )}
             </div>
-
-            {episode.duration && (
-              <span className="text-sm text-white/40">
-                {Math.floor(episode.duration / 60)} นาที
-              </span>
-            )}
-          </div>
-        </Link>
-      );
-    })}
+          </Link>
+        );
+      })
+    )}
   </div>
 </section>
 

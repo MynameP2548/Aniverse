@@ -9,17 +9,33 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-    const { episodeNumber, title, videoUrl, thumbnail, duration } = body;
+
+const {
+  seasonId,
+  episodeNumber,
+  title,
+  videoUrl,
+  thumbnail,
+  duration,
+} = body;
 
     const episode = await prisma.episode.update({
       where: { id },
       data: {
-        episodeNumber: episodeNumber ? Number(episodeNumber) : undefined,
-        title,
-        videoUrl,
-        thumbnail,
-        duration: duration ? Number(duration) : null,
-      },
+  seasonId,
+
+  episodeNumber: episodeNumber
+    ? Number(episodeNumber)
+    : undefined,
+
+  title,
+  videoUrl,
+  thumbnail,
+
+  duration: duration
+    ? Number(duration)
+    : null,
+},
     });
 
     return NextResponse.json(episode);

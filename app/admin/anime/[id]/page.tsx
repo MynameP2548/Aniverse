@@ -6,6 +6,7 @@ import Link from "next/link";
 
 type Episode = {
   id: string;
+  seasonId?: string | null;
   episodeNumber: number;
   title?: string;
   videoUrl: string;
@@ -19,7 +20,14 @@ type Anime = {
   coverImage?: string;
 };
 
+type Season = {
+  id: string;
+  seasonNumber: number;
+  title?: string;
+};
+
 const emptyForm = {
+  seasonId: "",
   episodeNumber: "",
   title: "",
   videoUrl: "",
@@ -33,19 +41,31 @@ export default function ManageEpisodesPage() {
 
   const [anime, setAnime] = useState<Anime | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [seasons, setSeasons] = useState<Season[]>([]);
+  const [selectedSeason, setSelectedSeason] = useState("");
+  const [creatingSeason, setCreatingSeason] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // โหลดข้อมูลทั้งหมด
   async function loadData() {
     setLoading(true);
     try {
-      const [animeRes, episodesRes] = await Promise.all([
+      const [animeRes, episodesRes, seasonsRes] = await Promise.all([
         fetch(`/api/anime`).then((r) => r.json()),
-        fetch(`/api/anime/${animeId}/episodes`).then((r) => r.json()),
+        fetch(`/api/anime/${animeId}/episodes?seasonId=${selectedSeason}`).then((r) => r.json()),
+        fetch(`/api/anime/${animeId}/seasons`).then((r) => r.json()),
       ]);
+
+      setSeasons(seasonsRes);
+
+      if (seasonsRes.length > 0 && selectedSeason === "") {
+        setSelectedSeason(seasonsRes[0].id);
+      }
+
       const found = Array.isArray(animeRes)
         ? animeRes.find((a: Anime) => a.id === animeId)
         : null;
@@ -61,11 +81,79 @@ export default function ManageEpisodesPage() {
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animeId]);
+  }, [animeId, selectedSeason]);
+
+  // ฟังก์ชันสร้าง Season ใหม่
+  async function createSeason() {
+    const title = prompt("ชื่อ Season เช่น Season 1");
+    if (!title) return;
+
+    const seasonNumber = prompt("Season Number");
+    if (!seasonNumber) return;
+
+    setCreatingSeason(true);
+
+    try {
+      const res = await fetch(`/api/anime/${animeId}/seasons`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          seasonNumber: Number(seasonNumber),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error);
+      }
+
+      await loadData();
+      setSelectedSeason(data.id);
+      alert("เพิ่ม Season สำเร็จ");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "เพิ่ม Season ไม่สำเร็จ");
+    } finally {
+      setCreatingSeason(false);
+    }
+  }
+
+  // ฟังก์ชันลบ Season
+  async function deleteSeason() {
+    if (!selectedSeason) return;
+
+    if (!confirm("ต้องการลบ Season นี้ใช่หรือไม่?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/seasons/${selectedSeason}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error);
+      }
+
+      setSelectedSeason("");
+      await loadData();
+      alert("ลบ Season สำเร็จ");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "ลบ Season ไม่สำเร็จ");
+    }
+  }
 
   function startEdit(ep: Episode) {
     setEditingId(ep.id);
+    setSelectedSeason(ep.seasonId ?? "");
+
     setForm({
+      seasonId: ep.seasonId ?? "",
       episodeNumber: String(ep.episodeNumber),
       title: ep.title || "",
       videoUrl: ep.videoUrl,
@@ -77,6 +165,10 @@ export default function ManageEpisodesPage() {
   function cancelEdit() {
     setEditingId(null);
     setForm(emptyForm);
+
+    if (seasons.length > 0) {
+      setSelectedSeason(seasons[0].id);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -93,13 +185,23 @@ export default function ManageEpisodesPage() {
         ? `/api/episodes/${editingId}`
         : `/api/anime/${animeId}/episodes`;
       const method = editingId ? "PUT" : "POST";
+      
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          seasonId: selectedSeason,
+          episodeNumber: form.episodeNumber,
+          title: form.title,
+          videoUrl: form.videoUrl,
+          thumbnail: form.thumbnail,
+          duration: form.duration,
+        }),
       });
+      
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "เกิดข้อผิดพลาด");
+      
       cancelEdit();
       await loadData();
     } catch (err) {
@@ -140,6 +242,44 @@ export default function ManageEpisodesPage() {
               {errorMsg}
             </div>
           )}
+
+          <div className="mb-5 flex items-end gap-3">
+            <div className="flex-1">
+              <label className="text-xs text-[#8a87a3] block mb-1">
+                Season *
+              </label>
+              <select
+                value={selectedSeason}
+                onChange={(e) => setSelectedSeason(e.target.value)}
+                className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+              >
+                {seasons.map((season) => (
+                  <option key={season.id} value={season.id}>
+                    {season.title || `Season ${season.seasonNumber}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={createSeason}
+                disabled={creatingSeason}
+                className="h-[42px] rounded-lg bg-[#ff5d73] px-4 font-semibold text-black"
+              >
+                + Season
+              </button>
+
+              <button
+                type="button"
+                onClick={deleteSeason}
+                className="h-[42px] rounded-lg border border-red-500/40 px-4 text-red-400 hover:bg-red-500/10"
+              >
+                ลบ
+              </button>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div>
@@ -202,7 +342,7 @@ export default function ManageEpisodesPage() {
           <div className="flex gap-2">
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || !selectedSeason}
               className="flex-1 bg-[#ff5d73] hover:bg-[#ff738a] transition text-[#0b0b12] font-semibold rounded-lg py-2 text-sm disabled:opacity-50"
             >
               {saving ? "กำลังบันทึก..." : editingId ? "บันทึกการแก้ไข" : "เพิ่มตอน"}
