@@ -150,6 +150,30 @@ setForm({
         : [...prev.genres, genre],
     }));
   }
+  async function uploadImage(
+  file: File,
+  field: "coverImage" | "bannerImage" | "heroLogo"
+) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    alert("อัปโหลดไม่สำเร็จ");
+    return;
+  }
+
+  const data = await res.json();
+
+  setForm((prev) => ({
+    ...prev,
+    [field]: data.url,
+  }));
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -287,13 +311,33 @@ const payload = {
             </div>
 
             <div>
-              <label className="text-xs text-[#8a87a3] block mb-1">URL รูปปก</label>
-              <input
-                value={form.coverImage}
-                onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
-                className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
-                placeholder="https://..."
-              />
+<label>Cover Image</label>
+
+<input
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+        const file = e.target.files?.[0];
+        if (file) uploadImage(file, "coverImage");
+    }}
+/>
+
+<input
+    value={form.coverImage}
+    onChange={(e)=>
+        setForm({
+            ...form,
+            coverImage:e.target.value
+        })
+    }
+/>
+
+{form.coverImage && (
+    <img
+        src={form.coverImage}
+        className="mt-2 rounded-lg"
+    />
+)}
             </div>
 
             <div>
@@ -301,17 +345,35 @@ const payload = {
     URL Banner
   </label>
 
-  <input
-    value={form.bannerImage}
-    onChange={(e) =>
-      setForm({
-        ...form,
-        bannerImage: e.target.value,
-      })
-    }
-    className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
-    placeholder="https://..."
-  />
+<input
+    type="file"
+    accept="image/*"
+    onChange={(e)=>{
+        const file=e.target.files?.[0];
+        if(file){
+            uploadImage(file,"bannerImage")
+        }
+    }}
+/>
+
+<input
+  value={form.bannerImage}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      bannerImage: e.target.value,
+    })
+  }
+  className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+  placeholder="https://..."
+/>
+
+{form.bannerImage && (
+<img
+src={form.bannerImage}
+className="mt-2 rounded-lg"
+/>
+)}
 </div>
 
             <div>
@@ -443,6 +505,16 @@ const payload = {
     <label className="mb-1 block text-xs text-[#8a87a3]">
       Hero Logo
     </label>
+    <input
+type="file"
+accept="image/*"
+onChange={(e)=>{
+const file=e.target.files?.[0];
+if(file){
+uploadImage(file,"heroLogo")
+}
+}}
+/>
 
     <input
       value={form.heroLogo}
