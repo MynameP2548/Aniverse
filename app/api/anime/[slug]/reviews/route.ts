@@ -4,17 +4,38 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/anime/[id]/reviews - list all reviews for an anime, newest first
+// GET /api/anime/[slug]/reviews
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { id } = await params;
+  const { slug } = await params;
+
+  const anime = await prisma.anime.findUnique({
+    where: { slug },
+  });
+
+  if (!anime) {
+    return NextResponse.json(
+      { error: "ไม่พบอนิเมะ" },
+      { status: 404 }
+    );
+  }
 
   const reviews = await prisma.review.findMany({
-    where: { animeId: id },
-    include: { user: { select: { name: true } } },
-    orderBy: { createdAt: "desc" },
+    where: {
+      animeId: anime.id,
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   const average =
@@ -22,32 +43,63 @@ export async function GET(
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : null;
 
-  return NextResponse.json({ reviews, average, count: reviews.length });
+  return NextResponse.json({
+    reviews,
+    average,
+    count: reviews.length,
+  });
 }
 
-// POST /api/anime/[id]/reviews - create or update the current user's review (upsert)
+// POST /api/anime/[slug]/reviews
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   const session = await auth();
+
   if (!session?.user) {
-    return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อน" }, { status: 401 });
+    return NextResponse.json(
+      { error: "กรุณาเข้าสู่ระบบก่อน" },
+      { status: 401 }
+    );
   }
 
-  const { id } = await params;
+  const { slug } = await params;
+
+  const anime = await prisma.anime.findUnique({
+    where: { slug },
+  });
+
+  if (!anime) {
+    return NextResponse.json(
+      { error: "ไม่พบอนิเมะ" },
+      { status: 404 }
+    );
+  }
+
   const { rating, comment } = await req.json();
 
   if (!rating || rating < 1 || rating > 5) {
-    return NextResponse.json({ error: "กรุณาให้คะแนน 1-5 ดาว" }, { status: 400 });
+    return NextResponse.json(
+      { error: "กรุณาให้คะแนน 1-5 ดาว" },
+      { status: 400 }
+    );
   }
 
   const review = await prisma.review.upsert({
-    where: { userId_animeId: { userId: session.user.id, animeId: id } },
-    update: { rating: Number(rating), comment },
+    where: {
+      userId_animeId: {
+        userId: session.user.id,
+        animeId: anime.id,
+      },
+    },
+    update: {
+      rating: Number(rating),
+      comment,
+    },
     create: {
       userId: session.user.id,
-      animeId: id,
+      animeId: anime.id,
       rating: Number(rating),
       comment,
     },
@@ -56,21 +108,41 @@ export async function POST(
   return NextResponse.json(review);
 }
 
-// DELETE /api/anime/[id]/reviews - remove the current user's own review
+// DELETE /api/anime/[slug]/reviews
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   const session = await auth();
+
   if (!session?.user) {
-    return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อน" }, { status: 401 });
+    return NextResponse.json(
+      { error: "กรุณาเข้าสู่ระบบก่อน" },
+      { status: 401 }
+    );
   }
 
-  const { id } = await params;
+  const { slug } = await params;
 
-  await prisma.review.deleteMany({
-    where: { userId: session.user.id, animeId: id },
+  const anime = await prisma.anime.findUnique({
+    where: { slug },
   });
 
-  return NextResponse.json({ success: true });
+  if (!anime) {
+    return NextResponse.json(
+      { error: "ไม่พบอนิเมะ" },
+      { status: 404 }
+    );
+  }
+
+  await prisma.review.deleteMany({
+    where: {
+      userId: session.user.id,
+      animeId: anime.id,
+    },
+  });
+
+  return NextResponse.json({
+    success: true,
+  });
 }

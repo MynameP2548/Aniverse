@@ -1,19 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// GET /api/anime/[id]/episodes
+export const dynamic = "force-dynamic";
+
+// GET /api/anime/[slug]/episodes
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (!anime) {
+      return NextResponse.json(
+        {
+          error: "ไม่พบอนิเมะ",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     const seasonId = req.nextUrl.searchParams.get("seasonId");
 
     const episodes = await prisma.episode.findMany({
       where: {
-        animeId: id,
+        animeId: anime.id,
         ...(seasonId ? { seasonId } : {}),
       },
       orderBy: {
@@ -36,13 +55,31 @@ export async function GET(
   }
 }
 
-// POST /api/anime/[id]/episodes
+// POST /api/anime/[slug]/episodes
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (!anime) {
+      return NextResponse.json(
+        {
+          error: "ไม่พบอนิเมะ",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
     const body = await req.json();
 
     const {
@@ -67,7 +104,7 @@ export async function POST(
 
     const episode = await prisma.episode.create({
       data: {
-        animeId: id,
+        animeId: anime.id,
         seasonId,
         episodeNumber: Number(episodeNumber),
         title,

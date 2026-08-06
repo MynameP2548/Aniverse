@@ -3,17 +3,30 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/anime/[id]/seasons
+// GET /api/anime/[slug]/seasons
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (!anime) {
+      return NextResponse.json(
+        { error: "ไม่พบอนิเมะ" },
+        { status: 404 }
+      );
+    }
 
     const seasons = await prisma.season.findMany({
       where: {
-        animeId: id,
+        animeId: anime.id,
       },
       orderBy: {
         seasonNumber: "asc",
@@ -31,13 +44,26 @@ export async function GET(
   }
 }
 
-// POST /api/anime/[id]/seasons
+// POST /api/anime/[slug]/seasons
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (!anime) {
+      return NextResponse.json(
+        { error: "ไม่พบอนิเมะ" },
+        { status: 404 }
+      );
+    }
 
     const body = await req.json();
 
@@ -55,7 +81,7 @@ export async function POST(
 
     const season = await prisma.season.create({
       data: {
-        animeId: id,
+        animeId: anime.id,
         seasonNumber: Number(seasonNumber),
         title,
       },

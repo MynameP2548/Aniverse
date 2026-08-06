@@ -36,6 +36,7 @@ export async function GET(
     return NextResponse.json(episodes);
   } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { error: "โหลดรายการตอนไม่สำเร็จ" },
       { status: 500 }
