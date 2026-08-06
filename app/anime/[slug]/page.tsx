@@ -463,7 +463,7 @@ return (
 </section>
 
 <ReviewSection
-  animeId={anime.id}
+  animeSlug={anime.slug!}
   isLoggedIn={!!session?.user}
   currentUserId={session?.user?.id}
 />
