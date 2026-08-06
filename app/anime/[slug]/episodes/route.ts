@@ -3,44 +3,95 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/anime/[id]/episodes - list all episodes of an anime, ordered by episode number
+// GET /api/anime/[slug]/episodes
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
-    const episodes = await prisma.episode.findMany({
-      where: { animeId: id },
-      orderBy: { episodeNumber: "asc" },
+    const { slug } = await params;
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
     });
+
+    if (!anime) {
+      return NextResponse.json(
+        { error: "ไม่พบอนิเมะ" },
+        { status: 404 }
+      );
+    }
+
+    const episodes = await prisma.episode.findMany({
+      where: {
+        animeId: anime.id,
+      },
+      orderBy: {
+        episodeNumber: "asc",
+      },
+    });
+
     return NextResponse.json(episodes);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "โหลดรายการตอนไม่สำเร็จ" }, { status: 500 });
+    return NextResponse.json(
+      { error: "โหลดรายการตอนไม่สำเร็จ" },
+      { status: 500 }
+    );
   }
 }
 
-// POST /api/anime/[id]/episodes - add a new episode to an anime (admin only)
+// POST /api/anime/[slug]/episodes
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
+
     const body = await req.json();
-    const { episodeNumber, title, videoUrl, thumbnail, duration } = body;
+
+    const {
+      episodeNumber,
+      title,
+      videoUrl,
+      thumbnail,
+      duration,
+    } = body;
 
     if (!episodeNumber || !videoUrl) {
       return NextResponse.json(
-        { error: "กรุณากรอกลำดับตอนและลิงก์วิดีโอ" },
-        { status: 400 }
+        {
+          error: "กรุณากรอกลำดับตอนและลิงก์วิดีโอ",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const anime = await prisma.anime.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (!anime) {
+      return NextResponse.json(
+        {
+          error: "ไม่พบอนิเมะ",
+        },
+        {
+          status: 404,
+        }
       );
     }
 
     const episode = await prisma.episode.create({
       data: {
-        animeId: id,
+        animeId: anime.id,
         episodeNumber: Number(episodeNumber),
         title,
         videoUrl,
@@ -49,13 +100,23 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(episode, { status: 201 });
+    return NextResponse.json(episode, {
+      status: 201,
+    });
   } catch (error: unknown) {
     console.error(error);
+
     const message =
-      typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "P2002"
+      typeof error === "object" &&
+      error &&
+      "code" in error &&
+      (error as { code?: string }).code === "P2002"
         ? "ตอนนี้มีลำดับตอนซ้ำกับตอนที่มีอยู่แล้ว"
         : "เพิ่มตอนไม่สำเร็จ";
-    return NextResponse.json({ error: message }, { status: 500 });
+
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }
