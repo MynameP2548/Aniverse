@@ -13,12 +13,16 @@ type Review = {
 };
 
 type Props = {
-  animeId: string;
+  animeSlug: string;
   isLoggedIn: boolean;
   currentUserId?: string;
 };
 
-export default function ReviewSection({ animeId, isLoggedIn, currentUserId }: Props) {
+export default function ReviewSection({
+  animeSlug,
+  isLoggedIn,
+  currentUserId,
+}: Props) {
   const router = useRouter();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [average, setAverage] = useState<number | null>(null);
@@ -31,22 +35,39 @@ export default function ReviewSection({ animeId, isLoggedIn, currentUserId }: Pr
 
   const myReview = reviews.find((r) => r.userId === currentUserId);
 
-  async function load() {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/anime/${animeId}/reviews`);
-      const data = await res.json();
-      setReviews(data.reviews);
-      setAverage(data.average);
-    } finally {
-      setLoading(false);
+async function load() {
+  setLoading(true);
+
+  try {
+    const res = await fetch(`/api/anime/${animeSlug}/reviews`);
+
+    if (!res.ok) {
+      setReviews([]);
+      setAverage(null);
+      return;
     }
+
+    const data = await res.json();
+
+    setReviews(Array.isArray(data.reviews) ? data.reviews : []);
+    setAverage(
+      typeof data.average === "number"
+        ? data.average
+        : null
+    );
+  } catch (err) {
+    console.error(err);
+    setReviews([]);
+    setAverage(null);
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animeId]);
+  }, [animeSlug]);
 
   useEffect(() => {
     if (myReview) {
@@ -68,7 +89,7 @@ export default function ReviewSection({ animeId, isLoggedIn, currentUserId }: Pr
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`/api/anime/${animeId}/reviews`, {
+      const res = await fetch(`/api/anime/${animeSlug}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating, comment }),
@@ -84,7 +105,7 @@ export default function ReviewSection({ animeId, isLoggedIn, currentUserId }: Pr
 
   async function handleDelete() {
     if (!confirm("ลบรีวิวของคุณ?")) return;
-    await fetch(`/api/anime/${animeId}/reviews`, { method: "DELETE" });
+    await fetch(`/api/anime/${animeSlug}/reviews`, { method: "DELETE" });
     setRating(0);
     setComment("");
     await load();
