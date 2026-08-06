@@ -1,37 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData();
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
 
-  const file = formData.get("file") as File;
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file uploaded" },
+        { status: 400 }
+      );
+    }
 
-  if (!file) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const extension = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+    const { error } = await supabaseAdmin.storage
+      .from("uploads")
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (error) {
+      console.error(error);
+
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
+    const { data } = supabaseAdmin.storage
+      .from("uploads")
+      .getPublicUrl(fileName);
+
+    return NextResponse.json({
+      url: data.publicUrl,
+    });
+  } catch (err) {
+    console.error(err);
+
     return NextResponse.json(
-      { error: "No file" },
-      { status: 400 }
+      { error: "Upload failed" },
+      { status: 500 }
     );
   }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const fileName =
-    Date.now() + "-" + file.name.replace(/\s/g, "-");
-
-  const uploadDir = path.join(process.cwd(), "public/uploads");
-
-  await fs.mkdir(uploadDir, {
-    recursive: true,
-  });
-
-  await fs.writeFile(
-    path.join(uploadDir, fileName),
-    buffer
-  );
-
-  return NextResponse.json({
-    url: `/uploads/${fileName}`,
-  });
 }
