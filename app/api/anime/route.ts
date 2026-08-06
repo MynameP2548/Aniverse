@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import slugify from "slugify";
 
 export const dynamic = "force-dynamic";
 
@@ -48,9 +49,25 @@ const {
       return NextResponse.json({ error: "กรุณากรอกชื่อเรื่อง" }, { status: 400 });
     }
 
+    const baseSlug = slugify(titleEn || title, {
+  lower: true,
+  strict: true,
+  trim: true,
+});
+
+let slug = baseSlug;
+
+let count = 1;
+
+while (await prisma.anime.findUnique({ where: { slug } })) {
+  slug = `${baseSlug}-${count}`;
+  count++;
+}
+
     const anime = await prisma.anime.create({
 data: {
   title,
+  slug,
 
   titleEn,
 

@@ -5,6 +5,7 @@ import { signOut } from "next-auth/react";
 
 type Anime = {
   id: string;
+  slug: string;
 
   title: string;
   titleEn?: string;
@@ -98,7 +99,9 @@ export default function AdminPage() {
   }, []);
 
   function startEdit(anime: Anime) {
-    setEditingId(anime.id);
+    console.log("EDIT", anime);
+
+    setEditingId(anime.slug);
 setForm({
   title: anime.title,
 
@@ -236,15 +239,29 @@ const payload = {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("ยืนยันลบอนิเมะเรื่องนี้?")) return;
-    try {
-      await fetch(`/api/anime/${id}`, { method: "DELETE" });
-      await loadAnime();
-    } catch {
-      setErrorMsg("ลบไม่สำเร็จ ลองใหม่อีกครั้ง");
-    }
+async function handleDelete(slug: string) {
+  if (!slug) {
+    alert("ไม่พบ slug ของอนิเมะ");
+    return;
   }
+
+  if (!confirm("ยืนยันลบอนิเมะเรื่องนี้?")) return;
+
+  try {
+    const res = await fetch(`/api/anime/${slug}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      throw new Error("Delete failed");
+    }
+
+    await loadAnime();
+  } catch (e) {
+    console.error(e);
+    setErrorMsg("ลบไม่สำเร็จ");
+  }
+}
 
   return (
     <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
@@ -290,15 +307,29 @@ const payload = {
               />
             </div>
 
-            <div>
-              <label className="text-xs text-[#8a87a3] block mb-1">ชื่อเรื่อง (อังกฤษ)</label>
-              <input
-                value={form.titleEn}
-                onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
-                className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
-                placeholder="Demon Slayer"
-              />
-            </div>
+<div>
+  <label className="text-xs text-[#8a87a3] block mb-1">
+    ชื่อเรื่อง (อังกฤษ)
+  </label>
+
+  <input
+    value={form.titleEn}
+    onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
+    className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+    placeholder="Demon Slayer"
+  />
+
+  <p className="mt-2 text-xs text-[#8a87a3]">
+    URL จะเป็น:
+    <span className="ml-2 text-[#5ee6a0]">
+      /anime/
+      {(form.titleEn || form.title)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}
+    </span>
+  </p>
+</div>
 
             <div>
               <label className="text-xs text-[#8a87a3] block mb-1">เรื่องย่อ</label>
@@ -598,7 +629,7 @@ uploadImage(file,"heroLogo")
             <div className="grid gap-3">
               {animeList.map((anime) => (
                 <div
-                  key={anime.id}
+                  key={anime.slug}
                   className="bg-[#131320] border border-[#232335] rounded-xl p-4 flex gap-4"
                 >
                   <div className="w-16 h-20 bg-[#0b0b12] rounded-lg overflow-hidden flex-shrink-0">
@@ -633,7 +664,7 @@ uploadImage(file,"heroLogo")
                   </div>
                   <div className="flex flex-col gap-2 flex-shrink-0">
                     <a
-                      href={`/admin/anime/${anime.id}`}
+                      href={`/admin/anime/${anime.slug}`}
                       className="text-xs px-3 py-1.5 rounded-lg border border-[#ff5d73]/30 text-[#ff5d73] hover:bg-[#ff5d73]/10 text-center"
                     >
                       จัดการตอน
@@ -645,7 +676,7 @@ uploadImage(file,"heroLogo")
                       แก้ไข
                     </button>
                     <button
-                      onClick={() => handleDelete(anime.id)}
+                      onClick={() => handleDelete(anime.slug)}
                       className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a3d] text-[#8a87a3] hover:bg-[#1a1a28]"
                     >
                       ลบ

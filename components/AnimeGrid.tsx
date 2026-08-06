@@ -2,6 +2,7 @@ import AnimeCard from "./AnimeCard";
 
 type AnimeItem = {
   id: string;
+  slug: string;
   title: string;
   coverImage?: string | null;
   releaseYear?: number | null;

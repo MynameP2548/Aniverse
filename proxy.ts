@@ -1,11 +1,16 @@
-import NextAuth from "next-auth";
-import authConfig from "./auth.config";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
-const { auth } = NextAuth(authConfig);
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isAdminRoute = nextUrl.pathname.startsWith("/admin");
 
-export async function proxy(req: any) {
-  return auth(req);
-}
+  if (isAdminRoute && req.auth?.user?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/", nextUrl));
+  }
+
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: ["/admin/:path*"],

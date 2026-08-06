@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 3600; // แคชผลลัพธ์ของ Sitemap ไว้ 1 ชั่วโมง เพื่อลดภาระและป้องกัน Timeout
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://aniverse-wheat.vercel.app";
@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const anime = await prisma.anime.findMany({
       select: {
-        id: true,
+        slug: true,
         updatedAt: true,
       },
       orderBy: {
@@ -20,9 +20,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     animeUrls = anime.map((item) => ({
-      url: `${baseUrl}/anime/${item.id}`,
+      url: `${baseUrl}/anime/${item.slug}`,
       lastModified: item.updatedAt,
-      changeFrequency: "weekly" as const,
+      changeFrequency: "weekly",
       priority: 0.9,
     }));
   } catch (error) {

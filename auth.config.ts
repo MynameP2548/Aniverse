@@ -7,22 +7,17 @@ export default {
   pages: {
     signIn: "/login",
   },
-  callbacks: {
-    authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user;
-      const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
+callbacks: {
+  authorized({ auth, request }) {
+    console.log(auth?.user);
 
-      console.log("========== AUTH ==========");
-      console.log(auth);
-      console.log("USER:", auth?.user);
-      console.log("==========================");
+    const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
 
-      // ป้องกันเฉพาะว่าต้อง Login ก่อนเข้า /admin
-      if (isAdminRoute) {
-        return isLoggedIn;
-      }
+    if (isAdminRoute) {
+      return auth?.user?.role === "ADMIN";
+    }
 
-      return true;
-    },
+    return true;
   },
+},
 } satisfies NextAuthConfig;

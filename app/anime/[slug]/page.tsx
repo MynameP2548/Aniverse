@@ -16,22 +16,95 @@ function isDirectVideoFile(url: string): boolean {
 }
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{
-  ep?: string;
-  season?: string;
-}>;
+    ep?: string;
+    season?: string;
+  }>;
 };
 
+import type { Metadata } from "next";
+
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+const { slug } = await params;
+
+const anime = await prisma.anime.findUnique({
+  where: {
+    slug,
+  },
+});
+
+  if (!anime) {
+    return {
+      title: "Anime Not Found - Aniverse",
+    };
+  }
+
+return {
+  metadataBase: new URL("https://aniverse-wheat.vercel.app"),
+
+  title: `${anime.title} - Aniverse`,
+
+  description:
+    anime.description ||
+    `รับชม ${anime.title} ออนไลน์บน Aniverse`,
+
+  keywords: [
+    anime.title,
+    anime.titleEn ?? "",
+    "anime",
+    "ดูอนิเมะ",
+    "อนิเมะออนไลน์",
+    "Aniverse",
+  ],
+
+  alternates: {
+    canonical: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
+  },
+
+  openGraph: {
+    title: `${anime.title} - Aniverse`,
+    description:
+      anime.description ||
+      `รับชม ${anime.title} ออนไลน์บน Aniverse`,
+    url: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
+    siteName: "Aniverse",
+    type: "website",
+
+    images: anime.coverImage
+      ? [
+          {
+            url: anime.coverImage,
+            width: 1200,
+            height: 630,
+            alt: anime.title,
+          },
+        ]
+      : [],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: `${anime.title} - Aniverse`,
+    description:
+      anime.description ||
+      `รับชม ${anime.title} ออนไลน์บน Aniverse`,
+    images: anime.coverImage ? [anime.coverImage] : [],
+  },
+};
+}
+
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
-const { id } = await params;
+const { slug } = await params;
 const { ep, season } = await searchParams;
 
 const session = await auth();
 const anime = await prisma.anime.findUnique({
-  where: {
-    id,
-  },
+where: {
+  slug,
+},
   include: {
     episodes: {
       include: {
@@ -54,9 +127,6 @@ const seasons = await prisma.season.findMany({
   where: {
     animeId: anime.id,
   },
-  orderBy: {
-    seasonNumber: "asc",
-  },
 });
 
 const activeSeason =
@@ -74,13 +144,50 @@ const currentEpisode = ep
   : seasonEpisodes[0];
   if (!ep && activeSeason && currentEpisode) {
   redirect(
-    `/anime/${anime.id}?season=${activeSeason.id}&ep=${currentEpisode.episodeNumber}`
+    `/anime/${anime.slug}?season=${activeSeason.id}&ep=${currentEpisode.episodeNumber}`
   );
 }
 
-  return (
-  <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
-    <Navbar />
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TVSeries",
+
+  name: anime.title,
+  alternateName: anime.titleEn || undefined,
+
+  description: anime.description || "",
+
+  image: anime.coverImage || undefined,
+
+  url: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
+
+  genre: anime.genres,
+
+  datePublished: anime.releaseYear
+    ? `${anime.releaseYear}-01-01`
+    : undefined,
+
+  aggregateRating: anime.rating
+    ? {
+        "@type": "AggregateRating",
+        ratingValue: anime.rating,
+        bestRating: 10,
+        worstRating: 0,
+      }
+    : undefined,
+};
+
+return (
+  <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(jsonLd),
+      }}
+    />
+
+    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+      <Navbar />
 
     <main className="pt-16">
 
@@ -180,7 +287,7 @@ const currentEpisode = ep
 
   <div className="flex flex-wrap gap-4">
     <Link
-  href={`/anime/${anime.id}?season=${activeSeason?.id}&ep=${
+  href={`/anime/${anime.slug}?season=${activeSeason?.id}&ep=${
     seasonEpisodes[0]?.episodeNumber ?? 1
   }`}
       className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
@@ -285,7 +392,7 @@ const currentEpisode = ep
         return (
           <Link
             key={episode.id}
-            href={`/anime/${anime.id}?season=${activeSeason?.id}&ep=${episode.episodeNumber}`}
+            href={`/anime/${anime.slug}?season=${activeSeason?.id}&ep=${episode.episodeNumber}`}
             className={`
               group
               flex
@@ -355,15 +462,16 @@ const currentEpisode = ep
   </div>
 </section>
 
-        <ReviewSection
-          animeId={anime.id}
-          isLoggedIn={!!session?.user}
-          currentUserId={session?.user?.id}
-        />
+<ReviewSection
+  animeId={anime.id}
+  isLoggedIn={!!session?.user}
+  currentUserId={session?.user?.id}
+/>
 
         </div> {/* ปิด max-w-7xl */}
 
       </main>
     </div>
-  );
+  </>
+);
 }

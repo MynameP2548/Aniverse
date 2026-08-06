@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import slugify from "slugify";
 
 // PUT /api/anime/[id] - update an existing anime (admin only)
 export async function PUT(
@@ -33,10 +34,36 @@ const {
 
   heroOrder,
 } = body;
+const baseSlug = slugify(titleEn || title, {
+  lower: true,
+  strict: true,
+  trim: true,
+});
+
+let slug = baseSlug;
+
+let count = 1;
+
+while (true) {
+  const exists = await prisma.anime.findFirst({
+    where: {
+      slug,
+      NOT: {
+        id,
+      },
+    },
+  });
+
+  if (!exists) break;
+
+  slug = `${baseSlug}-${count}`;
+  count++;
+}
     const anime = await prisma.anime.update({
       where: { id },
 data: {
   title,
+  slug,
 
   titleEn,
 
@@ -88,18 +115,16 @@ data: {
 
 // DELETE /api/anime/[id] - delete an anime (admin only)
 export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  req: Request,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  try {
-    const { id } = await params;
-    await prisma.anime.delete({ where: { id } });
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "ไม่สามารถลบอนิเมะได้" },
-      { status: 500 }
-    );
-  }
+  const { slug } = await params;
+
+  await prisma.anime.delete({
+    where: {
+      slug,
+    },
+  });
+
+  return NextResponse.json({ success: true });
 }

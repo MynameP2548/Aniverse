@@ -3,6 +3,7 @@ import Link from "next/link";
 type Props = {
   anime: {
     id: string;
+    slug: string;
     title: string;
     coverImage?: string | null;
     releaseYear?: number | null;
@@ -24,10 +25,10 @@ export default function AnimeCard({ anime }: Props) {
         2xl:w-[230px]
       "
     >
-      <Link
-        href={`/anime/${anime.id}`}
-        className="group block"
-      >
+<Link
+  href={`/anime/${anime.slug}`}
+  className="group block"
+>
         <div
           className="
             relative
