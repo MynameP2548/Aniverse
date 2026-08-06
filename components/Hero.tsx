@@ -14,6 +14,7 @@ import WelcomeScreen from "./WelcomeScreen";
 
 export type HeroAnime = {
   id: string;
+  slug: string;
   title: string;
   description?: string | null;
   bannerImage?: string | null;
@@ -359,14 +360,14 @@ export default function Hero({ heroes }: Props) {
 
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
-                href={`/anime/${anime.id}`}
+                href={`/anime/${anime.slug}`}
                 className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
               >
                 ▶ ดูเลย
               </Link>
 
               <Link
-                href={`/anime/${anime.id}`}
+                href={`/anime/${anime.slug}`}
                 className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur transition hover:bg-white/20"
               >
                 รายละเอียด
