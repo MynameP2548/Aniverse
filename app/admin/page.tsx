@@ -46,6 +46,22 @@ const GENRE_OPTIONS = [
   "Supernatural",
   "Isekai",
   "Mecha",
+  "Seinen",
+  "Shounen",
+  "Shoujo",
+  "Josei",
+  "School",
+  "Ecchi",
+  "Psychological",
+  "Magic",
+  "Military",
+  "Music",
+  "Historical",
+  "Martial Arts",
+  "Demons",
+  "Vampire",
+  "Game",
+  "Parody",
 ];
 
 const emptyForm = {
