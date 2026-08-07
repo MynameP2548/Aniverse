@@ -24,29 +24,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
+return {
+  id: user.id,
+  email: user.email,
+  name: user.name,
+  role: user.role,
+  avatar: user.avatar,
+  bio: user.bio,
+};
       },
     }),
   ],
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
+if (user) {
+  token.role = user.role;
+  token.id = user.id;
+  token.avatar = user.avatar;
+  token.bio = user.bio;
+}
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as "USER" | "ADMIN";
-        session.user.id = token.id as string;
-      }
+if (session.user) {
+  session.user.role = token.role as "USER" | "ADMIN";
+  session.user.id = token.id as string;
+  session.user.avatar = token.avatar as string | null;
+  session.user.bio = token.bio as string | null;
+}
       return session;
     },
   },
