@@ -3,16 +3,17 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import TrackWatch from "@/components/TrackWatch";
 import ReviewSection from "@/components/ReviewSection";
 import SeasonSelector from "@/components/SeasonSelector";
+import Player from "@/components/player";
+import AnimeWatch from "@/components/AnimeWatch";
 
 export const dynamic = "force-dynamic";
 
 // Direct video files (e.g. .mp4 demo/sample clips) need a <video> tag.
 // Embed pages (YouTube /embed/, Vimeo player, etc.) need an <iframe>.
-function isDirectVideoFile(url: string): boolean {
-  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+function isPlayableVideo(url: string): boolean {
+  return /\.(mp4|m3u8|webm|ogg|mov)(\?.*)?$/i.test(url);
 }
 
 type Props = {
@@ -142,6 +143,15 @@ const currentEpisode = ep
       (episode) => episode.episodeNumber === Number(ep)
     ) ?? seasonEpisodes[0]
   : seasonEpisodes[0];
+  const currentIndex = seasonEpisodes.findIndex(
+  (episode) => episode.id === currentEpisode?.id
+);
+
+const nextEpisode =
+  currentIndex >= 0 &&
+  currentIndex < seasonEpisodes.length - 1
+    ? seasonEpisodes[currentIndex + 1]
+    : null;
   if (!ep && activeSeason && currentEpisode) {
   redirect(
     `/anime/${anime.slug}?season=${activeSeason.id}&ep=${currentEpisode.episodeNumber}`
@@ -215,9 +225,6 @@ return (
 
       <div className="max-w-[700px]">
         {/* Silently records that the logged-in user watched this episode */}
-        {currentEpisode && (
-          <TrackWatch episodeId={currentEpisode.id} isLoggedIn={!!session?.user} />
-        )}
 
 {/* Title + Meta */}
 <div className="mb-8">
@@ -333,36 +340,18 @@ return (
     กำลังรับชม
   </h2>
 
-  <div className="overflow-hidden rounded-2xl border border-[#232335] bg-black shadow-2xl">
-
-    {currentEpisode ? (
-      isDirectVideoFile(currentEpisode.videoUrl) ? (
-        <video
-          key={currentEpisode.id}
-          src={currentEpisode.videoUrl}
-          controls
-          autoPlay
-          className="aspect-video w-full"
-        >
-          เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
-        </video>
-      ) : (
-        <iframe
-          key={currentEpisode.id}
-          src={currentEpisode.videoUrl}
-          title={`${anime.title} EP${currentEpisode.episodeNumber}`}
-          className="aspect-video w-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      )
-    ) : (
-      <div className="flex aspect-video items-center justify-center text-white/60">
-        ยังไม่มีตอน
-      </div>
-    )}
-
-  </div>
+<AnimeWatch
+  anime={{
+    slug: anime.slug!,
+    title: anime.title,
+    bannerImage: anime.bannerImage,
+    coverImage: anime.coverImage,
+  }}
+  seasons={seasons}
+  activeSeason={activeSeason!}
+  episodes={seasonEpisodes}
+  initialEpisode={currentEpisode!}
+/>
 
   {currentEpisode && (
     <div className="mt-5">
@@ -374,93 +363,6 @@ return (
   )}
 </section>
 
-{/* Episode List */}
-<section className="mb-14">
-  <h2 className="mb-6 text-2xl font-bold text-white">
-    รายการตอน ({seasonEpisodes.length})
-  </h2>
-
-  <div className="space-y-4">
-    {seasonEpisodes.length === 0 ? (
-      <div className="rounded-xl border border-[#232335] bg-[#131320] p-8 text-center text-white/60">
-        Season นี้ยังไม่มีตอน
-      </div>
-    ) : (
-      seasonEpisodes.map((episode) => {
-        const active = currentEpisode?.id === episode.id;
-
-        return (
-          <Link
-            key={episode.id}
-            href={`/anime/${anime.slug}?season=${activeSeason?.id}&ep=${episode.episodeNumber}`}
-            className={`
-              group
-              flex
-              overflow-hidden
-              rounded-2xl
-              border
-              transition-all
-              duration-300
-              ${
-                active
-                  ? "border-[#ff5d73] bg-[#ff5d73]/10 shadow-[0_0_30px_rgba(255,93,115,.15)]"
-                  : "border-[#232335] bg-[#131320] hover:border-[#ff5d73]/50 hover:bg-[#181827]"
-              }
-            `}
-          >
-            {/* Thumbnail */}
-            <div className="relative h-32 w-56 shrink-0 overflow-hidden">
-              {episode.thumbnail ? (
-                <img
-                  src={episode.thumbnail}
-                  alt={episode.title ?? ""}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[#1a1a28] text-white/30">
-                  ไม่มีรูป
-                </div>
-              )}
-
-              <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition" />
-
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-black shadow-xl">
-                  ▶
-                </div>
-              </div>
-            </div>
-
-            {/* Info */}
-            <div className="flex flex-1 items-center justify-between p-6">
-              <div>
-                <div className="mb-2 flex items-center gap-3">
-                  <span className="text-xl font-black text-[#ff5d73]">
-                    {episode.episodeNumber.toString().padStart(2, "0")}
-                  </span>
-
-                  <h3 className="text-lg font-bold text-white">
-                    {episode.title || `Episode ${episode.episodeNumber}`}
-                  </h3>
-                </div>
-
-                <p className="line-clamp-2 text-sm text-white/55">
-                  {episode.title || "ไม่มีรายละเอียด"}
-                </p>
-              </div>
-
-              {episode.duration && (
-                <span className="text-sm text-white/40">
-                  {Math.floor(episode.duration / 60)} นาที
-                </span>
-              )}
-            </div>
-          </Link>
-        );
-      })
-    )}
-  </div>
-</section>
 
 <ReviewSection
   animeSlug={anime.slug!}
