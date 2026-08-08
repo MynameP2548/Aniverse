@@ -34,13 +34,16 @@ export const metadata: Metadata = {
     "ซับไทย",
   ],
 
+  applicationName: "Aniverse",
+
   verification: {
     google: "98Egu2DAhSne2gwKwlU9egURt0dKsIpSN",
   },
 
   openGraph: {
     title: "Aniverse",
-    description: "เว็บไซต์ดูอนิเมะออนไลน์",
+    description:
+      "Aniverse เว็บไซต์ดูอนิเมะออนไลน์ รวมอนิเมะพากย์ไทย ซับไทย อัปเดตตอนใหม่",
     url: "https://aniverse-wheat.vercel.app",
     siteName: "Aniverse",
     locale: "th_TH",
@@ -50,8 +53,17 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Aniverse",
-    description: "เว็บไซต์ดูอนิเมะออนไลน์",
+    description:
+      "Aniverse เว็บไซต์ดูอนิเมะออนไลน์ รวมอนิเมะพากย์ไทย ซับไทย อัปเดตตอนใหม่",
   },
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Aniverse",
+  alternateName: "Aniverse Anime",
+  url: "https://aniverse-wheat.vercel.app",
 };
 
 export default function RootLayout({
@@ -64,6 +76,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteJsonLd),
+          }}
+        />
+
         <Providers>{children}</Providers>
       </body>
     </html>

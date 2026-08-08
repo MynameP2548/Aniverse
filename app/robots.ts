@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -10,8 +10,11 @@ export default function robots(): MetadataRoute.Robots {
         "/api",
         "/login",
         "/register",
+        "/profile",
+        "/favorites",
       ],
     },
+
     sitemap: "https://aniverse-wheat.vercel.app/sitemap.xml",
   };
 }

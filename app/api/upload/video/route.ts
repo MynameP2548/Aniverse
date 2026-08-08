@@ -65,16 +65,19 @@ const fileName =
       success: true,
       url: data.publicUrl,
     });
-  } catch (err) {
-    console.error(err);
+} catch (err) {
+  console.error("UPLOAD ERROR:", err);
 
-    return NextResponse.json(
-      {
-        error: "Upload ไม่สำเร็จ",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  return NextResponse.json(
+    {
+      error:
+        err instanceof Error
+          ? err.message
+          : String(err),
+    },
+    {
+      status: 500,
+    }
+  );
+}
 }

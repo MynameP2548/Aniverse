@@ -29,72 +29,88 @@ import type { Metadata } from "next";
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
-const { slug } = await params;
+  const { slug } = await params;
 
-const anime = await prisma.anime.findUnique({
-  where: {
-    slug,
-  },
-});
+  const anime = await prisma.anime.findUnique({
+    where: {
+      slug,
+    },
+    include: {
+      _count: {
+        select: {
+          episodes: true,
+        },
+      },
+    },
+  });
 
   if (!anime) {
     return {
-      title: "Anime Not Found - Aniverse",
+      title: "ไม่พบอนิเมะ",
+      description: "ไม่พบอนิเมะที่คุณกำลังค้นหา",
     };
   }
 
-return {
-  metadataBase: new URL("https://aniverse-wheat.vercel.app"),
+  const episodeCount = anime._count.episodes;
 
-  title: `${anime.title} - Aniverse`,
+  const title =
+    episodeCount > 0
+      ? `${anime.title} ตอนที่ 1-${episodeCount}`
+      : anime.title;
 
-  description:
+  const description =
     anime.description ||
-    `รับชม ${anime.title} ออนไลน์บน Aniverse`,
+    `ดู ${anime.title} ออนไลน์ พร้อมข้อมูลอนิเมะและตอนต่าง ๆ บน Aniverse${
+      episodeCount > 0 ? ` รวม ${episodeCount} ตอน` : ""
+    }`;
 
-  keywords: [
-    anime.title,
-    anime.titleEn ?? "",
-    "anime",
-    "ดูอนิเมะ",
-    "อนิเมะออนไลน์",
-    "Aniverse",
-  ],
+  return {
+    title,
 
-  alternates: {
-    canonical: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
-  },
+    description,
 
-  openGraph: {
-    title: `${anime.title} - Aniverse`,
-    description:
-      anime.description ||
-      `รับชม ${anime.title} ออนไลน์บน Aniverse`,
-    url: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
-    siteName: "Aniverse",
-    type: "website",
+    keywords: [
+      anime.title,
+      anime.titleEn ?? "",
+      "ดูอนิเมะ",
+      "อนิเมะออนไลน์",
+      "anime online",
+      "ซับไทย",
+      "พากย์ไทย",
+      "Aniverse",
+    ].filter(Boolean),
 
-    images: anime.coverImage
-      ? [
-          {
-            url: anime.coverImage,
-            width: 1200,
-            height: 630,
-            alt: anime.title,
-          },
-        ]
-      : [],
-  },
+    alternates: {
+      canonical: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
+    },
 
-  twitter: {
-    card: "summary_large_image",
-    title: `${anime.title} - Aniverse`,
-    description:
-      anime.description ||
-      `รับชม ${anime.title} ออนไลน์บน Aniverse`,
-    images: anime.coverImage ? [anime.coverImage] : [],
-  },
-};
+    openGraph: {
+      title: `${title} | Aniverse`,
+      description,
+      url: `https://aniverse-wheat.vercel.app/anime/${anime.slug}`,
+      siteName: "Aniverse",
+      locale: "th_TH",
+      type: "website",
+
+      images: anime.coverImage
+        ? [
+            {
+              url: anime.coverImage,
+              width: 1200,
+              height: 630,
+              alt: anime.title,
+            },
+          ]
+        : [],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | Aniverse`,
+      description,
+      images: anime.coverImage ? [anime.coverImage] : [],
+    },
+  };
 }
 
 export default async function AnimeDetailPage({ params, searchParams }: Props) {
