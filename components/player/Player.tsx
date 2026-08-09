@@ -51,6 +51,12 @@ export default function Player({
   const [loading, setLoading] =
     useState(true);
 
+  const [resolvedSrc, setResolvedSrc] =
+    useState<string | null>(null);
+
+  const [videoError, setVideoError] =
+    useState<string | null>(null);
+
   const [showControls, setShowControls] =
     useState(true);
 
@@ -76,10 +82,66 @@ export default function Player({
     useState(5);
 
   // ===========================
+  // R2 Signed URL
+  // ===========================
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSignedUrl() {
+      setLoading(true);
+      setVideoError(null);
+      setResolvedSrc(null);
+      restoredProgress.current = false;
+      lastSavedTime.current = 0;
+
+      try {
+        const res = await fetch(
+          `/api/video/${encodeURIComponent(episodeId)}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok || !data?.url) {
+          throw new Error(
+            data?.error || "ไม่สามารถสร้าง URL วิดีโอได้"
+          );
+        }
+
+        if (!cancelled) {
+          setResolvedSrc(data.url);
+        }
+      } catch (error) {
+        console.error("R2 VIDEO URL ERROR:", error);
+
+        if (!cancelled) {
+          setVideoError(
+            error instanceof Error
+              ? error.message
+              : "ไม่สามารถโหลดวิดีโอได้"
+          );
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSignedUrl();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [episodeId]);
+
+  // ===========================
   // Video Events
   // ===========================
 
   useEffect(() => {
+    if (!resolvedSrc) return;
+
     const video = videoRef.current;
 
     if (!video) return;
@@ -219,6 +281,7 @@ export default function Player({
     };
   }, [
     episodeId,
+    resolvedSrc,
     videoRef,
     onEnded,
     onTimeUpdate,
@@ -389,6 +452,14 @@ export default function Player({
     showUI();
   }, [showUI]);
 
+  useEffect(() => {
+    setPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setShowNextEpisode(false);
+    setCountdown(5);
+  }, [episodeId]);
+
   // ===========================
   // Watch History
   // ===========================
@@ -521,17 +592,32 @@ if (countdown <= 0) {
     >
       {/* Video */}
 
-      <Video
-        src={src}
-        poster={poster}
-        autoPlay={autoPlay}
-        videoRef={videoRef}
-        hlsRef={hls}
-      />
+      {resolvedSrc && (
+        <Video
+          src={resolvedSrc}
+          poster={poster}
+          autoPlay={autoPlay}
+          videoRef={videoRef}
+          hlsRef={hls}
+        />
+      )}
 
       {/* Loading */}
 
       {loading && <Loading />}
+
+      {videoError && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/80 p-6 text-center">
+          <div>
+            <p className="text-lg font-semibold text-white">
+              ไม่สามารถโหลดวิดีโอได้
+            </p>
+            <p className="mt-2 max-w-md text-sm text-white/60">
+              {videoError}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Center Play */}
 

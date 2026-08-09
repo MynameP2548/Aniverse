@@ -1,6 +1,8 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+
+import { r2, R2_BUCKET_NAME } from "@/lib/r2";
 
 const MAX_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 
@@ -31,53 +33,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const extension =
+      file.name.split(".").pop()?.toLowerCase() || "mp4";
+
+    const fileName = `${randomUUID()}.${extension}`;
+
     const bytes = await file.arrayBuffer();
 
     const buffer = Buffer.from(bytes);
 
-const extension =
-  file.name.split(".").pop() || "mp4";
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: R2_BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: file.type,
+      })
+    );
 
-const fileName =
-  `${randomUUID()}.${extension}`;
-
-    const { error } =
-      await supabaseAdmin.storage
-        .from("videos")
-        .upload(fileName, buffer, {
-          contentType: file.type,
-          upsert: false,
-        });
-
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
-
-    const { data } =
-      supabaseAdmin.storage
-        .from("videos")
-        .getPublicUrl(fileName);
+    const publicUrl =
+      `${process.env.R2_PUBLIC_URL}/${fileName}`;
 
     return NextResponse.json({
       success: true,
-      url: data.publicUrl,
+      url: publicUrl,
+      fileName,
     });
-} catch (err) {
-  console.error("UPLOAD ERROR:", err);
+  } catch (err) {
+    console.error("R2 UPLOAD ERROR:", err);
 
-  return NextResponse.json(
-    {
-      error:
-        err instanceof Error
-          ? err.message
-          : String(err),
-    },
-    {
-      status: 500,
-    }
-  );
-}
+    return NextResponse.json(
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : String(err),
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
