@@ -629,21 +629,28 @@ if (countdown <= 0) {
       {/* Controls */}
 
       {showControls && (
-        <Controls
-          video={videoRef.current}
-          poster={poster}
-          currentTime={currentTime}
-          duration={duration}
-          volume={volume}
-          muted={muted}
-          onSeek={seek}
-          onMute={toggleMute}
-          onVolume={changeVolume}
-          onFullscreen={toggleFullscreen}
-          onTheaterMode={() =>
-            setTheaterMode((v) => !v)
-          }
-        />
+        <div
+          className="relative z-40"
+          onClick={(e) => e.stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <Controls
+            video={videoRef.current}
+            poster={poster}
+            currentTime={currentTime}
+            duration={duration}
+            volume={volume}
+            muted={muted}
+            onSeek={seek}
+            onMute={toggleMute}
+            onVolume={changeVolume}
+            onFullscreen={toggleFullscreen}
+            onTheaterMode={() =>
+              setTheaterMode((v) => !v)
+            }
+          />
+        </div>
       )}
 
       {/* Anime Info */}
