@@ -85,7 +85,8 @@ export default function ManageEpisodesPage() {
 
   const fileInputRef =
     useRef<HTMLInputElement>(null);
-      // ==========================
+
+  // ==========================
   // โหลดข้อมูลทั้งหมด
   // ==========================
 
@@ -150,101 +151,359 @@ export default function ManageEpisodesPage() {
   }, [animeId, selectedSeason]);
 
   // ==========================
-  // Upload Video
+  // Upload Video → R2
   // ==========================
 
   async function uploadVideo(
-    file: File
-  ) {
-    return new Promise<void>(
-      (resolve, reject) => {
-        setUploadingVideo(true);
+  file: File
+) {
+  setUploadingVideo(true);
+  setUploadProgress(0);
+  setErrorMsg("");
 
-        setUploadProgress(0);
+  try {
+    // ==================================================
+    // 1. ขอ Multipart Upload จาก Server
+    // ==================================================
 
-        const formData =
-          new FormData();
+    const initRes =
+      await fetch(
+        "/api/upload/video",
+        {
+          method: "POST",
 
-        formData.append(
-          "file",
-          file
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            action: "init",
+
+            fileName:
+              file.name,
+
+            contentType:
+              file.type,
+
+            size:
+              file.size,
+          }),
+        }
+      );
+
+    const initData =
+      await initRes.json();
+
+    if (!initRes.ok) {
+      throw new Error(
+        initData.error ||
+          "ไม่สามารถเริ่มอัปโหลดได้"
+      );
+    }
+
+    const {
+      uploadId,
+      key,
+      partSize,
+      parts,
+    } = initData;
+
+    if (
+      !uploadId ||
+      !key ||
+      !partSize ||
+      !Array.isArray(parts)
+    ) {
+      throw new Error(
+        "ข้อมูล Multipart Upload ไม่ถูกต้อง"
+      );
+    }
+
+    // ==================================================
+    // 2. Upload แต่ละ Part
+    // ==================================================
+
+    type UploadedPart = {
+      partNumber: number;
+      etag: string;
+    };
+
+    const uploadedParts: UploadedPart[] =
+      [];
+
+    let uploadedBytes = 0;
+
+    // อัปโหลดทีละ 3 parts
+    // เพื่อไม่ให้ connection หนักเกินไป
+    const CONCURRENCY = 3;
+
+    async function uploadPart(
+      part: {
+        partNumber: number;
+        uploadUrl: string;
+      }
+    ) {
+      const start =
+        (part.partNumber - 1) *
+        partSize;
+
+      const end =
+        Math.min(
+          start + partSize,
+          file.size
         );
 
-        const xhr =
-          new XMLHttpRequest();
+      const blob =
+        file.slice(
+          start,
+          end
+        );
 
-        xhr.upload.onprogress = (
-          e
+      return new Promise<UploadedPart>(
+        (
+          resolve,
+          reject
         ) => {
-          if (
-            e.lengthComputable
-          ) {
-            setUploadProgress(
-              Math.round(
-                (e.loaded * 100) /
-                  e.total
-              )
-            );
-          }
-        };
+          const xhr =
+            new XMLHttpRequest();
 
-        xhr.onload = () => {
-          setUploadingVideo(
-            false
+          xhr.open(
+            "PUT",
+            part.uploadUrl
           );
 
-          if (
-            xhr.status >= 200 &&
-            xhr.status < 300
-          ) {
-            const data =
-              JSON.parse(
-                xhr.responseText
+          xhr.upload.onprogress = (
+            event
+          ) => {
+            if (
+              event.lengthComputable
+            ) {
+              const currentPartBytes =
+                event.loaded;
+
+              const totalProgressBytes =
+                uploadedBytes +
+                currentPartBytes;
+
+              const percent =
+                Math.min(
+                  99,
+                  Math.round(
+                    (totalProgressBytes *
+                      100) /
+                      file.size
+                  )
+                );
+
+              setUploadProgress(
+                percent
+              );
+            }
+          };
+
+          xhr.onload = () => {
+            if (
+              xhr.status >= 200 &&
+              xhr.status < 300
+            ) {
+              const etag =
+                xhr.getResponseHeader(
+                  "ETag"
+                );
+
+              if (!etag) {
+                reject(
+                  new Error(
+                    `Part ${part.partNumber}: ไม่พบ ETag`
+                  )
+                );
+
+                return;
+              }
+
+              uploadedBytes +=
+                blob.size;
+
+              setUploadProgress(
+                Math.min(
+                  99,
+                  Math.round(
+                    (uploadedBytes *
+                      100) /
+                      file.size
+                  )
+                )
               );
 
-            setForm((prev) => ({
-              ...prev,
+              resolve({
+                partNumber:
+                  part.partNumber,
 
-              videoUrl:
-                data.url,
-            }));
+                etag,
+              });
+            } else {
+              reject(
+                new Error(
+                  `Part ${part.partNumber} อัปโหลดไม่สำเร็จ (${xhr.status})`
+                )
+              );
+            }
+          };
 
-            setUploadProgress(
-              100
-            );
-
-            resolve();
-          } else {
+          xhr.onerror = () => {
             reject(
               new Error(
-                xhr.responseText
+                `Part ${part.partNumber} เชื่อมต่อ R2 ไม่สำเร็จ`
               )
             );
-          }
-        };
+          };
 
-        xhr.onerror = () => {
-          setUploadingVideo(
-            false
-          );
+          xhr.onabort = () => {
+            reject(
+              new Error(
+                `Part ${part.partNumber} ถูกยกเลิก`
+              )
+            );
+          };
 
-          reject(
-            new Error(
-              "Upload ไม่สำเร็จ"
-            )
-          );
-        };
+          // ไม่ต้องตั้ง Content-Type
+          // เพราะ presigned UploadPart
+          // ไม่ได้เซ็น Content-Type
 
-        xhr.open(
-          "POST",
-          "/api/upload/video"
+          xhr.send(blob);
+        }
+      );
+    }
+
+    // ==================================================
+    // 3. ทำงานเป็นชุด ๆ
+    // ==================================================
+
+    for (
+      let i = 0;
+      i < parts.length;
+      i += CONCURRENCY
+    ) {
+      const batch =
+        parts.slice(
+          i,
+          i + CONCURRENCY
         );
 
-        xhr.send(formData);
-      }
+      const results =
+        await Promise.all(
+          batch.map(
+            (
+              part: {
+                partNumber: number;
+                uploadUrl: string;
+              }
+            ) =>
+              uploadPart(part)
+          )
+        );
+
+      uploadedParts.push(
+        ...results
+      );
+    }
+
+    // ==================================================
+    // 4. Complete Multipart Upload
+    // ==================================================
+
+    setUploadProgress(99);
+
+    const completeRes =
+      await fetch(
+        "/api/upload/video",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            action:
+              "complete",
+
+            uploadId,
+
+            key,
+
+            parts:
+              uploadedParts,
+          }),
+        }
+      );
+
+    const completeData =
+      await completeRes.json();
+
+    if (!completeRes.ok) {
+      throw new Error(
+        completeData.error ||
+          "ไม่สามารถรวมไฟล์วิดีโอได้"
+      );
+    }
+
+    if (
+      !completeData.url
+    ) {
+      throw new Error(
+        "R2 ไม่ส่ง URL กลับมา"
+      );
+    }
+
+    // ==================================================
+    // 5. บันทึก URL ลง Form
+    // ==================================================
+
+    setForm((prev) => ({
+      ...prev,
+
+      videoUrl:
+        completeData.url,
+    }));
+
+    setUploadProgress(
+      100
     );
+
+  } catch (err) {
+    console.error(
+      "VIDEO MULTIPART UPLOAD ERROR:",
+      err
+    );
+
+    setErrorMsg(
+      err instanceof Error
+        ? err.message
+        : "อัปโหลดวิดีโอไม่สำเร็จ"
+    );
+
+    // ----------------------------------------------
+    // ถ้า error หลังจากสร้าง upload
+    // พยายาม Abort เพื่อไม่ทิ้ง multipart ค้าง
+    // ----------------------------------------------
+
+    // หมายเหตุ:
+    // ถ้าอยากทำ abort แบบสมบูรณ์
+    // เราจะเก็บ uploadId/key ไว้ด้านนอก try
+    // ในเวอร์ชันถัดไปได้
+
+    setUploadProgress(0);
+
+    throw err;
+  } finally {
+    setUploadingVideo(false);
   }
-    // ==========================
+}
+
+  // ==========================
   // Create Season
   // ==========================
 
@@ -409,6 +668,10 @@ export default function ManageEpisodesPage() {
     );
   }
 
+  // ==========================
+  // Cancel Edit
+  // ==========================
+
   function cancelEdit() {
     setEditingId(null);
 
@@ -432,7 +695,8 @@ export default function ManageEpisodesPage() {
       );
     }
   }
-    // ==========================
+
+  // ==========================
   // Submit
   // ==========================
 
@@ -466,21 +730,27 @@ export default function ManageEpisodesPage() {
         : "POST";
 
       const payload = {
-        seasonId: selectedSeason,
+        seasonId:
+          selectedSeason,
 
-        episodeNumber: Number(
-          form.episodeNumber
-        ),
+        episodeNumber:
+          Number(
+            form.episodeNumber
+          ),
 
-        title: form.title.trim(),
+        title:
+          form.title.trim(),
 
-        videoUrl: form.videoUrl,
+        videoUrl:
+          form.videoUrl,
 
         thumbnail:
           form.thumbnail.trim(),
 
         duration: form.duration
-          ? Number(form.duration)
+          ? Number(
+              form.duration
+            )
           : null,
       };
 
@@ -560,7 +830,8 @@ export default function ManageEpisodesPage() {
   // ==========================
 
   return (
-        <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+
       <header className="border-b border-[#232335] px-6 py-5">
 
         <Link
@@ -582,7 +853,9 @@ export default function ManageEpisodesPage() {
       <main className="mx-auto max-w-3xl px-6 py-8">
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={
+            handleSubmit
+          }
           className="
             mb-8
             rounded-xl
@@ -619,6 +892,10 @@ export default function ManageEpisodesPage() {
             </div>
           )}
 
+          {/* ==========================
+              Season
+          ========================== */}
+
           <div className="mb-5 flex items-end gap-3">
 
             <div className="flex-1">
@@ -628,7 +905,9 @@ export default function ManageEpisodesPage() {
               </label>
 
               <select
-                value={selectedSeason}
+                value={
+                  selectedSeason
+                }
                 onChange={(e) =>
                   setSelectedSeason(
                     e.target.value
@@ -648,17 +927,23 @@ export default function ManageEpisodesPage() {
                   focus:ring-[#ff5d73]
                 "
               >
+
                 {seasons.map(
                   (season) => (
                     <option
-                      key={season.id}
-                      value={season.id}
+                      key={
+                        season.id
+                      }
+                      value={
+                        season.id
+                      }
                     >
                       {season.title ||
                         `Season ${season.seasonNumber}`}
                     </option>
                   )
                 )}
+
               </select>
 
             </div>
@@ -667,8 +952,12 @@ export default function ManageEpisodesPage() {
 
               <button
                 type="button"
-                onClick={createSeason}
-                disabled={creatingSeason}
+                onClick={
+                  createSeason
+                }
+                disabled={
+                  creatingSeason
+                }
                 className="
                   h-[42px]
                   rounded-lg
@@ -683,7 +972,9 @@ export default function ManageEpisodesPage() {
 
               <button
                 type="button"
-                onClick={deleteSeason}
+                onClick={
+                  deleteSeason
+                }
                 className="
                   h-[42px]
                   rounded-lg
@@ -700,7 +991,12 @@ export default function ManageEpisodesPage() {
             </div>
 
           </div>
-                    <div className="grid grid-cols-2 gap-3 mb-3">
+
+          {/* ==========================
+              Episode Number / Duration
+          ========================== */}
+
+          <div className="grid grid-cols-2 gap-3 mb-3">
 
             <div>
 
@@ -710,7 +1006,9 @@ export default function ManageEpisodesPage() {
 
               <input
                 type="number"
-                value={form.episodeNumber}
+                value={
+                  form.episodeNumber
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
@@ -744,7 +1042,9 @@ export default function ManageEpisodesPage() {
 
               <input
                 type="number"
-                value={form.duration}
+                value={
+                  form.duration
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
@@ -772,6 +1072,10 @@ export default function ManageEpisodesPage() {
 
           </div>
 
+          {/* ==========================
+              Episode Title
+          ========================== */}
+
           <div className="mb-3">
 
             <label className="mb-1 block text-xs text-[#8a87a3]">
@@ -779,7 +1083,9 @@ export default function ManageEpisodesPage() {
             </label>
 
             <input
-              value={form.title}
+              value={
+                form.title
+              }
               onChange={(e) =>
                 setForm({
                   ...form,
@@ -805,6 +1111,10 @@ export default function ManageEpisodesPage() {
 
           </div>
 
+          {/* ==========================
+              Video Upload
+          ========================== */}
+
           <div className="mb-4">
 
             <label className="mb-1 block text-xs text-[#8a87a3]">
@@ -812,7 +1122,9 @@ export default function ManageEpisodesPage() {
             </label>
 
             <input
-              value={form.videoUrl}
+              value={
+                form.videoUrl
+              }
               readOnly
               className="
                 w-full
@@ -828,7 +1140,9 @@ export default function ManageEpisodesPage() {
             />
 
             <input
-              ref={fileInputRef}
+              ref={
+                fileInputRef
+              }
               type="file"
               accept="video/mp4"
               className="hidden"
@@ -836,11 +1150,24 @@ export default function ManageEpisodesPage() {
                 const file =
                   e.target.files?.[0];
 
-                if (!file) return;
+                if (!file)
+                  return;
 
-                setSelectedVideo(file);
+                setSelectedVideo(
+                  file
+                );
 
-                uploadVideo(file);
+                uploadVideo(
+                  file
+                ).catch(
+                  (err) => {
+                    setErrorMsg(
+                      err instanceof Error
+                        ? err.message
+                        : "อัปโหลดไม่สำเร็จ"
+                    );
+                  }
+                );
               }}
             />
 
@@ -849,7 +1176,9 @@ export default function ManageEpisodesPage() {
               onClick={() =>
                 fileInputRef.current?.click()
               }
-              disabled={uploadingVideo}
+              disabled={
+                uploadingVideo
+              }
               className="
                 mt-3
                 rounded-lg
@@ -868,7 +1197,12 @@ export default function ManageEpisodesPage() {
                 ? "กำลังอัปโหลด..."
                 : "📹 เลือกไฟล์ MP4"}
             </button>
-                        {selectedVideo && (
+
+            {/* ==========================
+                Upload Information
+            ========================== */}
+
+            {selectedVideo && (
               <div
                 className="
                   mt-4
@@ -879,12 +1213,15 @@ export default function ManageEpisodesPage() {
                   p-4
                 "
               >
+
                 <div className="flex items-center justify-between">
 
                   <div>
 
                     <p className="font-medium text-sm">
-                      {selectedVideo.name}
+                      {
+                        selectedVideo.name
+                      }
                     </p>
 
                     <p className="mt-1 text-xs text-[#8a87a3]">
@@ -898,7 +1235,8 @@ export default function ManageEpisodesPage() {
 
                   </div>
 
-                  {uploadProgress === 100 && (
+                  {uploadProgress ===
+                    100 && (
                     <span
                       className="
                         rounded-full
@@ -916,8 +1254,9 @@ export default function ManageEpisodesPage() {
 
                 </div>
 
-                {uploadingVideo && (
+                {/* Progress */}
 
+                {uploadingVideo && (
                   <div className="mt-4">
 
                     <div className="mb-1 flex justify-between text-xs">
@@ -927,7 +1266,9 @@ export default function ManageEpisodesPage() {
                       </span>
 
                       <span>
-                        {uploadProgress}%
+                        {
+                          uploadProgress
+                        }%
                       </span>
 
                     </div>
@@ -956,11 +1297,14 @@ export default function ManageEpisodesPage() {
                     </div>
 
                   </div>
-
                 )}
 
               </div>
             )}
+
+            {/* ==========================
+                Video Preview
+            ========================== */}
 
             {form.videoUrl && (
               <div className="mt-5">
@@ -970,7 +1314,9 @@ export default function ManageEpisodesPage() {
                 </label>
 
                 <video
-                  src={form.videoUrl}
+                  src={
+                    form.videoUrl
+                  }
                   controls
                   preload="metadata"
                   className="
@@ -988,6 +1334,10 @@ export default function ManageEpisodesPage() {
 
           </div>
 
+          {/* ==========================
+              Thumbnail
+          ========================== */}
+
           <div className="mb-4">
 
             <label className="mb-1 block text-xs text-[#8a87a3]">
@@ -995,7 +1345,9 @@ export default function ManageEpisodesPage() {
             </label>
 
             <input
-              value={form.thumbnail}
+              value={
+                form.thumbnail
+              }
               onChange={(e) =>
                 setForm({
                   ...form,
@@ -1018,9 +1370,14 @@ export default function ManageEpisodesPage() {
               "
               placeholder="https://..."
             />
-            </div>
 
-                      <div className="flex gap-2">
+          </div>
+
+          {/* ==========================
+              Actions
+          ========================== */}
+
+          <div className="flex gap-2">
 
             <button
               type="submit"
@@ -1052,7 +1409,9 @@ export default function ManageEpisodesPage() {
             {editingId && (
               <button
                 type="button"
-                onClick={cancelEdit}
+                onClick={
+                  cancelEdit
+                }
                 className="
                   rounded-lg
                   border
@@ -1071,10 +1430,17 @@ export default function ManageEpisodesPage() {
 
         </form>
 
+        {/* ==========================
+            Episode List
+        ========================== */}
+
         <h2 className="mb-4 text-lg font-semibold">
+
           รายการตอนทั้งหมด
+
           {!loading &&
             ` (${episodes.length})`}
+
         </h2>
 
         {loading ? (
@@ -1098,6 +1464,7 @@ export default function ManageEpisodesPage() {
                   p-3
                 "
               >
+
                 <div className="h-4 w-10 rounded bg-[#1a1a28]" />
 
                 <div className="h-4 flex-1 rounded bg-[#1a1a28]" />
@@ -1118,85 +1485,96 @@ export default function ManageEpisodesPage() {
 
           <div className="grid gap-2">
 
-            {episodes.map((ep) => (
+            {episodes.map(
+              (ep) => (
 
-              <div
-                key={ep.id}
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  rounded-lg
-                  border
-                  border-[#232335]
-                  bg-[#131320]
-                  p-3
-                "
-              >
-
-                <span
+                <div
+                  key={ep.id}
                   className="
-                    w-10
-                    flex-shrink-0
-                    text-sm
-                    font-bold
-                    text-[#ff5d73]
+                    flex
+                    items-center
+                    gap-3
+                    rounded-lg
+                    border
+                    border-[#232335]
+                    bg-[#131320]
+                    p-3
                   "
                 >
-                  EP{ep.episodeNumber}
-                </span>
 
-                <div className="flex-1">
+                  <span
+                    className="
+                      w-10
+                      flex-shrink-0
+                      text-sm
+                      font-bold
+                      text-[#ff5d73]
+                    "
+                  >
+                    EP
+                    {
+                      ep.episodeNumber
+                    }
+                  </span>
 
-                  <div className="truncate text-sm">
-                    {ep.title ||
-                      "(ไม่มีชื่อตอน)"}
+                  <div className="flex-1">
+
+                    <div className="truncate text-sm">
+                      {ep.title ||
+                        "(ไม่มีชื่อตอน)"}
+                    </div>
+
+                    <div className="mt-1 truncate text-xs text-[#8a87a3]">
+                      {
+                        ep.videoUrl
+                      }
+                    </div>
+
                   </div>
 
-                  <div className="mt-1 truncate text-xs text-[#8a87a3]">
-                    {ep.videoUrl}
-                  </div>
+                  <button
+                    onClick={() =>
+                      startEdit(
+                        ep
+                      )
+                    }
+                    className="
+                      rounded-lg
+                      border
+                      border-[#2a2a3d]
+                      px-3
+                      py-1.5
+                      text-xs
+                      hover:bg-[#1a1a28]
+                    "
+                  >
+                    แก้ไข
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(
+                        ep.id
+                      )
+                    }
+                    className="
+                      rounded-lg
+                      border
+                      border-[#ff5d73]/30
+                      px-3
+                      py-1.5
+                      text-xs
+                      text-[#ff5d73]
+                      hover:bg-[#ff5d73]/10
+                    "
+                  >
+                    ลบ
+                  </button>
 
                 </div>
 
-                <button
-                  onClick={() =>
-                    startEdit(ep)
-                  }
-                  className="
-                    rounded-lg
-                    border
-                    border-[#2a2a3d]
-                    px-3
-                    py-1.5
-                    text-xs
-                    hover:bg-[#1a1a28]
-                  "
-                >
-                  แก้ไข
-                </button>
-
-                <button
-                  onClick={() =>
-                    handleDelete(ep.id)
-                  }
-                  className="
-                    rounded-lg
-                    border
-                    border-[#ff5d73]/30
-                    px-3
-                    py-1.5
-                    text-xs
-                    text-[#ff5d73]
-                    hover:bg-[#ff5d73]/10
-                  "
-                >
-                  ลบ
-                </button>
-
-              </div>
-
-            ))}
+              )
+            )}
 
           </div>
 

@@ -19,6 +19,7 @@ model User {
   favorites    Favorite[]
   reviews      Review[]
   watchHistory WatchHistory[]
+  episodeLikes EpisodeLike[]
 }
 
 model Anime {
@@ -39,6 +40,7 @@ model Anime {
   heroOrder   Int         @default(0)
   heroTrailer String?
   slug        String      @unique
+
   episodes    Episode[]
   favorites   Favorite[]
   reviews     Review[]
@@ -54,12 +56,28 @@ model Episode {
   videoUrl      String
   thumbnail     String?
   duration      Int?
+  views         Int            @default(0)
   createdAt     DateTime       @default(now())
+
   anime         Anime          @relation(fields: [animeId], references: [id], onDelete: Cascade)
   season        Season?        @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   watchHistory  WatchHistory[]
+  likes         EpisodeLike[]
 
   @@unique([animeId, seasonId, episodeNumber])
+}
+
+model EpisodeLike {
+  id        String   @id @default(cuid())
+  userId    String
+  episodeId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
 }
 
 model Season {
@@ -80,6 +98,7 @@ model Favorite {
   userId    String
   animeId   String
   createdAt DateTime @default(now())
+
   anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -94,6 +113,7 @@ model Review {
   comment   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -106,6 +126,7 @@ model WatchHistory {
   episodeId String
   progress  Int      @default(0)
   updatedAt DateTime @updatedAt
+
   episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -126,18 +147,13 @@ model PasswordReset {
   id         String   @id @default(cuid())
 
   email      String
-
   otp        String
-
   resetToken String?  @unique
 
   expiresAt  DateTime
-
   used       Boolean  @default(false)
-
   createdAt  DateTime @default(now())
 
   @@index([email])
-
   @@index([resetToken])
-}
+} 

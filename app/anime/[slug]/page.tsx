@@ -371,10 +371,6 @@ return (
 
   {currentEpisode && (
     <div className="mt-5">
-      <h3 className="text-xl font-bold text-white">
-        EP {currentEpisode.episodeNumber}
-        {currentEpisode.title && ` • ${currentEpisode.title}`}
-      </h3>
     </div>
   )}
 </section>
