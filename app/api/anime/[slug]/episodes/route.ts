@@ -89,6 +89,9 @@ export async function POST(
       videoUrl,
       thumbnail,
       duration,
+      introStart,
+      introEnd,
+      nextEpisodeTime,
     } = body;
 
     if (!seasonId || !episodeNumber || !videoUrl) {
@@ -111,6 +114,18 @@ export async function POST(
         videoUrl,
         thumbnail,
         duration: duration ? Number(duration) : null,
+        introStart:
+          introStart === null || introStart === "" || introStart === undefined
+            ? null
+            : Number(introStart),
+        introEnd:
+          introEnd === null || introEnd === "" || introEnd === undefined
+            ? null
+            : Number(introEnd),
+        nextEpisodeTime:
+          nextEpisodeTime === null || nextEpisodeTime === "" || nextEpisodeTime === undefined
+            ? null
+            : Number(nextEpisodeTime),
       },
     });
 

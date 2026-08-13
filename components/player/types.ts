@@ -19,6 +19,12 @@ export type PlayerProps = {
 
   onNextEpisode?: () => void;
 
+  introStart?: number | null;
+
+  introEnd?: number | null;
+
+  nextEpisodeTime?: number | null;
+
   nextEpisode?: {
     slug: string;
     seasonId: string;

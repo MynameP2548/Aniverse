@@ -55,8 +55,11 @@ model Episode {
   title         String?
   videoUrl      String
   thumbnail     String?
-  duration      Int?
-  views         Int            @default(0)
+  duration         Int?
+  introStart       Int?
+  introEnd         Int?
+  nextEpisodeTime  Int?
+  views            Int            @default(0)
   createdAt     DateTime       @default(now())
 
   anime         Anime          @relation(fields: [animeId], references: [id], onDelete: Cascade)

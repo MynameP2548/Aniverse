@@ -65,10 +65,6 @@ export default function AnimeWatch({
         ]
       : undefined;
 
-  // ==================================================
-  // เพิ่มยอดวิวเมื่อเริ่มดู Episode
-  // ==================================================
-
   useEffect(() => {
     let cancelled = false;
 
@@ -98,7 +94,6 @@ export default function AnimeWatch({
           return;
         }
 
-        // อัปเดตยอดวิวในรายการทันที
         setEpisodeList((prev) =>
           prev.map((episode) =>
             episode.id ===
@@ -111,7 +106,6 @@ export default function AnimeWatch({
           )
         );
 
-        // อัปเดต current episode ด้วย
         setCurrentEpisode((prev) =>
           prev.id ===
           currentEpisode.id
@@ -135,10 +129,6 @@ export default function AnimeWatch({
       cancelled = true;
     };
   }, [currentEpisode.id]);
-
-  // ==================================================
-  // เปลี่ยนตอน
-  // ==================================================
 
   function selectEpisode(
     episode: Episode
@@ -171,10 +161,6 @@ export default function AnimeWatch({
     );
   }
 
-  // ==================================================
-  // ตอนถัดไป
-  // ==================================================
-
   function goToNextEpisode() {
     if (!nextEpisode) {
       return;
@@ -187,15 +173,9 @@ export default function AnimeWatch({
 
   return (
     <div className="space-y-8">
-      {/* =========================
-          PLAYER
-      ========================= */}
 
-      <Player
-        key={currentEpisode.id}
-        episodeId={
-          currentEpisode.id
-        }
+<Player
+  episodeId={currentEpisode.id}
         src={
           currentEpisode.videoUrl
         }
@@ -204,11 +184,22 @@ export default function AnimeWatch({
           anime.coverImage ??
           ""
         }
-        title={anime.title}
+        title={
+          anime.title
+        }
         episode={
           currentEpisode.episodeNumber
         }
         autoPlay
+        introStart={
+          currentEpisode.introStart
+        }
+        introEnd={
+          currentEpisode.introEnd
+        }
+        nextEpisodeTime={
+          currentEpisode.nextEpisodeTime
+        }
         onNextEpisode={
           goToNextEpisode
         }
@@ -227,10 +218,6 @@ export default function AnimeWatch({
             : undefined
         }
       />
-
-      {/* =========================
-          EPISODE LIST
-      ========================= */}
 
       <div>
         <h2 className="mb-6 text-2xl font-bold text-white">
@@ -251,6 +238,7 @@ export default function AnimeWatch({
           }
         />
       </div>
+
     </div>
   );
 }

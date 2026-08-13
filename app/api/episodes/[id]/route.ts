@@ -17,6 +17,9 @@ const {
   videoUrl,
   thumbnail,
   duration,
+  introStart,
+  introEnd,
+  nextEpisodeTime,
 } = body;
 
     const episode = await prisma.episode.update({
@@ -35,6 +38,21 @@ const {
   duration: duration
     ? Number(duration)
     : null,
+
+  introStart:
+    introStart === null || introStart === ""
+      ? null
+      : Number(introStart),
+
+  introEnd:
+    introEnd === null || introEnd === ""
+      ? null
+      : Number(introEnd),
+
+  nextEpisodeTime:
+    nextEpisodeTime === null || nextEpisodeTime === ""
+      ? null
+      : Number(nextEpisodeTime),
 },
     });
 

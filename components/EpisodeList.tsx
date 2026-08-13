@@ -11,6 +11,10 @@ export type EpisodeItem = {
   duration: number | null;
   seasonId: string | null;
   views: number;
+
+  introStart: number | null;
+  introEnd: number | null;
+  nextEpisodeTime: number | null;
 };
 
 type LikeState = {

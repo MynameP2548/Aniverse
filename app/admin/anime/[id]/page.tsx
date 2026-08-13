@@ -12,6 +12,10 @@ type Episode = {
   videoUrl: string;
   thumbnail?: string;
   duration?: number;
+
+  introStart?: number | null;
+  introEnd?: number | null;
+  nextEpisodeTime?: number | null;
 };
 
 type Anime = {
@@ -33,7 +37,39 @@ const emptyForm = {
   videoUrl: "",
   thumbnail: "",
   duration: "",
+  introStart: "",
+  introEnd: "",
+  nextEpisodeTime: "",
 };
+
+function secondsToTime(value?: number | null) {
+  if (typeof value !== "number" || value < 0) return "";
+
+  const minutes = Math.floor(value / 60);
+  const seconds = Math.floor(value % 60);
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
+}
+
+function timeToSeconds(value: string) {
+  const text = value.trim();
+
+  if (!text) return null;
+
+  const match = text.match(/^(\d+):([0-5]\d)$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  const minutes = Number(match[1]);
+  const seconds = Number(match[2]);
+
+  return minutes * 60 + seconds;
+}
 
 export default function ManageEpisodesPage() {
   const params = useParams();
@@ -84,6 +120,16 @@ export default function ManageEpisodesPage() {
     useState<File | null>(null);
 
   const fileInputRef =
+    useRef<HTMLInputElement>(null);
+
+  // ==========================
+  // Upload Thumbnail → Supabase
+  // ==========================
+
+  const [uploadingThumbnail, setUploadingThumbnail] =
+    useState(false);
+
+  const thumbnailInputRef =
     useRef<HTMLInputElement>(null);
 
   // ==========================
@@ -504,6 +550,75 @@ export default function ManageEpisodesPage() {
 }
 
   // ==========================
+  // Upload Thumbnail → Supabase
+  // ==========================
+
+  async function uploadThumbnail(
+    file: File
+  ) {
+    if (!file.type.startsWith("image/")) {
+      setErrorMsg(
+        "กรุณาเลือกไฟล์รูปภาพเท่านั้น"
+      );
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setErrorMsg(
+        "รูป Thumbnail ต้องมีขนาดไม่เกิน 10MB"
+      );
+      return;
+    }
+
+    setUploadingThumbnail(true);
+    setErrorMsg("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(
+        "/api/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || !data.url) {
+        throw new Error(
+          data.error ||
+            "อัปโหลด Thumbnail ไม่สำเร็จ"
+        );
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        thumbnail: data.url,
+      }));
+    } catch (err) {
+      console.error(
+        "THUMBNAIL UPLOAD ERROR:",
+        err
+      );
+
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "อัปโหลด Thumbnail ไม่สำเร็จ"
+      );
+    } finally {
+      setUploadingThumbnail(false);
+
+      if (thumbnailInputRef.current) {
+        thumbnailInputRef.current.value = "";
+      }
+    }
+  }
+
+  // ==========================
   // Create Season
   // ==========================
 
@@ -635,29 +750,28 @@ export default function ManageEpisodesPage() {
       ep.seasonId ?? ""
     );
 
-    setForm({
-      seasonId:
-        ep.seasonId ?? "",
+setForm({
+  seasonId: ep.seasonId ?? "",
+  episodeNumber: String(ep.episodeNumber),
+  title: ep.title || "",
+  videoUrl: ep.videoUrl,
+  thumbnail: ep.thumbnail || "",
+  duration: ep.duration
+    ? String(ep.duration)
+    : "",
 
-      episodeNumber: String(
-        ep.episodeNumber
-      ),
+  introStart: ep.introStart
+    ? String(ep.introStart)
+    : "",
 
-      title:
-        ep.title || "",
+  introEnd: ep.introEnd
+    ? String(ep.introEnd)
+    : "",
 
-      videoUrl:
-        ep.videoUrl,
-
-      thumbnail:
-        ep.thumbnail || "",
-
-      duration: ep.duration
-        ? String(
-            ep.duration
-          )
-        : "",
-    });
+  nextEpisodeTime: ep.nextEpisodeTime
+    ? String(ep.nextEpisodeTime)
+    : "",
+});
 
     setSelectedVideo(
       null
@@ -716,6 +830,74 @@ export default function ManageEpisodesPage() {
       return;
     }
 
+    const introStart = timeToSeconds(
+      form.introStart
+    );
+
+    const introEnd = timeToSeconds(
+      form.introEnd
+    );
+
+    const nextEpisodeTime =
+      timeToSeconds(
+        form.nextEpisodeTime
+      );
+
+    if (
+      introStart === undefined ||
+      introEnd === undefined ||
+      nextEpisodeTime === undefined
+    ) {
+      setErrorMsg(
+        "รูปแบบเวลาต้องเป็น MM:SS เช่น 01:30"
+      );
+      return;
+    }
+
+    if (
+      introStart !== null &&
+      introEnd !== null &&
+      introEnd <= introStart
+    ) {
+      setErrorMsg(
+        "เวลา Intro จบต้องมากกว่าเวลา Intro เริ่ม"
+      );
+      return;
+    }
+
+    if (
+      introStart !== null &&
+      form.duration &&
+      introStart >= Number(form.duration)
+    ) {
+      setErrorMsg(
+        "เวลาเริ่ม Intro ต้องน้อยกว่าความยาววิดีโอ"
+      );
+      return;
+    }
+
+    if (
+      introEnd !== null &&
+      form.duration &&
+      introEnd > Number(form.duration)
+    ) {
+      setErrorMsg(
+        "เวลาจบ Intro ต้องไม่เกินความยาววิดีโอ"
+      );
+      return;
+    }
+
+    if (
+      nextEpisodeTime !== null &&
+      form.duration &&
+      nextEpisodeTime >= Number(form.duration)
+    ) {
+      setErrorMsg(
+        "เวลาขึ้นตอนถัดไปต้องน้อยกว่าความยาววิดีโอ"
+      );
+      return;
+    }
+
     setSaving(true);
 
     setErrorMsg("");
@@ -752,6 +934,10 @@ export default function ManageEpisodesPage() {
               form.duration
             )
           : null,
+
+        introStart,
+        introEnd,
+        nextEpisodeTime,
       };
 
       const res = await fetch(
@@ -1073,6 +1259,99 @@ export default function ManageEpisodesPage() {
           </div>
 
           {/* ==========================
+              Skip Intro / Next Episode
+          ========================== */}
+
+          <div className="mb-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
+            <h3 className="mb-1 text-sm font-semibold text-white">
+              ⏭ ระบบข้าม Intro
+            </h3>
+            <p className="mb-4 text-xs text-[#8a87a3]">
+              กำหนดเป็น MM:SS เช่น 01:30 หากไม่ต้องการใช้ ให้เว้นว่างไว้
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-xs text-[#8a87a3]">
+                  Intro เริ่ม
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={form.introStart ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      introStart: e.target.value,
+                    })
+                  }
+                  className="
+                    w-full rounded-lg border border-[#2a2a3d]
+                    bg-[#0b0b12] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  "
+                  placeholder="01:30"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs text-[#8a87a3]">
+                  Intro จบ
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={form.introEnd ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      introEnd: e.target.value,
+                    })
+                  }
+                  className="
+                    w-full rounded-lg border border-[#2a2a3d]
+                    bg-[#0b0b12] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  "
+                  placeholder="03:00"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
+            <h3 className="mb-1 text-sm font-semibold text-white">
+              ▶ ตอนถัดไป
+            </h3>
+            <p className="mb-4 text-xs text-[#8a87a3]">
+              เมื่อถึงเวลานี้จะแสดงตอนถัดไปและเริ่มนับถอยหลัง 5 วินาที
+            </p>
+
+            <div>
+              <label className="mb-1 block text-xs text-[#8a87a3]">
+                แสดงตอนถัดไปเมื่อ
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={form.nextEpisodeTime ?? ""}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    nextEpisodeTime: e.target.value,
+                  })
+                }
+                className="
+                  w-full rounded-lg border border-[#2a2a3d]
+                  bg-[#0b0b12] px-3 py-2 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                "
+                placeholder="22:00"
+              />
+            </div>
+          </div>
+
+          {/* ==========================
               Episode Title
           ========================== */}
 
@@ -1339,38 +1618,96 @@ export default function ManageEpisodesPage() {
           ========================== */}
 
           <div className="mb-4">
-
             <label className="mb-1 block text-xs text-[#8a87a3]">
-              URL รูปปกตอน (Thumbnail)
+              รูปปกตอน (Thumbnail)
             </label>
 
             <input
-              value={
-                form.thumbnail
+              ref={thumbnailInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="hidden"
+              onChange={(e) => {
+                const file =
+                  e.target.files?.[0];
+
+                if (!file) return;
+
+                uploadThumbnail(file);
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={() =>
+                thumbnailInputRef.current?.click()
               }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  thumbnail:
-                    e.target.value,
-                })
-              }
+              disabled={uploadingThumbnail}
               className="
                 w-full
                 rounded-lg
-                border
-                border-[#2a2a3d]
-                bg-[#0b0b12]
-                px-3
-                py-2
+                bg-[#ff5d73]
+                px-4
+                py-2.5
                 text-sm
-                focus:outline-none
-                focus:ring-2
-                focus:ring-[#ff5d73]
+                font-semibold
+                text-black
+                transition
+                hover:bg-[#ff738a]
+                disabled:cursor-not-allowed
+                disabled:opacity-60
               "
-              placeholder="https://..."
-            />
+            >
+              {uploadingThumbnail
+                ? "กำลังอัปโหลดรูป..."
+                : "🖼️ เลือกรูป Thumbnail"}
+            </button>
 
+            {form.thumbnail && (
+              <div className="mt-3 overflow-hidden rounded-xl border border-[#2a2a3d] bg-[#0b0b12]">
+                <img
+                  src={form.thumbnail}
+                  alt="Thumbnail Preview"
+                  className="
+                    aspect-video
+                    w-full
+                    object-cover
+                  "
+                />
+
+                <div className="flex items-center justify-between gap-3 p-3">
+                  <span className="truncate text-xs text-[#8a87a3]">
+                    อัปโหลดแล้ว
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        thumbnail: "",
+                      }))
+                    }
+                    className="
+                      rounded-lg
+                      border
+                      border-[#ff5d73]/30
+                      px-3
+                      py-1.5
+                      text-xs
+                      text-[#ff5d73]
+                      hover:bg-[#ff5d73]/10
+                    "
+                  >
+                    ลบรูป
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <p className="mt-2 text-xs text-[#6f6c84]">
+              รองรับ PNG, JPG, WEBP และ GIF • สูงสุด 10MB
+            </p>
           </div>
 
           {/* ==========================
