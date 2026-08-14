@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import {
   useCallback,
   useEffect,
@@ -17,6 +15,23 @@ import Video from "./Video";
 import usePlayer from "./usePlayer";
 
 import type { PlayerProps } from "./types";
+
+
+type AudioLanguage =
+  | "THAI"
+  | "JAPANESE";
+
+type AudioOption = {
+  id: string;
+  language: AudioLanguage;
+  label: string;
+};
+
+type SubtitleOption = {
+  id: string;
+  language: string;
+  label: string;
+};
 
 export default function Player({
   episodeId,
@@ -46,8 +61,6 @@ export default function Player({
     hls,
   } = usePlayer();
 
-  const router = useRouter();
-
   const hideTimer =
     useRef<NodeJS.Timeout | null>(null);
 
@@ -66,6 +79,18 @@ export default function Player({
 
   const [videoError, setVideoError] =
     useState<string | null>(null);
+
+  const [audioTracks, setAudioTracks] =
+    useState<AudioOption[]>([]);
+
+  const [selectedAudioLanguage, setSelectedAudioLanguage] =
+    useState<AudioLanguage>("THAI");
+
+  const [subtitleTracks, setSubtitleTracks] =
+    useState<SubtitleOption[]>([]);
+
+  const [selectedSubtitle, setSelectedSubtitle] =
+    useState("off");
 
   const [showControls, setShowControls] =
     useState(true);
@@ -95,21 +120,6 @@ export default function Player({
     useState(false);
 
   const introSkipped = useRef(false);
-
-  type AudioLanguage = "THAI" | "JAPANESE";
-
-  type AudioOption = {
-    id: string;
-    language: AudioLanguage;
-    label: string;
-    url: string;
-  };
-
-  const [audioTracks, setAudioTracks] =
-    useState<AudioOption[]>([]);
-
-  const [selectedAudioLanguage, setSelectedAudioLanguage] =
-    useState<AudioLanguage>("THAI");
 
   // ===========================
   // R2 Signed URL
@@ -164,93 +174,6 @@ export default function Player({
       cancelled = true;
     };
   }, [episodeId]);
-
-  // ===========================
-  // HLS Audio Tracks
-  // ===========================
-
-  useEffect(() => {
-    if (!resolvedSrc) {
-      setAudioTracks([]);
-      return;
-    }
-
-    let cancelled = false;
-    let attempts = 0;
-
-    const readTracks = () => {
-      const instance = hls.current;
-      if (!instance) return;
-
-      const next: AudioOption[] = instance.audioTracks
-        .map((track, index) => {
-          const lang = String(track?.lang ?? "").toLowerCase();
-          const name = String(track?.name ?? "").toLowerCase();
-
-          let language: AudioLanguage | null = null;
-
-          if (
-            lang === "th" ||
-            lang === "tha" ||
-            lang.startsWith("th-") ||
-            name.includes("thai") ||
-            name.includes("ไทย")
-          ) {
-            language = "THAI";
-          } else if (
-            lang === "ja" ||
-            lang === "jpn" ||
-            lang.startsWith("ja-") ||
-            name.includes("japanese") ||
-            name.includes("日本語") ||
-            name.includes("ญี่ปุ่น")
-          ) {
-            language = "JAPANESE";
-          }
-
-          if (!language) return null;
-
-          return {
-            id: `${language}-${index}`,
-            language,
-            label:
-              language === "THAI"
-                ? "🇹🇭 พากย์ไทย"
-                : "🇯🇵 พากย์ญี่ปุ่น",
-            url: "",
-          };
-        })
-        .filter(
-          (track): track is AudioOption =>
-            track !== null
-        );
-
-      if (!cancelled && next.length > 0) {
-        setAudioTracks(next);
-
-        setSelectedAudioLanguage((current) =>
-          next.some((track) => track.language === current)
-            ? current
-            : next[0].language
-        );
-      }
-    };
-
-    const timer = window.setInterval(() => {
-      attempts += 1;
-      readTracks();
-      if (attempts >= 100) {
-        window.clearInterval(timer);
-      }
-    }, 100);
-
-    readTracks();
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
-  }, [resolvedSrc, hls]);
 
   // ===========================
   // Video Events
@@ -544,6 +467,59 @@ export default function Player({
     toggleFullscreen,
   ]);
 
+  const handleAudioTracksChange = useCallback(
+    (tracks: AudioOption[]) => {
+      setAudioTracks((current) => {
+        if (
+          current.length === tracks.length &&
+          current.every(
+            (item, index) =>
+              item.id === tracks[index]?.id &&
+              item.label === tracks[index]?.label &&
+              item.language === tracks[index]?.language
+          )
+        ) {
+          return current;
+        }
+
+        return tracks;
+      });
+    },
+    []
+  );
+
+  const handleSubtitleTracksChange = useCallback(
+    (tracks: SubtitleOption[]) => {
+      setSubtitleTracks((current) => {
+        if (
+          current.length === tracks.length &&
+          current.every(
+            (item, index) =>
+              item.id === tracks[index]?.id &&
+              item.label === tracks[index]?.label
+          )
+        ) {
+          return current;
+        }
+
+        return tracks;
+      });
+
+      setSelectedSubtitle((current) => {
+        if (current === "off") {
+          return current;
+        }
+
+        return tracks.some(
+          (track) => track.id === current
+        )
+          ? current
+          : "off";
+      });
+    },
+    []
+  );
+
   // ===========================
   // Auto Hide Controls
   // ===========================
@@ -566,16 +542,16 @@ export default function Player({
   }, [playing]);
 
   useEffect(() => {
-    showUI();
-  }, [showUI]);
-
-  useEffect(() => {
     setPlaying(false);
     setCurrentTime(0);
     setDuration(0);
     setShowNextEpisode(false);
     setCountdown(5);
     setShowSkipIntro(false);
+    setAudioTracks([]);
+    setSubtitleTracks([]);
+    setSelectedAudioLanguage("THAI");
+    setSelectedSubtitle("off");
     introSkipped.current = false;
   }, [episodeId]);
 
@@ -763,6 +739,15 @@ export default function Player({
           selectedAudioLanguage={
             selectedAudioLanguage
           }
+          onAudioTracksChange={
+            handleAudioTracksChange
+          }
+          onSubtitleTracksChange={
+            handleSubtitleTracksChange
+          }
+          selectedSubtitle={
+            selectedSubtitle
+          }
         />
       )}
 
@@ -819,6 +804,15 @@ export default function Player({
             }
             onAudioChange={
               setSelectedAudioLanguage
+            }
+            subtitleTracks={
+              subtitleTracks
+            }
+            selectedSubtitle={
+              selectedSubtitle
+            }
+            onSubtitleChange={
+              setSelectedSubtitle
             }
           />
         </div>

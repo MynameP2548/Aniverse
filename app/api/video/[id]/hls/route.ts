@@ -53,6 +53,14 @@ function isTs(
   );
 }
 
+function isVtt(
+  value: string
+) {
+  return /\.vtt$/i.test(
+    value.split("?")[0]
+  );
+}
+
 // --------------------------------------------------
 // ทำ URI ของไฟล์ลูกให้กลายเป็น URL ของ HLS Proxy
 // --------------------------------------------------
@@ -392,39 +400,98 @@ export async function GET(
       );
     }
 
-    // ----------------------------------------------
-    // TS Segment
-    // ----------------------------------------------
+// ----------------------------------------------
+// TS Segment
+// ----------------------------------------------
 
-    if (
-      isTs(
-        requestedKey
-      )
-    ) {
-      const command =
-        new GetObjectCommand({
-          Bucket:
-            R2_BUCKET_NAME,
+if (
+  isTs(
+    requestedKey
+  )
+) {
+  const command =
+    new GetObjectCommand({
+      Bucket:
+        R2_BUCKET_NAME,
 
-          Key:
-            requestedKey,
-        });
+      Key:
+        requestedKey,
+    });
 
-      const signedUrl =
-        await getSignedUrl(
-          r2,
-          command,
-          {
-            expiresIn:
-              10 * 60,
-          }
-        );
+  const signedUrl =
+    await getSignedUrl(
+      r2,
+      command,
+      {
+        expiresIn:
+          10 * 60,
+      }
+    );
 
-      return NextResponse.redirect(
-        signedUrl,
-        307
-      );
+  return NextResponse.redirect(
+    signedUrl,
+    307
+  );
+}
+
+// ----------------------------------------------
+// WebVTT Subtitle
+// ----------------------------------------------
+
+if (
+  isVtt(
+    requestedKey
+  )
+) {
+  const object =
+    await r2.send(
+      new GetObjectCommand({
+        Bucket:
+          R2_BUCKET_NAME,
+
+        Key:
+          requestedKey,
+      })
+    );
+
+  if (!object.Body) {
+    return new NextResponse(
+      "Subtitle not found",
+      {
+        status: 404,
+      }
+    );
+  }
+
+  const vtt =
+    await object.Body.transformToString(
+      "utf-8"
+    );
+
+  return new NextResponse(
+    vtt,
+    {
+      status: 200,
+
+      headers: {
+        "Content-Type":
+          "text/vtt; charset=utf-8",
+
+        "Cache-Control":
+          "public, max-age=3600",
+
+        "Access-Control-Allow-Origin":
+          "*",
+
+        "Access-Control-Allow-Methods":
+          "GET, HEAD, OPTIONS",
+
+        "Access-Control-Allow-Headers":
+          "*",
+      },
     }
+  );
+}
 
     return new NextResponse(
       "Unsupported HLS file",

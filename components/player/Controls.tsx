@@ -1,3 +1,4 @@
+
 "use client";
 
 import Progress from "./Progress";
@@ -28,20 +29,37 @@ type Props = {
   audioTracks?: {
     id?: string;
     language: "THAI" | "JAPANESE";
-    url: string;
+    url?: string;
     label?: string;
   }[];
 
-  selectedAudioLanguage?: "THAI" | "JAPANESE" | null;
+  selectedAudioLanguage?:
+    | "THAI"
+    | "JAPANESE"
+    | null;
 
   onAudioChange?: (
-    language: "THAI" | "JAPANESE"
+    language:
+      | "THAI"
+      | "JAPANESE"
+  ) => void;
+
+  subtitleTracks?: {
+    id: string;
+    language?: string;
+    url?: string;
+    label: string;
+  }[];
+
+  selectedSubtitle?: string;
+
+  onSubtitleChange?: (
+    id: string
   ) => void;
 };
 
 export default function Controls({
   video,
-
   poster,
 
   currentTime,
@@ -62,8 +80,12 @@ export default function Controls({
   audioTracks = [],
   selectedAudioLanguage,
   onAudioChange,
+
+  subtitleTracks = [],
+  selectedSubtitle,
+  onSubtitleChange,
 }: Props) {
-      return (
+  return (
     <div
       className="
         absolute
@@ -79,8 +101,6 @@ export default function Controls({
         pt-12
       "
     >
-      {/* Progress */}
-
       <Progress
         currentTime={currentTime}
         duration={duration}
@@ -88,25 +108,15 @@ export default function Controls({
         onSeek={onSeek}
       />
 
-      {/* Bottom Controls */}
-
       <div className="mt-5 flex items-center justify-between">
-
-        {/* Left */}
-
         <div className="flex items-center gap-5">
-
           <Time
             currentTime={currentTime}
             duration={duration}
           />
-
         </div>
 
-        {/* Right */}
-
         <div className="flex items-center gap-3">
-
           <Volume
             muted={muted}
             volume={volume}
@@ -114,71 +124,26 @@ export default function Controls({
             onChange={onVolume}
           />
 
-          {audioTracks.length > 0 && (
-            <div className="relative">
-              <label
-                className="
-                  flex h-10 items-center gap-2 rounded-full
-                  border border-white/10 bg-white/10 px-3
-                  text-sm text-white backdrop-blur-xl
-                "
-                title="เลือกเสียง"
-              >
-                <span aria-hidden="true">🔊</span>
-
-                <select
-                  value={selectedAudioLanguage ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-
-                    if (
-                      value === "THAI" ||
-                      value === "JAPANESE"
-                    ) {
-                      onAudioChange?.(value);
-                    }
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="
-                    cursor-pointer appearance-none bg-transparent
-                    pr-1 text-sm font-medium text-white
-                    outline-none
-                  "
-                  aria-label="เลือกเสียง"
-                >
-                  {audioTracks.map((track) => (
-                    <option
-                      key={track.id ?? track.language}
-                      value={track.language}
-                      className="bg-[#131320] text-white"
-                    >
-                      {track.label ??
-                        (track.language === "THAI"
-                          ? "พากย์ไทย"
-                          : "พากย์ญี่ปุ่น")}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          )}
-
           <Settings
             video={video}
             onTheaterMode={
               onTheaterMode
             }
-            audioTracks={audioTracks.map((track) => ({
-              id: track.id ?? track.language,
-              label:
-                track.label ??
-                (track.language === "THAI"
-                  ? "🇹🇭 พากย์ไทย"
-                  : "🇯🇵 พากย์ญี่ปุ่น"),
-            }))}
+            audioTracks={audioTracks.map(
+              (track) => ({
+                id:
+                  track.language,
+                label:
+                  track.label ??
+                  (track.language ===
+                  "THAI"
+                    ? "🇹🇭 พากย์ไทย"
+                    : "🇯🇵 พากย์ญี่ปุ่น"),
+              })
+            )}
             selectedAudio={
-              selectedAudioLanguage ?? ""
+              selectedAudioLanguage ??
+              ""
             }
             onAudioChange={(id) => {
               if (
@@ -188,6 +153,23 @@ export default function Controls({
                 onAudioChange?.(id);
               }
             }}
+            subtitleTracks={
+              subtitleTracks.map(
+                (track) => ({
+                  id: track.id,
+                  label:
+                    track.label ??
+                    "🇹🇭 ภาษาไทย",
+                })
+              )
+            }
+            selectedSubtitle={
+              selectedSubtitle ??
+              "off"
+            }
+            onSubtitleChange={
+              onSubtitleChange
+            }
           />
 
           <button
@@ -212,6 +194,7 @@ export default function Controls({
               hover:bg-white/20
               active:scale-95
             "
+            aria-label="Fullscreen"
           >
             <svg
               viewBox="0 0 24 24"
@@ -226,10 +209,8 @@ export default function Controls({
               <path d="M3 16v5h5" />
             </svg>
           </button>
-
         </div>
-
       </div>
-          </div>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -21,26 +22,14 @@ type Props = {
 
   onTheaterMode?: () => void;
 
-  // ==========================
-  // Audio
-  // ==========================
-
   audioTracks?: AudioTrack[];
-
   selectedAudio?: string;
-
   onAudioChange?: (
     id: string
   ) => void;
 
-  // ==========================
-  // Subtitle
-  // ==========================
-
   subtitleTracks?: SubtitleTrack[];
-
   selectedSubtitle?: string;
-
   onSubtitleChange?: (
     id: string
   ) => void;
@@ -64,7 +53,7 @@ export default function Settings({
   onAudioChange,
 
   subtitleTracks = [],
-  selectedSubtitle = "",
+  selectedSubtitle = "off",
   onSubtitleChange,
 }: Props) {
   const [open, setOpen] =
@@ -72,10 +61,6 @@ export default function Settings({
 
   const menuRef =
     useRef<HTMLDivElement>(null);
-
-  // ==========================
-  // Close outside
-  // ==========================
 
   useEffect(() => {
     function handleClick(
@@ -96,12 +81,11 @@ export default function Settings({
       handleClick
     );
 
-    return () => {
+    return () =>
       document.removeEventListener(
         "mousedown",
         handleClick
       );
-    };
   }, []);
 
   return (
@@ -109,25 +93,19 @@ export default function Settings({
       ref={menuRef}
       className="relative"
     >
-      {/* Settings Button */}
-
       <button
         type="button"
         onClick={() =>
           setOpen((v) => !v)
         }
         className="
-          flex
-          h-10
-          w-10
+          flex h-10 w-10
           items-center
           justify-center
           rounded-full
-          border
-          border-white/10
+          border border-white/10
           bg-white/10
-          text-lg
-          text-white
+          text-lg text-white
           backdrop-blur-xl
           transition-all
           duration-300
@@ -148,21 +126,16 @@ export default function Settings({
             w-64
             overflow-hidden
             rounded-2xl
-            border
-            border-white/10
+            border border-white/10
             bg-[#121218]/95
             shadow-2xl
             backdrop-blur-2xl
           "
         >
-          {/* Header */}
-
           <div
             className="
-              border-b
-              border-white/10
-              px-4
-              py-3
+              border-b border-white/10
+              px-4 py-3
               text-xs
               uppercase
               tracking-[0.25em]
@@ -173,11 +146,7 @@ export default function Settings({
           </div>
 
           <div className="p-2">
-
-            {/* ==========================
-                Playback Speed
-            ========================== */}
-
+            {/* Speed */}
             <div className="mb-2 px-2 text-xs text-white/40">
               Playback Speed
             </div>
@@ -201,10 +170,8 @@ export default function Settings({
                     items-center
                     justify-between
                     rounded-xl
-                    px-3
-                    py-2
-                    text-sm
-                    text-white
+                    px-3 py-2
+                    text-sm text-white
                     transition
                     hover:bg-white/10
                   "
@@ -215,20 +182,14 @@ export default function Settings({
 
                   {video?.playbackRate ===
                     speed && (
-                    <span>
-                      ✓
-                    </span>
+                    <span>✓</span>
                   )}
                 </button>
               )
             )}
 
-            {/* ==========================
-                Audio
-            ========================== */}
-
-            {audioTracks.length >
-              0 && (
+            {/* Audio */}
+            {audioTracks.length > 0 && (
               <>
                 <div className="my-2 h-px bg-white/10" />
 
@@ -252,10 +213,8 @@ export default function Settings({
                         items-center
                         justify-between
                         rounded-xl
-                        px-3
-                        py-2
-                        text-sm
-                        text-white
+                        px-3 py-2
+                        text-sm text-white
                         transition
                         hover:bg-white/10
                       "
@@ -266,9 +225,7 @@ export default function Settings({
 
                       {selectedAudio ===
                         track.id && (
-                        <span>
-                          ✓
-                        </span>
+                        <span>✓</span>
                       )}
                     </button>
                   )
@@ -276,12 +233,8 @@ export default function Settings({
               </>
             )}
 
-            {/* ==========================
-                Subtitles
-            ========================== */}
-
-            {subtitleTracks.length >
-              0 && (
+            {/* Subtitle */}
+            {subtitleTracks.length > 0 && (
               <>
                 <div className="my-2 h-px bg-white/10" />
 
@@ -291,34 +244,28 @@ export default function Settings({
 
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={() =>
                     onSubtitleChange?.(
                       "off"
-                    );
-                  }}
+                    )
+                  }
                   className="
                     flex
                     w-full
                     items-center
                     justify-between
                     rounded-xl
-                    px-3
-                    py-2
-                    text-sm
-                    text-white
+                    px-3 py-2
+                    text-sm text-white
                     transition
                     hover:bg-white/10
                   "
                 >
-                  <span>
-                    ปิด
-                  </span>
+                  <span>ปิด</span>
 
                   {selectedSubtitle ===
                     "off" && (
-                    <span>
-                      ✓
-                    </span>
+                    <span>✓</span>
                   )}
                 </button>
 
@@ -327,21 +274,19 @@ export default function Settings({
                     <button
                       key={track.id}
                       type="button"
-                      onClick={() => {
+                      onClick={() =>
                         onSubtitleChange?.(
                           track.id
-                        );
-                      }}
+                        )
+                      }
                       className="
                         flex
                         w-full
                         items-center
                         justify-between
                         rounded-xl
-                        px-3
-                        py-2
-                        text-sm
-                        text-white
+                        px-3 py-2
+                        text-sm text-white
                         transition
                         hover:bg-white/10
                       "
@@ -352,9 +297,7 @@ export default function Settings({
 
                       {selectedSubtitle ===
                         track.id && (
-                        <span>
-                          ✓
-                        </span>
+                        <span>✓</span>
                       )}
                     </button>
                   )
@@ -362,21 +305,13 @@ export default function Settings({
               </>
             )}
 
-            {/* ==========================
-                Divider
-            ========================== */}
-
             <div className="my-2 h-px bg-white/10" />
 
-            {/* ==========================
-                Picture in Picture
-            ========================== */}
-
+            {/* PiP */}
             <button
               type="button"
               onClick={async () => {
-                if (!video)
-                  return;
+                if (!video) return;
 
                 try {
                   if (
@@ -386,20 +321,15 @@ export default function Settings({
                   } else {
                     await video.requestPictureInPicture();
                   }
-                } catch {
-                  // Browser ไม่รองรับ
-                }
+                } catch {}
 
                 setOpen(false);
               }}
               className="
-                flex
-                w-full
+                flex w-full
                 rounded-xl
-                px-3
-                py-2
-                text-sm
-                text-white
+                px-3 py-2
+                text-sm text-white
                 transition
                 hover:bg-white/10
               "
@@ -407,32 +337,24 @@ export default function Settings({
               📺 Picture in Picture
             </button>
 
-            {/* ==========================
-                Theater Mode
-            ========================== */}
-
+            {/* Theater */}
             <button
               type="button"
               onClick={() => {
                 onTheaterMode?.();
-
                 setOpen(false);
               }}
               className="
-                flex
-                w-full
+                flex w-full
                 rounded-xl
-                px-3
-                py-2
-                text-sm
-                text-white
+                px-3 py-2
+                text-sm text-white
                 transition
                 hover:bg-white/10
               "
             >
               🎭 Theater Mode
             </button>
-
           </div>
         </div>
       )}
