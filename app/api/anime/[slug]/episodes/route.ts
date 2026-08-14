@@ -3,6 +3,18 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+type AudioInput = {
+  language: "THAI" | "JAPANESE";
+  url: string;
+  label?: string;
+};
+
+type SubtitleInput = {
+  language: "THAI" | "ENGLISH" | "JAPANESE";
+  url: string;
+  label?: string;
+};
+
 // GET /api/anime/[slug]/episodes
 export async function GET(
   req: NextRequest,
@@ -11,21 +23,10 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    const anime = await prisma.anime.findUnique({
-      where: {
-        slug,
-      },
-    });
+    const anime = await prisma.anime.findUnique({ where: { slug } });
 
     if (!anime) {
-      return NextResponse.json(
-        {
-          error: "ไม่พบอนิเมะ",
-        },
-        {
-          status: 404,
-        }
-      );
+      return NextResponse.json({ error: "ไม่พบอนิเมะ" }, { status: 404 });
     }
 
     const seasonId = req.nextUrl.searchParams.get("seasonId");
@@ -35,22 +36,19 @@ export async function GET(
         animeId: anime.id,
         ...(seasonId ? { seasonId } : {}),
       },
-      orderBy: {
-        episodeNumber: "asc",
+      include: {
+        audioTracks: { orderBy: { language: "asc" } },
+        subtitles: { orderBy: { language: "asc" } },
       },
+      orderBy: { episodeNumber: "asc" },
     });
 
     return NextResponse.json(episodes);
   } catch (error) {
     console.error(error);
-
     return NextResponse.json(
-      {
-        error: "โหลดรายการตอนไม่สำเร็จ",
-      },
-      {
-        status: 500,
-      }
+      { error: "โหลดรายการตอนไม่สำเร็จ" },
+      { status: 500 }
     );
   }
 }
@@ -63,21 +61,10 @@ export async function POST(
   try {
     const { slug } = await params;
 
-    const anime = await prisma.anime.findUnique({
-      where: {
-        slug,
-      },
-    });
+    const anime = await prisma.anime.findUnique({ where: { slug } });
 
     if (!anime) {
-      return NextResponse.json(
-        {
-          error: "ไม่พบอนิเมะ",
-        },
-        {
-          status: 404,
-        }
-      );
+      return NextResponse.json({ error: "ไม่พบอนิเมะ" }, { status: 404 });
     }
 
     const body = await req.json();
@@ -92,18 +79,42 @@ export async function POST(
       introStart,
       introEnd,
       nextEpisodeTime,
-    } = body;
+      audioTracks,
+      subtitles,
+    } = body as {
+      seasonId?: string;
+      episodeNumber?: number | string;
+      title?: string | null;
+      videoUrl?: string;
+      thumbnail?: string | null;
+      duration?: number | string | null;
+      introStart?: number | string | null;
+      introEnd?: number | string | null;
+      nextEpisodeTime?: number | string | null;
+      audioTracks?: AudioInput[];
+      subtitles?: SubtitleInput[];
+    };
 
     if (!seasonId || !episodeNumber || !videoUrl) {
       return NextResponse.json(
-        {
-          error: "กรุณาเลือก Season พร้อมกรอกลำดับตอนและลิงก์วิดีโอ",
-        },
-        {
-          status: 400,
-        }
+        { error: "กรุณาเลือก Season พร้อมกรอกลำดับตอนและลิงก์วิดีโอ" },
+        { status: 400 }
       );
     }
+
+    const validAudioTracks = (audioTracks ?? []).filter(
+      (track) =>
+        (track.language === "THAI" || track.language === "JAPANESE") &&
+        typeof track.url === "string" &&
+        track.url.trim().length > 0
+    );
+
+    const validSubtitles = (subtitles ?? []).filter(
+      (track) =>
+        ["THAI", "ENGLISH", "JAPANESE"].includes(track.language) &&
+        typeof track.url === "string" &&
+        track.url.trim().length > 0
+    );
 
     const episode = await prisma.episode.create({
       data: {
@@ -113,7 +124,10 @@ export async function POST(
         title,
         videoUrl,
         thumbnail,
-        duration: duration ? Number(duration) : null,
+        duration:
+          duration === null || duration === "" || duration === undefined
+            ? null
+            : Number(duration),
         introStart:
           introStart === null || introStart === "" || introStart === undefined
             ? null
@@ -123,15 +137,39 @@ export async function POST(
             ? null
             : Number(introEnd),
         nextEpisodeTime:
-          nextEpisodeTime === null || nextEpisodeTime === "" || nextEpisodeTime === undefined
+          nextEpisodeTime === null ||
+          nextEpisodeTime === "" ||
+          nextEpisodeTime === undefined
             ? null
             : Number(nextEpisodeTime),
+        audioTracks: {
+          create: validAudioTracks.map((track) => ({
+            language: track.language,
+            url: track.url.trim(),
+            label:
+              track.label?.trim() ||
+              (track.language === "THAI" ? "พากย์ไทย" : "พากย์ญี่ปุ่น"),
+          })),
+        },
+        subtitles: {
+          create: validSubtitles.map((track) => ({
+            language: track.language,
+            url: track.url.trim(),
+            label:
+              track.label?.trim() ||
+              ({ THAI: "ไทย", ENGLISH: "English", JAPANESE: "日本語" } as const)[
+                track.language
+              ],
+          })),
+        },
+      },
+      include: {
+        audioTracks: true,
+        subtitles: true,
       },
     });
 
-    return NextResponse.json(episode, {
-      status: 201,
-    });
+    return NextResponse.json(episode, { status: 201 });
   } catch (error: unknown) {
     console.error(error);
 
@@ -143,13 +181,6 @@ export async function POST(
         ? "ตอนนี้มีลำดับตอนซ้ำกับตอนที่มีอยู่แล้ว"
         : "เพิ่มตอนไม่สำเร็จ";
 
-    return NextResponse.json(
-      {
-        error: message,
-      },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

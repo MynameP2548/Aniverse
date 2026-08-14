@@ -66,8 +66,38 @@ model Episode {
   season        Season?        @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   watchHistory  WatchHistory[]
   likes         EpisodeLike[]
+  audioTracks   EpisodeAudio[]
+  subtitles     EpisodeSubtitle[]
 
   @@unique([animeId, seasonId, episodeNumber])
+}
+
+model EpisodeAudio {
+  id         String      @id @default(cuid())
+  episodeId  String
+  language   AudioLanguage
+  url        String
+  label      String
+  createdAt  DateTime    @default(now())
+
+  episode    Episode     @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([episodeId, language])
+  @@index([episodeId])
+}
+
+model EpisodeSubtitle {
+  id         String      @id @default(cuid())
+  episodeId  String
+  language   SubtitleLanguage
+  url        String
+  label      String
+  createdAt  DateTime    @default(now())
+
+  episode    Episode     @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([episodeId, language])
+  @@index([episodeId])
 }
 
 model EpisodeLike {
@@ -134,6 +164,17 @@ model WatchHistory {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, episodeId])
+}
+
+enum AudioLanguage {
+  THAI
+  JAPANESE
+}
+
+enum SubtitleLanguage {
+  THAI
+  ENGLISH
+  JAPANESE
 }
 
 enum Role {

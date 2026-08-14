@@ -15,7 +15,7 @@ const adapter = new PrismaPg({
 
   // จำกัดจำนวน connection
   // เพื่อไม่ให้ชน pool ของ Supabase
-  max: 5,
+  max: 2,
 });
 
 const globalForPrisma =

@@ -24,6 +24,19 @@ type Props = {
   onFullscreen: () => void;
 
   onTheaterMode?: () => void;
+
+  audioTracks?: {
+    id?: string;
+    language: "THAI" | "JAPANESE";
+    url: string;
+    label?: string;
+  }[];
+
+  selectedAudioLanguage?: "THAI" | "JAPANESE" | null;
+
+  onAudioChange?: (
+    language: "THAI" | "JAPANESE"
+  ) => void;
 };
 
 export default function Controls({
@@ -45,6 +58,10 @@ export default function Controls({
   onFullscreen,
 
   onTheaterMode,
+
+  audioTracks = [],
+  selectedAudioLanguage,
+  onAudioChange,
 }: Props) {
       return (
     <div
@@ -97,11 +114,80 @@ export default function Controls({
             onChange={onVolume}
           />
 
+          {audioTracks.length > 0 && (
+            <div className="relative">
+              <label
+                className="
+                  flex h-10 items-center gap-2 rounded-full
+                  border border-white/10 bg-white/10 px-3
+                  text-sm text-white backdrop-blur-xl
+                "
+                title="เลือกเสียง"
+              >
+                <span aria-hidden="true">🔊</span>
+
+                <select
+                  value={selectedAudioLanguage ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (
+                      value === "THAI" ||
+                      value === "JAPANESE"
+                    ) {
+                      onAudioChange?.(value);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="
+                    cursor-pointer appearance-none bg-transparent
+                    pr-1 text-sm font-medium text-white
+                    outline-none
+                  "
+                  aria-label="เลือกเสียง"
+                >
+                  {audioTracks.map((track) => (
+                    <option
+                      key={track.id ?? track.language}
+                      value={track.language}
+                      className="bg-[#131320] text-white"
+                    >
+                      {track.label ??
+                        (track.language === "THAI"
+                          ? "พากย์ไทย"
+                          : "พากย์ญี่ปุ่น")}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
+
           <Settings
             video={video}
             onTheaterMode={
               onTheaterMode
             }
+            audioTracks={audioTracks.map((track) => ({
+              id: track.id ?? track.language,
+              label:
+                track.label ??
+                (track.language === "THAI"
+                  ? "🇹🇭 พากย์ไทย"
+                  : "🇯🇵 พากย์ญี่ปุ่น"),
+            }))}
+            selectedAudio={
+              selectedAudioLanguage ?? ""
+            }
+            onAudioChange={(id) => {
+              if (
+                id === "THAI" ||
+                id === "JAPANESE"
+              ) {
+                onAudioChange?.(id);
+              }
+            }}
           />
 
           <button

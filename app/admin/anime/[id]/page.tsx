@@ -16,6 +16,20 @@ type Episode = {
   introStart?: number | null;
   introEnd?: number | null;
   nextEpisodeTime?: number | null;
+
+  audioTracks?: {
+    id?: string;
+    language: "THAI" | "JAPANESE";
+    url: string;
+    label?: string;
+  }[];
+
+  subtitles?: {
+    id?: string;
+    language: string;
+    url: string;
+    label?: string;
+  }[];
 };
 
 type Anime = {
@@ -40,6 +54,9 @@ const emptyForm = {
   introStart: "",
   introEnd: "",
   nextEpisodeTime: "",
+  thaiAudioUrl: "",
+  japaneseAudioUrl: "",
+  thaiSubtitleUrl: "",
 };
 
 function secondsToTime(value?: number | null) {
@@ -121,6 +138,304 @@ export default function ManageEpisodesPage() {
 
   const fileInputRef =
     useRef<HTMLInputElement>(null);
+
+  // ==========================
+  // Upload HLS Multi-Audio → R2
+  // ==========================
+
+  const [uploadingHls, setUploadingHls] =
+    useState(false);
+
+  const [hlsUploadProgress, setHlsUploadProgress] =
+    useState(0);
+
+  const [selectedHlsFiles, setSelectedHlsFiles] =
+    useState<File[]>([]);
+
+  const hlsInputRef =
+    useRef<HTMLInputElement>(null);
+
+  // ==========================
+  // Upload HLS Multi-Audio → R2
+  // ==========================
+
+  async function uploadHlsFolder(
+    files: File[]
+  ) {
+    if (!files.length) {
+      return;
+    }
+
+    setUploadingHls(true);
+    setHlsUploadProgress(0);
+    setErrorMsg("");
+
+    try {
+      // ----------------------------------------------
+      // ตรวจสอบไฟล์สำคัญ
+      // ----------------------------------------------
+
+      const hasMaster = files.some(
+        (file) =>
+          file.webkitRelativePath
+            .split("/")
+            .pop()
+            ?.toLowerCase() === "master.m3u8"
+      );
+
+      if (!hasMaster) {
+        throw new Error(
+          "ไม่พบ master.m3u8 ในโฟลเดอร์ที่เลือก"
+        );
+      }
+
+      const allowed = files.every(
+        (file) => {
+          const lower =
+            file.webkitRelativePath.toLowerCase();
+
+          return (
+            lower.endsWith(".m3u8") ||
+            lower.endsWith(".ts")
+          );
+        }
+      );
+
+      if (!allowed) {
+        throw new Error(
+          "โฟลเดอร์ HLS ต้องมีเฉพาะไฟล์ .m3u8 และ .ts"
+        );
+      }
+
+      if (files.length > 2000) {
+        throw new Error(
+          "จำนวนไฟล์ HLS มากเกินไป (สูงสุด 2000 ไฟล์)"
+        );
+      }
+
+      setSelectedHlsFiles(files);
+
+      // ----------------------------------------------
+      // 1. ขอ Presigned URLs จาก Server
+      // ----------------------------------------------
+
+      const initRes = await fetch(
+        "/api/upload/hls",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            action: "init",
+            files: files.map((file) => ({
+              name: file.name,
+              relativePath:
+                file.webkitRelativePath ||
+                file.name,
+              size: file.size,
+            })),
+          }),
+        }
+      );
+
+      const initData =
+        await initRes.json();
+
+      if (!initRes.ok) {
+        throw new Error(
+          initData.error ||
+            "ไม่สามารถเริ่มอัปโหลด HLS ได้"
+        );
+      }
+
+      const uploadFiles =
+        Array.isArray(initData.files)
+          ? initData.files
+          : [];
+
+      if (!uploadFiles.length) {
+        throw new Error(
+          "Server ไม่ได้ส่งรายการไฟล์สำหรับอัปโหลดกลับมา"
+        );
+      }
+
+      // ----------------------------------------------
+      // จับคู่ URL กับ File จริง
+      // ----------------------------------------------
+
+      const fileMap = new Map<
+        string,
+        File
+      >();
+
+      for (const file of files) {
+        const relativePath =
+          file.webkitRelativePath ||
+          file.name;
+
+        const cleanRelativePath =
+          relativePath
+            .replace(/\\/g, "/")
+            .split("/")
+            .filter(Boolean)
+            .slice(1)
+            .join("/");
+
+        fileMap.set(
+          cleanRelativePath,
+          file
+        );
+      }
+
+      // ----------------------------------------------
+      // 2. Upload ตรงจาก Browser → R2
+      // ----------------------------------------------
+
+      let completed = 0;
+
+      const CONCURRENCY = 5;
+
+      async function uploadOne(
+        item: {
+          relativePath: string;
+          uploadUrl: string;
+          contentType: string;
+        }
+      ) {
+        const file =
+          fileMap.get(
+            item.relativePath
+          );
+
+        if (!file) {
+          throw new Error(
+            `ไม่พบไฟล์ ${item.relativePath} ในเครื่อง`
+          );
+        }
+
+        const res =
+          await fetch(
+            item.uploadUrl,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type":
+                  item.contentType,
+              },
+              body: file,
+            }
+          );
+
+        if (!res.ok) {
+          throw new Error(
+            `อัปโหลด ${item.relativePath} ไม่สำเร็จ (${res.status})`
+          );
+        }
+
+        completed += 1;
+
+        setHlsUploadProgress(
+          Math.min(
+            99,
+            Math.round(
+              (completed /
+                uploadFiles.length) *
+                100
+            )
+          )
+        );
+      }
+
+      for (
+        let i = 0;
+        i < uploadFiles.length;
+        i += CONCURRENCY
+      ) {
+        const batch =
+          uploadFiles.slice(
+            i,
+            i + CONCURRENCY
+          );
+
+        await Promise.all(
+          batch.map(
+            (item) =>
+              uploadOne(item)
+          )
+        );
+      }
+
+      // ----------------------------------------------
+      // 3. แจ้ง Server ว่าอัปโหลดครบแล้ว
+      // ----------------------------------------------
+
+      const completeRes =
+        await fetch(
+          "/api/upload/hls",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              action: "complete",
+              uploadId:
+                initData.uploadId,
+              baseKey:
+                initData.baseKey,
+            }),
+          }
+        );
+
+      const completeData =
+        await completeRes.json();
+
+      if (!completeRes.ok) {
+        throw new Error(
+          completeData.error ||
+            "อัปโหลด HLS สำเร็จแต่ไม่สามารถยืนยันการอัปโหลดได้"
+        );
+      }
+
+      if (
+        !completeData.masterUrl
+      ) {
+        throw new Error(
+          "ไม่พบ URL ของ master.m3u8"
+        );
+      }
+
+      // ----------------------------------------------
+      // 4. ใส่ master.m3u8 ลง videoUrl อัตโนมัติ
+      // ----------------------------------------------
+
+      setForm((prev) => ({
+        ...prev,
+        videoUrl:
+          completeData.masterUrl,
+      }));
+
+      setHlsUploadProgress(100);
+    } catch (err) {
+      console.error(
+        "HLS MULTIAUDIO UPLOAD ERROR:",
+        err
+      );
+
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "อัปโหลด HLS ไม่สำเร็จ"
+      );
+
+      setHlsUploadProgress(0);
+    } finally {
+      setUploadingHls(false);
+    }
+  }
 
   // ==========================
   // Upload Thumbnail → Supabase
@@ -771,6 +1086,18 @@ setForm({
   nextEpisodeTime: ep.nextEpisodeTime
     ? String(ep.nextEpisodeTime)
     : "",
+  thaiAudioUrl:
+    ep.audioTracks?.find(
+      (track) => track.language === "THAI"
+    )?.url || "",
+  japaneseAudioUrl:
+    ep.audioTracks?.find(
+      (track) => track.language === "JAPANESE"
+    )?.url || "",
+  thaiSubtitleUrl:
+    ep.subtitles?.find(
+      (track) => track.language === "THAI"
+    )?.url || "",
 });
 
     setSelectedVideo(
@@ -938,6 +1265,39 @@ setForm({
         introStart,
         introEnd,
         nextEpisodeTime,
+
+        audioTracks: [
+          ...(form.thaiAudioUrl.trim()
+            ? [
+                {
+                  language: "THAI",
+                  url: form.thaiAudioUrl.trim(),
+                  label: "พากย์ไทย",
+                },
+              ]
+            : []),
+          ...(form.japaneseAudioUrl.trim()
+            ? [
+                {
+                  language: "JAPANESE",
+                  url: form.japaneseAudioUrl.trim(),
+                  label: "พากย์ญี่ปุ่น",
+                },
+              ]
+            : []),
+        ],
+
+        subtitles: [
+          ...(form.thaiSubtitleUrl.trim()
+            ? [
+                {
+                  language: "THAI",
+                  url: form.thaiSubtitleUrl.trim(),
+                  label: "ไทย",
+                },
+              ]
+            : []),
+        ],
       };
 
       const res = await fetch(
@@ -1394,16 +1754,13 @@ setForm({
               Video Upload
           ========================== */}
 
-          <div className="mb-4">
-
+          <div className="mb-5">
             <label className="mb-1 block text-xs text-[#8a87a3]">
               วิดีโอ
             </label>
 
             <input
-              value={
-                form.videoUrl
-              }
+              value={form.videoUrl}
               readOnly
               className="
                 w-full
@@ -1415,73 +1772,240 @@ setForm({
                 py-2
                 text-sm
               "
-              placeholder="อัปโหลดไฟล์ MP4 เพื่อสร้าง URL"
+              placeholder="เลือก MP4 หรือ HLS Multi-Audio"
             />
 
-            <input
-              ref={
-                fileInputRef
-              }
-              type="file"
-              accept="video/mp4"
-              className="hidden"
-              onChange={(e) => {
-                const file =
-                  e.target.files?.[0];
+            <div className="mt-3 flex flex-wrap gap-2">
+              {/* MP4 */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="video/mp4"
+                className="hidden"
+                onChange={(e) => {
+                  const file =
+                    e.target.files?.[0];
 
-                if (!file)
-                  return;
+                  if (!file) return;
 
-                setSelectedVideo(
-                  file
-                );
+                  setSelectedVideo(
+                    file
+                  );
 
-                uploadVideo(
-                  file
-                ).catch(
-                  (err) => {
-                    setErrorMsg(
-                      err instanceof Error
-                        ? err.message
-                        : "อัปโหลดไม่สำเร็จ"
-                    );
+                  setSelectedHlsFiles(
+                    []
+                  );
+
+                  uploadVideo(file).catch(
+                    (err) => {
+                      setErrorMsg(
+                        err instanceof Error
+                          ? err.message
+                          : "อัปโหลดไม่สำเร็จ"
+                      );
+                    }
+                  );
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  fileInputRef.current?.click()
+                }
+                disabled={
+                  uploadingVideo ||
+                  uploadingHls
+                }
+                className="
+                  rounded-lg
+                  bg-[#ff5d73]
+                  px-4
+                  py-2
+                  text-sm
+                  font-semibold
+                  text-black
+                  transition
+                  hover:bg-[#ff738a]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-60
+                "
+              >
+                {uploadingVideo
+                  ? "กำลังอัปโหลด MP4..."
+                  : "📹 เลือกไฟล์ MP4"}
+              </button>
+
+              {/* HLS folder */}
+              <input
+                ref={hlsInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                // @ts-expect-error webkitdirectory ไม่อยู่ใน React type ปกติ
+                webkitdirectory=""
+                directory=""
+                accept=".m3u8,.ts"
+                onChange={(e) => {
+                  const files = Array.from(
+                    e.target.files || []
+                  );
+
+                  if (!files.length) {
+                    return;
                   }
-                );
-              }}
-            />
 
-            <button
-              type="button"
-              onClick={() =>
-                fileInputRef.current?.click()
-              }
-              disabled={
-                uploadingVideo
-              }
-              className="
-                mt-3
-                rounded-lg
-                bg-[#ff5d73]
-                px-4
-                py-2
-                text-sm
-                font-semibold
-                text-black
-                transition
-                hover:bg-[#ff738a]
-                disabled:opacity-60
-              "
-            >
-              {uploadingVideo
-                ? "กำลังอัปโหลด..."
-                : "📹 เลือกไฟล์ MP4"}
-            </button>
+                  setSelectedVideo(
+                    null
+                  );
 
-            {/* ==========================
-                Upload Information
-            ========================== */}
+                  uploadHlsFolder(
+                    files
+                  ).catch(
+                    (err) => {
+                      setErrorMsg(
+                        err instanceof Error
+                          ? err.message
+                          : "อัปโหลด HLS ไม่สำเร็จ"
+                      );
+                    }
+                  );
+                }}
+              />
 
-            {selectedVideo && (
+              <button
+                type="button"
+                onClick={() =>
+                  hlsInputRef.current?.click()
+                }
+                disabled={
+                  uploadingVideo ||
+                  uploadingHls
+                }
+                className="
+                  rounded-lg
+                  border
+                  border-[#ff5d73]/40
+                  bg-[#ff5d73]/10
+                  px-4
+                  py-2
+                  text-sm
+                  font-semibold
+                  text-[#ff8da0]
+                  transition
+                  hover:bg-[#ff5d73]/20
+                  disabled:cursor-not-allowed
+                  disabled:opacity-60
+                "
+              >
+                {uploadingHls
+                  ? "กำลังอัปโหลด HLS..."
+                  : "🎬 เลือกโฟลเดอร์ HLS"}
+              </button>
+            </div>
+
+            {/* HLS information */}
+            <div className="mt-3 rounded-lg border border-[#2a2a3d] bg-[#0f0f18] p-3 text-xs text-[#8a87a3]">
+              <p className="font-medium text-white">
+                HLS Multi-Audio
+              </p>
+
+              <p className="mt-1">
+                เลือกโฟลเดอร์ที่มี
+                master.m3u8,
+                stream-Thai.m3u8,
+                stream-Japanese.m3u8
+                และไฟล์ .ts ทั้งหมด
+              </p>
+
+              <p className="mt-1">
+                ระบบจะอัปโหลดตรงจากเครื่องของคุณไป R2
+                โดยไม่ส่งไฟล์ทั้งหมดผ่าน Next.js
+              </p>
+            </div>
+
+            {/* MP4 information */}
+            {selectedVideo &&
+              !uploadingHls && (
+                <div
+                  className="
+                    mt-4
+                    rounded-lg
+                    border
+                    border-[#2a2a3d]
+                    bg-[#0f0f18]
+                    p-4
+                  "
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">
+                        {
+                          selectedVideo.name
+                        }
+                      </p>
+
+                      <p className="mt-1 text-xs text-[#8a87a3]">
+                        {(
+                          selectedVideo.size /
+                          1024 /
+                          1024
+                        ).toFixed(2)}
+                        {" MB"}
+                      </p>
+                    </div>
+
+                    {uploadProgress ===
+                      100 && (
+                      <span
+                        className="
+                          rounded-full
+                          bg-green-500/20
+                          px-3
+                          py-1
+                          text-xs
+                          font-semibold
+                          text-green-400
+                        "
+                      >
+                        ✓ Upload สำเร็จ
+                      </span>
+                    )}
+                  </div>
+
+                  {uploadingVideo && (
+                    <div className="mt-4">
+                      <div className="mb-1 flex justify-between text-xs">
+                        <span>
+                          กำลังอัปโหลด...
+                        </span>
+
+                        <span>
+                          {uploadProgress}%
+                        </span>
+                      </div>
+
+                      <div className="h-2 overflow-hidden rounded-full bg-[#222]">
+                        <div
+                          className="
+                            h-full
+                            bg-[#ff5d73]
+                            transition-all
+                            duration-300
+                          "
+                          style={{
+                            width: `${uploadProgress}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            {/* HLS information / progress */}
+            {(uploadingHls ||
+              selectedHlsFiles.length > 0) && (
               <div
                 className="
                   mt-4
@@ -1492,125 +2016,207 @@ setForm({
                   p-4
                 "
               >
-
                 <div className="flex items-center justify-between">
-
                   <div>
-
-                    <p className="font-medium text-sm">
-                      {
-                        selectedVideo.name
-                      }
+                    <p className="text-sm font-medium">
+                      HLS Multi-Audio
                     </p>
 
                     <p className="mt-1 text-xs text-[#8a87a3]">
-                      {(
-                        selectedVideo.size /
-                        1024 /
-                        1024
-                      ).toFixed(2)}
-                      {" MB"}
+                      {selectedHlsFiles.length} ไฟล์
                     </p>
-
                   </div>
 
-                  {uploadProgress ===
-                    100 && (
-                    <span
-                      className="
-                        rounded-full
-                        bg-green-500/20
-                        px-3
-                        py-1
-                        text-xs
-                        font-semibold
-                        text-green-400
-                      "
-                    >
-                      ✓ Upload สำเร็จ
-                    </span>
-                  )}
-
+                  {!uploadingHls &&
+                    hlsUploadProgress ===
+                      100 && (
+                      <span
+                        className="
+                          rounded-full
+                          bg-green-500/20
+                          px-3
+                          py-1
+                          text-xs
+                          font-semibold
+                          text-green-400
+                        "
+                      >
+                        ✓ HLS Upload สำเร็จ
+                      </span>
+                    )}
                 </div>
 
-                {/* Progress */}
+                <div className="mt-4">
+                  <div className="mb-1 flex justify-between text-xs">
+                    <span>
+                      {uploadingHls
+                        ? "กำลังอัปโหลด HLS..."
+                        : "เสร็จแล้ว"}
+                    </span>
 
-                {uploadingVideo && (
-                  <div className="mt-4">
+                    <span>
+                      {hlsUploadProgress}%
+                    </span>
+                  </div>
 
-                    <div className="mb-1 flex justify-between text-xs">
-
-                      <span>
-                        กำลังอัปโหลด...
-                      </span>
-
-                      <span>
-                        {
-                          uploadProgress
-                        }%
-                      </span>
-
-                    </div>
-
+                  <div className="h-2 overflow-hidden rounded-full bg-[#222]">
                     <div
                       className="
-                        h-2
-                        overflow-hidden
-                        rounded-full
-                        bg-[#222]
+                        h-full
+                        bg-[#ff5d73]
+                        transition-all
+                        duration-300
                       "
-                    >
-
-                      <div
-                        className="
-                          h-full
-                          bg-[#ff5d73]
-                          transition-all
-                          duration-300
-                        "
-                        style={{
-                          width: `${uploadProgress}%`,
-                        }}
-                      />
-
-                    </div>
-
+                      style={{
+                        width: `${hlsUploadProgress}%`,
+                      }}
+                    />
                   </div>
-                )}
-
+                </div>
               </div>
             )}
 
-            {/* ==========================
-                Video Preview
-            ========================== */}
+            {/* HLS preview */}
+            {form.videoUrl &&
+              form.videoUrl
+                .toLowerCase()
+                .includes(".m3u8") && (
+              <div className="mt-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
+                <p className="text-xs text-[#8a87a3]">
+                  HLS Master URL
+                </p>
 
-            {form.videoUrl && (
+                <p className="mt-1 break-all text-xs text-white/70">
+                  {form.videoUrl}
+                </p>
+
+                <p className="mt-2 text-xs text-[#6f6c84]">
+                  เสียงใน HLS: 🇹🇭 Thai + 🇯🇵 Japanese
+                </p>
+              </div>
+            )}
+
+            {/* MP4 Preview */}
+            {form.videoUrl &&
+              !form.videoUrl
+                .toLowerCase()
+                .includes(".m3u8") && (
               <div className="mt-5">
-
                 <label className="mb-2 block text-xs text-[#8a87a3]">
                   ตัวอย่างวิดีโอ
                 </label>
 
                 <video
-                  src={
-                    form.videoUrl
-                  }
+                  src={form.videoUrl}
                   controls
                   preload="metadata"
                   className="
                     aspect-video
                     w-full
                     rounded-xl
-                    bg-black
                     border
                     border-[#232335]
+                    bg-black
                   "
                 />
-
               </div>
             )}
+          </div>
 
+          {/* ==========================
+              Audio / Subtitle
+          ========================== */}
+
+          <div className="mb-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
+            <h3 className="mb-1 text-sm font-semibold text-white">
+              🔊 เสียงพากย์
+            </h3>
+
+            <p className="mb-4 text-xs text-[#8a87a3]">
+              ใส่ URL ของ Audio Track สำหรับตอนนี้
+              หากยังไม่มี สามารถเว้นว่างไว้ก่อนได้
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-xs text-[#8a87a3]">
+                  🇹🇭 พากย์ไทย
+                </label>
+
+                <input
+                  type="url"
+                  value={form.thaiAudioUrl}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      thaiAudioUrl: e.target.value,
+                    })
+                  }
+                  className="
+                    w-full rounded-lg border border-[#2a2a3d]
+                    bg-[#0b0b12] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  "
+                  placeholder="https://.../thai.m3u8"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs text-[#8a87a3]">
+                  🇯🇵 พากย์ญี่ปุ่น
+                </label>
+
+                <input
+                  type="url"
+                  value={form.japaneseAudioUrl}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      japaneseAudioUrl: e.target.value,
+                    })
+                  }
+                  className="
+                    w-full rounded-lg border border-[#2a2a3d]
+                    bg-[#0b0b12] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  "
+                  placeholder="https://.../japanese.m3u8"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
+            <h3 className="mb-1 text-sm font-semibold text-white">
+              💬 คำบรรยาย
+            </h3>
+
+            <p className="mb-4 text-xs text-[#8a87a3]">
+              ตอนนี้รองรับซับไทยก่อน สามารถเว้นว่างไว้ได้
+            </p>
+
+            <div>
+              <label className="mb-1 block text-xs text-[#8a87a3]">
+                🇹🇭 ซับไทย
+              </label>
+
+              <input
+                type="url"
+                value={form.thaiSubtitleUrl}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    thaiSubtitleUrl: e.target.value,
+                  })
+                }
+                className="
+                  w-full rounded-lg border border-[#2a2a3d]
+                  bg-[#0b0b12] px-3 py-2 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                "
+                placeholder="https://.../thai.vtt"
+              />
+            </div>
           </div>
 
           {/* ==========================
@@ -1721,6 +2327,7 @@ setForm({
               disabled={
                 saving ||
                 uploadingVideo ||
+                uploadingHls ||
                 !selectedSeason
               }
               className="
