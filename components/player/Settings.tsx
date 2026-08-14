@@ -6,10 +6,44 @@ import {
   useState,
 } from "react";
 
+type AudioTrack = {
+  id: string;
+  label: string;
+};
+
+type SubtitleTrack = {
+  id: string;
+  label: string;
+};
+
 type Props = {
   video: HTMLVideoElement | null;
 
   onTheaterMode?: () => void;
+
+  // ==========================
+  // Audio
+  // ==========================
+
+  audioTracks?: AudioTrack[];
+
+  selectedAudio?: string;
+
+  onAudioChange?: (
+    id: string
+  ) => void;
+
+  // ==========================
+  // Subtitle
+  // ==========================
+
+  subtitleTracks?: SubtitleTrack[];
+
+  selectedSubtitle?: string;
+
+  onSubtitleChange?: (
+    id: string
+  ) => void;
 };
 
 const SPEEDS = [
@@ -24,12 +58,24 @@ const SPEEDS = [
 export default function Settings({
   video,
   onTheaterMode,
+
+  audioTracks = [],
+  selectedAudio = "",
+  onAudioChange,
+
+  subtitleTracks = [],
+  selectedSubtitle = "",
+  onSubtitleChange,
 }: Props) {
   const [open, setOpen] =
     useState(false);
 
   const menuRef =
     useRef<HTMLDivElement>(null);
+
+  // ==========================
+  // Close outside
+  // ==========================
 
   useEffect(() => {
     function handleClick(
@@ -50,11 +96,12 @@ export default function Settings({
       handleClick
     );
 
-    return () =>
+    return () => {
       document.removeEventListener(
         "mousedown",
         handleClick
       );
+    };
   }, []);
 
   return (
@@ -62,6 +109,8 @@ export default function Settings({
       ref={menuRef}
       className="relative"
     >
+      {/* Settings Button */}
+
       <button
         type="button"
         onClick={() =>
@@ -85,6 +134,7 @@ export default function Settings({
           hover:rotate-45
           hover:scale-110
         "
+        aria-label="Settings"
       >
         ⚙️
       </button>
@@ -95,7 +145,7 @@ export default function Settings({
             absolute
             bottom-14
             right-0
-            w-60
+            w-64
             overflow-hidden
             rounded-2xl
             border
@@ -105,6 +155,8 @@ export default function Settings({
             backdrop-blur-2xl
           "
         >
+          {/* Header */}
+
           <div
             className="
               border-b
@@ -122,53 +174,209 @@ export default function Settings({
 
           <div className="p-2">
 
+            {/* ==========================
+                Playback Speed
+            ========================== */}
+
             <div className="mb-2 px-2 text-xs text-white/40">
               Playback Speed
             </div>
 
-            {SPEEDS.map((speed) => (
-              <button
-                key={speed}
-                type="button"
-                onClick={() => {
-                  if (video) {
-                    video.playbackRate =
-                      speed;
-                  }
+            {SPEEDS.map(
+              (speed) => (
+                <button
+                  key={speed}
+                  type="button"
+                  onClick={() => {
+                    if (video) {
+                      video.playbackRate =
+                        speed;
+                    }
 
-                  setOpen(false);
-                }}
-                className="
-                  flex
-                  w-full
-                  items-center
-                  justify-between
-                  rounded-xl
-                  px-3
-                  py-2
-                  text-sm
-                  text-white
-                  transition
-                  hover:bg-white/10
-                "
-              >
-                <span>
-                  {speed}x
-                </span>
+                    setOpen(false);
+                  }}
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-sm
+                    text-white
+                    transition
+                    hover:bg-white/10
+                  "
+                >
+                  <span>
+                    {speed}x
+                  </span>
 
-                {video?.playbackRate ===
-                  speed && (
-                  <span>✓</span>
+                  {video?.playbackRate ===
+                    speed && (
+                    <span>
+                      ✓
+                    </span>
+                  )}
+                </button>
+              )
+            )}
+
+            {/* ==========================
+                Audio
+            ========================== */}
+
+            {audioTracks.length >
+              0 && (
+              <>
+                <div className="my-2 h-px bg-white/10" />
+
+                <div className="mb-2 px-2 text-xs text-white/40">
+                  🔊 Audio
+                </div>
+
+                {audioTracks.map(
+                  (track) => (
+                    <button
+                      key={track.id}
+                      type="button"
+                      onClick={() => {
+                        onAudioChange?.(
+                          track.id
+                        );
+                      }}
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-3
+                        py-2
+                        text-sm
+                        text-white
+                        transition
+                        hover:bg-white/10
+                      "
+                    >
+                      <span>
+                        {track.label}
+                      </span>
+
+                      {selectedAudio ===
+                        track.id && (
+                        <span>
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  )
                 )}
-              </button>
-            ))}
+              </>
+            )}
+
+            {/* ==========================
+                Subtitles
+            ========================== */}
+
+            {subtitleTracks.length >
+              0 && (
+              <>
+                <div className="my-2 h-px bg-white/10" />
+
+                <div className="mb-2 px-2 text-xs text-white/40">
+                  💬 Subtitles
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSubtitleChange?.(
+                      "off"
+                    );
+                  }}
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-sm
+                    text-white
+                    transition
+                    hover:bg-white/10
+                  "
+                >
+                  <span>
+                    ปิด
+                  </span>
+
+                  {selectedSubtitle ===
+                    "off" && (
+                    <span>
+                      ✓
+                    </span>
+                  )}
+                </button>
+
+                {subtitleTracks.map(
+                  (track) => (
+                    <button
+                      key={track.id}
+                      type="button"
+                      onClick={() => {
+                        onSubtitleChange?.(
+                          track.id
+                        );
+                      }}
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-3
+                        py-2
+                        text-sm
+                        text-white
+                        transition
+                        hover:bg-white/10
+                      "
+                    >
+                      <span>
+                        {track.label}
+                      </span>
+
+                      {selectedSubtitle ===
+                        track.id && (
+                        <span>
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  )
+                )}
+              </>
+            )}
+
+            {/* ==========================
+                Divider
+            ========================== */}
 
             <div className="my-2 h-px bg-white/10" />
+
+            {/* ==========================
+                Picture in Picture
+            ========================== */}
 
             <button
               type="button"
               onClick={async () => {
-                if (!video) return;
+                if (!video)
+                  return;
 
                 try {
                   if (
@@ -179,7 +387,7 @@ export default function Settings({
                     await video.requestPictureInPicture();
                   }
                 } catch {
-                  // browser ไม่รองรับหรือผู้ใช้ยกเลิก
+                  // Browser ไม่รองรับ
                 }
 
                 setOpen(false);
@@ -198,6 +406,10 @@ export default function Settings({
             >
               📺 Picture in Picture
             </button>
+
+            {/* ==========================
+                Theater Mode
+            ========================== */}
 
             <button
               type="button"

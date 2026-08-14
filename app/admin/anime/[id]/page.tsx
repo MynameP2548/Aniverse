@@ -250,10 +250,18 @@ export default function ManageEpisodesPage() {
         );
       }
 
-      const uploadFiles =
-        Array.isArray(initData.files)
-          ? initData.files
-          : [];
+type HlsUploadFile = {
+  name: string;
+  relativePath: string;
+  key: string;
+  uploadUrl: string;
+  contentType: string;
+};
+
+const uploadFiles: HlsUploadFile[] =
+  Array.isArray(initData.files)
+    ? initData.files
+    : [];
 
       if (!uploadFiles.length) {
         throw new Error(
@@ -359,12 +367,12 @@ export default function ManageEpisodesPage() {
             i + CONCURRENCY
           );
 
-        await Promise.all(
-          batch.map(
-            (item) =>
-              uploadOne(item)
-          )
-        );
+await Promise.all(
+  batch.map(
+    (item: HlsUploadFile) =>
+      uploadOne(item)
+  )
+);
       }
 
       // ----------------------------------------------
