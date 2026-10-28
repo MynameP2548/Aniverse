@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";\nimport { auth } from "@/auth";
 
 import {
   AbortMultipartUploadCommand,
@@ -37,6 +37,14 @@ export async function POST(
   req: NextRequest
 ) {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const body = await req.json();
 
     const action =
@@ -104,7 +112,7 @@ export async function POST(
         return NextResponse.json(
           {
             error:
-              "ไฟล์ใหญ่เกิน 5 TiB",
+              "ไฟล์ใหญ่เกิน 100 GiB",
           },
           {
             status: 400,

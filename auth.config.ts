@@ -9,8 +9,6 @@ export default {
   },
 callbacks: {
   authorized({ auth, request }) {
-    console.log(auth?.user);
-
     const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
 
     if (isAdminRoute) {
