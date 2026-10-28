@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
-import { NextRequest, NextResponse } from "next/server";\nimport { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 import {
   AbortMultipartUploadCommand,
