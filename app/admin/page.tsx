@@ -280,17 +280,17 @@ async function handleDelete(slug: string) {
 }
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
       <header className="border-b border-[#232335] px-6 py-5 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            แผงควบคุมแอดมิน <span className="text-[#ff5d73]">・อนิเมะ</span>
+            แผงควบคุมแอดมิน <span className="text-[#8b5cf6]">・อนิเมะ</span>
           </h1>
-          <p className="text-sm text-[#8a87a3] mt-1">จัดการรายการอนิเมะทั้งหมดของเว็บไซต์</p>
+          <p className="text-sm text-[#9693b8] mt-1">จัดการรายการอนิเมะทั้งหมดของเว็บไซต์</p>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="text-xs px-4 py-2 rounded-lg border border-[#2a2a3d] text-[#8a87a3] hover:text-[#e8e6f0] hover:border-[#3a3a52] transition"
+          className="text-xs px-4 py-2 rounded-lg border border-[#2a2a3d] text-[#9693b8] hover:text-[#e8e6f0] hover:border-[#3a3a52] transition"
         >
           ออกจากระบบ
         </button>
@@ -307,35 +307,35 @@ async function handleDelete(slug: string) {
           </h2>
 
           {errorMsg && (
-            <div className="bg-[#3a1620] border border-[#ff5d73]/40 text-[#ff9aa8] text-sm rounded-lg px-3 py-2 mb-4">
+            <div className="bg-[#3a1620] border border-[#8b5cf6]/40 text-[#c4b5fd] text-sm rounded-lg px-3 py-2 mb-4">
               {errorMsg}
             </div>
           )}
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#8a87a3] block mb-1">ชื่อเรื่อง (ไทย) *</label>
+              <label className="text-xs text-[#9693b8] block mb-1">ชื่อเรื่อง (ไทย) *</label>
               <input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+                className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
                 placeholder="เช่น ดาบพิฆาตอสูร"
               />
             </div>
 
 <div>
-  <label className="text-xs text-[#8a87a3] block mb-1">
+  <label className="text-xs text-[#9693b8] block mb-1">
     ชื่อเรื่อง (อังกฤษ)
   </label>
 
   <input
     value={form.titleEn}
     onChange={(e) => setForm({ ...form, titleEn: e.target.value })}
-    className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+    className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
     placeholder="Demon Slayer"
   />
 
-  <p className="mt-2 text-xs text-[#8a87a3]">
+  <p className="mt-2 text-xs text-[#9693b8]">
     URL จะเป็น:
     <span className="ml-2 text-[#5ee6a0]">
       /anime/
@@ -348,12 +348,12 @@ async function handleDelete(slug: string) {
 </div>
 
             <div>
-              <label className="text-xs text-[#8a87a3] block mb-1">เรื่องย่อ</label>
+              <label className="text-xs text-[#9693b8] block mb-1">เรื่องย่อ</label>
               <textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={3}
-                className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73] resize-none"
+                className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] resize-none"
               />
             </div>
 
@@ -388,7 +388,7 @@ async function handleDelete(slug: string) {
             </div>
 
             <div>
-  <label className="text-xs text-[#8a87a3] block mb-1">
+  <label className="text-xs text-[#9693b8] block mb-1">
     URL Banner
   </label>
 
@@ -411,7 +411,7 @@ async function handleDelete(slug: string) {
       bannerImage: e.target.value,
     })
   }
-  className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+  className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
   placeholder="https://..."
 />
 
@@ -424,7 +424,7 @@ className="mt-2 rounded-lg"
 </div>
 
             <div>
-              <label className="text-xs text-[#8a87a3] block mb-2">หมวดหมู่ (เลือกได้หลายอัน)</label>
+              <label className="text-xs text-[#9693b8] block mb-2">หมวดหมู่ (เลือกได้หลายอัน)</label>
               <div className="flex flex-wrap gap-2">
                 {GENRE_OPTIONS.map((genre) => {
                   const active = form.genres.includes(genre);
@@ -435,8 +435,8 @@ className="mt-2 rounded-lg"
                       onClick={() => toggleGenre(genre)}
                       className={`text-xs px-3 py-1.5 rounded-full border transition ${
                         active
-                          ? "bg-[#ff5d73] border-[#ff5d73] text-[#0b0b12] font-semibold"
-                          : "border-[#2a2a3d] text-[#8a87a3] hover:border-[#3a3a52]"
+                          ? "bg-[#8b5cf6] border-[#8b5cf6] text-[#080914] font-semibold"
+                          : "border-[#2a2a3d] text-[#9693b8] hover:border-[#3a3a52]"
                       }`}
                     >
                       {genre}
@@ -448,7 +448,7 @@ className="mt-2 rounded-lg"
 
 <div className="grid grid-cols-3 gap-3">
   <div>
-    <label className="text-xs text-[#8a87a3] block mb-1">สถานะ</label>
+    <label className="text-xs text-[#9693b8] block mb-1">สถานะ</label>
     <select
       value={form.status}
       onChange={(e) =>
@@ -457,7 +457,7 @@ className="mt-2 rounded-lg"
           status: e.target.value as "ONGOING" | "COMPLETED",
         })
       }
-      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+      className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
     >
       <option value="ONGOING">กำลังฉาย</option>
       <option value="COMPLETED">จบแล้ว</option>
@@ -465,7 +465,7 @@ className="mt-2 rounded-lg"
   </div>
 
   <div>
-    <label className="text-xs text-[#8a87a3] block mb-1">
+    <label className="text-xs text-[#9693b8] block mb-1">
       ปีที่ออกฉาย
     </label>
 
@@ -478,13 +478,13 @@ className="mt-2 rounded-lg"
           releaseYear: e.target.value,
         })
       }
-      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+      className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
       placeholder="2024"
     />
   </div>
 
   <div>
-    <label className="text-xs text-[#8a87a3] block mb-1">
+    <label className="text-xs text-[#9693b8] block mb-1">
       คะแนน
     </label>
 
@@ -500,7 +500,7 @@ className="mt-2 rounded-lg"
           rating: e.target.value,
         })
       }
-      className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73]"
+      className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]"
       placeholder="9.5"
     />
   </div>
@@ -531,7 +531,7 @@ className="mt-2 rounded-lg"
 
 <div className="space-y-3">
   <div>
-    <label className="mb-1 block text-xs text-[#8a87a3]">
+    <label className="mb-1 block text-xs text-[#9693b8]">
       Hero Trailer
     </label>
 
@@ -543,13 +543,13 @@ className="mt-2 rounded-lg"
           heroTrailer: e.target.value,
         })
       }
-      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-3 py-2 text-sm"
       placeholder="/videos/rick.mp4"
     />
   </div>
 
   <div>
-    <label className="mb-1 block text-xs text-[#8a87a3]">
+    <label className="mb-1 block text-xs text-[#9693b8]">
       Hero Logo
     </label>
     <input
@@ -571,13 +571,13 @@ uploadImage(file,"heroLogo")
           heroLogo: e.target.value,
         })
       }
-      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-3 py-2 text-sm"
       placeholder="/logos/rick.png"
     />
   </div>
 
   <div>
-    <label className="mb-1 block text-xs text-[#8a87a3]">
+    <label className="mb-1 block text-xs text-[#9693b8]">
       Hero Order
     </label>
 
@@ -590,7 +590,7 @@ uploadImage(file,"heroLogo")
           heroOrder: e.target.value,
         })
       }
-      className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-3 py-2 text-sm"
+      className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-3 py-2 text-sm"
       placeholder="0"
     />
   </div>
@@ -601,7 +601,7 @@ uploadImage(file,"heroLogo")
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#ff5d73] hover:bg-[#ff738a] transition text-[#0b0b12] font-semibold rounded-lg py-2 text-sm disabled:opacity-50"
+              className="flex-1 bg-[#8b5cf6] hover:bg-[#a78bfa] transition text-[#080914] font-semibold rounded-lg py-2 text-sm disabled:opacity-50"
             >
               {saving ? "กำลังบันทึก..." : editingId ? "บันทึกการแก้ไข" : "เพิ่มอนิเมะ"}
             </button>
@@ -609,7 +609,7 @@ uploadImage(file,"heroLogo")
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="px-4 border border-[#2a2a3d] rounded-lg text-sm text-[#8a87a3] hover:text-[#e8e6f0]"
+                className="px-4 border border-[#2a2a3d] rounded-lg text-sm text-[#9693b8] hover:text-[#e8e6f0]"
               >
                 ยกเลิก
               </button>
@@ -640,7 +640,7 @@ uploadImage(file,"heroLogo")
               ))}
             </div>
           ) : animeList.length === 0 ? (
-            <p className="text-[#8a87a3] text-sm">ยังไม่มีอนิเมะในระบบ เพิ่มเรื่องแรกได้จากฟอร์มด้านซ้าย</p>
+            <p className="text-[#9693b8] text-sm">ยังไม่มีอนิเมะในระบบ เพิ่มเรื่องแรกได้จากฟอร์มด้านซ้าย</p>
           ) : (
             <div className="grid gap-3">
               {animeList.map((anime) => (
@@ -648,7 +648,7 @@ uploadImage(file,"heroLogo")
                   key={anime.slug}
                   className="bg-[#131320] border border-[#232335] rounded-xl p-4 flex gap-4"
                 >
-                  <div className="w-16 h-20 bg-[#0b0b12] rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-20 bg-[#080914] rounded-lg overflow-hidden flex-shrink-0">
                     {anime.coverImage && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -665,13 +665,13 @@ uploadImage(file,"heroLogo")
                         className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${
                           anime.status === "ONGOING"
                             ? "bg-[#1e3a2e] text-[#5ee6a0]"
-                            : "bg-[#2a2a3d] text-[#8a87a3]"
+                            : "bg-[#2a2a3d] text-[#9693b8]"
                         }`}
                       >
                         {anime.status === "ONGOING" ? "กำลังฉาย" : "จบแล้ว"}
                       </span>
                     </div>
-                    <p className="text-xs text-[#8a87a3] mt-1">
+                    <p className="text-xs text-[#9693b8] mt-1">
                       {anime.releaseYear || "-"} · {anime.genres.join(", ") || "ไม่ระบุแนว"}
                     </p>
                     <p className="text-xs text-[#5a5770] mt-2 line-clamp-2">
@@ -681,7 +681,7 @@ uploadImage(file,"heroLogo")
                   <div className="flex flex-col gap-2 flex-shrink-0">
                     <a
                       href={`/admin/anime/${anime.slug}`}
-                      className="text-xs px-3 py-1.5 rounded-lg border border-[#ff5d73]/30 text-[#ff5d73] hover:bg-[#ff5d73]/10 text-center"
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#8b5cf6]/30 text-[#8b5cf6] hover:bg-[#8b5cf6]/10 text-center"
                     >
                       จัดการตอน
                     </a>
@@ -693,7 +693,7 @@ uploadImage(file,"heroLogo")
                     </button>
                     <button
                       onClick={() => handleDelete(anime.slug)}
-                      className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a3d] text-[#8a87a3] hover:bg-[#1a1a28]"
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a3d] text-[#9693b8] hover:bg-[#1a1a28]"
                     >
                       ลบ
                     </button>

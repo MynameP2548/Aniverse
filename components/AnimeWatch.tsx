@@ -172,7 +172,7 @@ export default function AnimeWatch({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="player-cinematic space-y-8">
 
 <Player
   episodeId={currentEpisode.id}

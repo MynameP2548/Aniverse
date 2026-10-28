@@ -31,7 +31,7 @@ export default function Time({
       {/* Live Dot */}
       <div className="relative flex items-center justify-center">
 
-        <div className="h-2.5 w-2.5 rounded-full bg-[#ff3355]" />
+        <div className="h-2.5 w-2.5 rounded-full bg-[#7c3aed]" />
 
         <div
           className="
@@ -40,7 +40,7 @@ export default function Time({
             w-2.5
             animate-ping
             rounded-full
-            bg-[#ff3355]
+            bg-[#7c3aed]
             opacity-60
           "
         />

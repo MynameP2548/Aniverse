@@ -80,6 +80,9 @@ export default function Player({
   const [videoError, setVideoError] =
     useState<string | null>(null);
 
+  const [retryCount, setRetryCount] =
+    useState(0);
+
   const [audioTracks, setAudioTracks] =
     useState<AudioOption[]>([]);
 
@@ -173,7 +176,7 @@ export default function Player({
     return () => {
       cancelled = true;
     };
-  }, [episodeId]);
+  }, [episodeId, retryCount]);
 
   // ===========================
   // Video Events
@@ -711,10 +714,15 @@ export default function Player({
     <div
       ref={playerRef}
       className={`
+        group/player
         relative
+        isolate
         overflow-hidden
         rounded-2xl
-        bg-black
+        border border-white/[0.08]
+        bg-[#05050b]
+        shadow-[0_24px_80px_rgba(0,0,0,.42)]
+        ring-1 ring-violet-300/[0.04]
         transition-all
         duration-300
         ${
@@ -756,14 +764,27 @@ export default function Player({
       {loading && <Loading />}
 
       {videoError && (
-        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/80 p-6 text-center">
-          <div>
-            <p className="text-lg font-semibold text-white">
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-[#070711]/90 p-5 text-center backdrop-blur-md"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="w-full max-w-md rounded-2xl border border-violet-300/15 bg-white/[0.04] p-6 shadow-[0_20px_80px_rgba(76,29,149,.2)] sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-500/20 to-blue-500/20 text-2xl text-violet-100">
+              !
+            </div>
+            <p className="mt-4 text-lg font-bold text-white">
               ไม่สามารถโหลดวิดีโอได้
             </p>
-            <p className="mt-2 max-w-md text-sm text-white/60">
+            <p className="mt-2 break-words text-sm leading-6 text-white/60">
               {videoError}
             </p>
+            <button
+              type="button"
+              onClick={() => setRetryCount((count) => count + 1)}
+              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+            >
+              ลองโหลดอีกครั้ง
+            </button>
           </div>
         </div>
       )}
@@ -826,18 +847,23 @@ export default function Player({
           className="
             pointer-events-none
             absolute
-            left-6
-            top-6
+            left-4
+            top-4
             z-30
+            max-w-[75%]
             text-white
+            sm:left-6
+            sm:top-6
           "
         >
           {title && (
             <h2
               className="
-                text-2xl
-                font-bold
-                drop-shadow-lg
+                text-lg
+                font-extrabold
+                tracking-tight
+                drop-shadow-[0_2px_18px_rgba(0,0,0,.8)]
+                sm:text-2xl
               "
             >
               {title}
@@ -848,8 +874,9 @@ export default function Player({
             <p
               className="
                 mt-1
-                text-sm
+                text-xs
                 text-white/70
+                sm:text-sm
               "
             >
               Episode {episode}
@@ -868,17 +895,21 @@ export default function Player({
           className="
             absolute
             bottom-24
-            right-8
+            right-3
             z-50
             rounded-xl
-            bg-white
-            px-5
+            border border-violet-200/20
+            bg-gradient-to-r from-violet-600 to-blue-600
+            px-4
             py-3
-            font-semibold
-            text-black
-            shadow-2xl
+            text-sm
+            font-bold
+            text-white
+            shadow-[0_10px_35px_rgba(76,29,149,.35)]
             transition
-            hover:bg-neutral-200
+            hover:brightness-110
+            sm:right-8
+            sm:px-5
           "
           onClick={(e) => {
             e.stopPropagation();
@@ -898,17 +929,20 @@ export default function Player({
           <div
             className="
               absolute
-              bottom-8
-              right-8
+              bottom-3
+              right-3
               z-50
-              w-[360px]
+              w-[min(360px,calc(100%-1.5rem))]
               rounded-2xl
               border
-              border-white/10
-              bg-black/80
-              p-6
-              backdrop-blur-xl
-              shadow-2xl
+              border-violet-200/15
+              bg-[#090914]/90
+              p-4
+              backdrop-blur-2xl
+              shadow-[0_18px_70px_rgba(0,0,0,.55)]
+              sm:bottom-8
+              sm:right-8
+              sm:p-6
             "
             onClick={(e) =>
               e.stopPropagation()
@@ -939,7 +973,7 @@ export default function Player({
 
             <div className="mt-6 flex items-center justify-between">
 
-              <div className="text-5xl font-black text-white">
+              <div className="text-4xl font-black tabular-nums text-violet-100 sm:text-5xl">
                 {countdown}
               </div>
 
@@ -949,13 +983,15 @@ export default function Player({
 onClick={() => onNextEpisode?.()}
                   className="
                     rounded-xl
-                    bg-white
-                    px-5
+                    bg-gradient-to-r from-violet-600 to-blue-600
+                    px-4
                     py-3
+                    text-sm
                     font-semibold
-                    text-black
+                    text-white
                     transition
-                    hover:bg-neutral-200
+                    hover:brightness-110
+                    sm:px-5
                   "
                 >
                   ▶ เล่นเลย
@@ -970,12 +1006,14 @@ onClick={() => onNextEpisode?.()}
                   className="
                     rounded-xl
                     border
-                    border-white/20
-                    px-5
+                    border-white/15
+                    px-4
                     py-3
+                    text-sm
                     text-white
                     transition
                     hover:bg-white/10
+                    sm:px-5
                   "
                 >
                   ✕

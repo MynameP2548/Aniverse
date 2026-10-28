@@ -31,7 +31,7 @@ export default function WelcomeScreen({
 
             <button
               onClick={onEnter}
-              className="mt-10 px-10 py-4 rounded-full bg-red-600 hover:bg-red-500 transition text-white font-semibold"
+              className="mt-10 px-10 py-4 rounded-full bg-violet-600 hover:bg-violet-500 transition text-white font-semibold"
             >
               เข้าสู่เว็บไซต์
             </button>

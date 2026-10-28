@@ -210,13 +210,13 @@ export default function ManageEpisodesPage() {
     await loadData();
   }
     return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
 
       <header className="border-b border-[#232335] px-6 py-5">
 
         <Link
           href="/admin"
-          className="text-xs text-[#8a87a3] hover:text-white"
+          className="text-xs text-[#9693b8] hover:text-white"
         >
           ← กลับหน้า Admin
         </Link>
@@ -225,7 +225,7 @@ export default function ManageEpisodesPage() {
           {anime?.title}
         </h1>
 
-        <p className="mt-2 text-sm text-[#8a87a3]">
+        <p className="mt-2 text-sm text-[#9693b8]">
           จัดการ Episode
         </p>
 
@@ -241,7 +241,7 @@ export default function ManageEpisodesPage() {
               Season
             </h2>
 
-            <p className="text-sm text-[#8a87a3]">
+            <p className="text-sm text-[#9693b8]">
               เลือก Season ที่ต้องการจัดการ
             </p>
 
@@ -298,7 +298,7 @@ export default function ManageEpisodesPage() {
             seasonId: e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       >
         <option value="">
           เลือก Season
@@ -331,7 +331,7 @@ export default function ManageEpisodesPage() {
               e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       />
     </div>
 
@@ -348,7 +348,7 @@ export default function ManageEpisodesPage() {
             title: e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       />
     </div>
 
@@ -365,7 +365,7 @@ export default function ManageEpisodesPage() {
             videoUrl: e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       />
     </div>
 
@@ -382,7 +382,7 @@ export default function ManageEpisodesPage() {
             thumbnail: e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       />
     </div>
 
@@ -400,7 +400,7 @@ export default function ManageEpisodesPage() {
             duration: e.target.value,
           })
         }
-        className="w-full rounded-lg border border-[#2a2a3d] bg-[#0b0b12] px-4 py-3"
+        className="w-full rounded-lg border border-[#2a2a3d] bg-[#080914] px-4 py-3"
       />
     </div>
 
@@ -411,7 +411,7 @@ export default function ManageEpisodesPage() {
     <button
       type="submit"
       disabled={saving}
-      className="rounded-lg bg-[#ff5d73] px-6 py-3 font-semibold text-black"
+      className="rounded-lg bg-[#8b5cf6] px-6 py-3 font-semibold text-black"
     >
       {saving
         ? "กำลังบันทึก..."
@@ -438,11 +438,11 @@ export default function ManageEpisodesPage() {
         </h2>
 
         {loading ? (
-          <div className="text-center py-10 text-[#8a87a3]">
+          <div className="text-center py-10 text-[#9693b8]">
             กำลังโหลด...
           </div>
         ) : episodes.length === 0 ? (
-          <div className="rounded-xl border border-[#232335] bg-[#131320] p-8 text-center text-[#8a87a3]">
+          <div className="rounded-xl border border-[#232335] bg-[#131320] p-8 text-center text-[#9693b8]">
             ยังไม่มี Episode ใน Season นี้
           </div>
         ) : (
@@ -458,7 +458,7 @@ export default function ManageEpisodesPage() {
                     {episode.title && ` • ${episode.title}`}
                   </div>
 
-                  <div className="mt-1 text-sm text-[#8a87a3]">
+                  <div className="mt-1 text-sm text-[#9693b8]">
                     {episode.videoUrl}
                   </div>
                 </div>

@@ -1384,13 +1384,13 @@ setForm({
   // ==========================
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
 
       <header className="border-b border-[#232335] px-6 py-5">
 
         <Link
           href="/admin"
-          className="text-xs text-[#8a87a3] hover:text-[#e8e6f0]"
+          className="text-xs text-[#9693b8] hover:text-[#e8e6f0]"
         >
           ← กลับไปรายการอนิเมะ
         </Link>
@@ -1434,12 +1434,12 @@ setForm({
                 mb-4
                 rounded-lg
                 border
-                border-[#ff5d73]/40
+                border-[#8b5cf6]/40
                 bg-[#3a1620]
                 px-3
                 py-2
                 text-sm
-                text-[#ff9aa8]
+                text-[#c4b5fd]
               "
             >
               {errorMsg}
@@ -1454,7 +1454,7 @@ setForm({
 
             <div className="flex-1">
 
-              <label className="mb-1 block text-xs text-[#8a87a3]">
+              <label className="mb-1 block text-xs text-[#9693b8]">
                 Season *
               </label>
 
@@ -1472,13 +1472,13 @@ setForm({
                   rounded-lg
                   border
                   border-[#2a2a3d]
-                  bg-[#0b0b12]
+                  bg-[#080914]
                   px-3
                   py-2
                   text-sm
                   focus:outline-none
                   focus:ring-2
-                  focus:ring-[#ff5d73]
+                  focus:ring-[#8b5cf6]
                 "
               >
 
@@ -1515,7 +1515,7 @@ setForm({
                 className="
                   h-[42px]
                   rounded-lg
-                  bg-[#ff5d73]
+                  bg-[#8b5cf6]
                   px-4
                   font-semibold
                   text-black
@@ -1554,7 +1554,7 @@ setForm({
 
             <div>
 
-              <label className="mb-1 block text-xs text-[#8a87a3]">
+              <label className="mb-1 block text-xs text-[#9693b8]">
                 ลำดับตอน *
               </label>
 
@@ -1575,13 +1575,13 @@ setForm({
                   rounded-lg
                   border
                   border-[#2a2a3d]
-                  bg-[#0b0b12]
+                  bg-[#080914]
                   px-3
                   py-2
                   text-sm
                   focus:outline-none
                   focus:ring-2
-                  focus:ring-[#ff5d73]
+                  focus:ring-[#8b5cf6]
                 "
                 placeholder="1"
               />
@@ -1590,7 +1590,7 @@ setForm({
 
             <div>
 
-              <label className="mb-1 block text-xs text-[#8a87a3]">
+              <label className="mb-1 block text-xs text-[#9693b8]">
                 ความยาว (วินาที)
               </label>
 
@@ -1611,13 +1611,13 @@ setForm({
                   rounded-lg
                   border
                   border-[#2a2a3d]
-                  bg-[#0b0b12]
+                  bg-[#080914]
                   px-3
                   py-2
                   text-sm
                   focus:outline-none
                   focus:ring-2
-                  focus:ring-[#ff5d73]
+                  focus:ring-[#8b5cf6]
                 "
                 placeholder="1440"
               />
@@ -1634,13 +1634,13 @@ setForm({
             <h3 className="mb-1 text-sm font-semibold text-white">
               ⏭ ระบบข้าม Intro
             </h3>
-            <p className="mb-4 text-xs text-[#8a87a3]">
+            <p className="mb-4 text-xs text-[#9693b8]">
               กำหนดเป็น MM:SS เช่น 01:30 หากไม่ต้องการใช้ ให้เว้นว่างไว้
             </p>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs text-[#8a87a3]">
+                <label className="mb-1 block text-xs text-[#9693b8]">
                   Intro เริ่ม
                 </label>
                 <input
@@ -1655,15 +1655,15 @@ setForm({
                   }
                   className="
                     w-full rounded-lg border border-[#2a2a3d]
-                    bg-[#0b0b12] px-3 py-2 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                    bg-[#080914] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                   "
                   placeholder="01:30"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs text-[#8a87a3]">
+                <label className="mb-1 block text-xs text-[#9693b8]">
                   Intro จบ
                 </label>
                 <input
@@ -1678,8 +1678,8 @@ setForm({
                   }
                   className="
                     w-full rounded-lg border border-[#2a2a3d]
-                    bg-[#0b0b12] px-3 py-2 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                    bg-[#080914] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                   "
                   placeholder="03:00"
                 />
@@ -1691,12 +1691,12 @@ setForm({
             <h3 className="mb-1 text-sm font-semibold text-white">
               ▶ ตอนถัดไป
             </h3>
-            <p className="mb-4 text-xs text-[#8a87a3]">
+            <p className="mb-4 text-xs text-[#9693b8]">
               เมื่อถึงเวลานี้จะแสดงตอนถัดไปและเริ่มนับถอยหลัง 5 วินาที
             </p>
 
             <div>
-              <label className="mb-1 block text-xs text-[#8a87a3]">
+              <label className="mb-1 block text-xs text-[#9693b8]">
                 แสดงตอนถัดไปเมื่อ
               </label>
               <input
@@ -1711,8 +1711,8 @@ setForm({
                 }
                 className="
                   w-full rounded-lg border border-[#2a2a3d]
-                  bg-[#0b0b12] px-3 py-2 text-sm
-                  focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  bg-[#080914] px-3 py-2 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                 "
                 placeholder="22:00"
               />
@@ -1725,7 +1725,7 @@ setForm({
 
           <div className="mb-3">
 
-            <label className="mb-1 block text-xs text-[#8a87a3]">
+            <label className="mb-1 block text-xs text-[#9693b8]">
               ชื่อตอน
             </label>
 
@@ -1745,13 +1745,13 @@ setForm({
                 rounded-lg
                 border
                 border-[#2a2a3d]
-                bg-[#0b0b12]
+                bg-[#080914]
                 px-3
                 py-2
                 text-sm
                 focus:outline-none
                 focus:ring-2
-                focus:ring-[#ff5d73]
+                focus:ring-[#8b5cf6]
               "
               placeholder="จุดเริ่มต้น"
             />
@@ -1763,7 +1763,7 @@ setForm({
           ========================== */}
 
           <div className="mb-5">
-            <label className="mb-1 block text-xs text-[#8a87a3]">
+            <label className="mb-1 block text-xs text-[#9693b8]">
               วิดีโอ
             </label>
 
@@ -1775,7 +1775,7 @@ setForm({
                 rounded-lg
                 border
                 border-[#2a2a3d]
-                bg-[#09090f]
+                bg-[#080914]
                 px-3
                 py-2
                 text-sm
@@ -1827,14 +1827,14 @@ setForm({
                 }
                 className="
                   rounded-lg
-                  bg-[#ff5d73]
+                  bg-[#8b5cf6]
                   px-4
                   py-2
                   text-sm
                   font-semibold
                   text-black
                   transition
-                  hover:bg-[#ff738a]
+                  hover:bg-[#a78bfa]
                   disabled:cursor-not-allowed
                   disabled:opacity-60
                 "
@@ -1893,15 +1893,15 @@ setForm({
                 className="
                   rounded-lg
                   border
-                  border-[#ff5d73]/40
-                  bg-[#ff5d73]/10
+                  border-[#8b5cf6]/40
+                  bg-[#8b5cf6]/10
                   px-4
                   py-2
                   text-sm
                   font-semibold
-                  text-[#ff8da0]
+                  text-[#c4b5fd]
                   transition
-                  hover:bg-[#ff5d73]/20
+                  hover:bg-[#8b5cf6]/20
                   disabled:cursor-not-allowed
                   disabled:opacity-60
                 "
@@ -1913,7 +1913,7 @@ setForm({
             </div>
 
             {/* HLS information */}
-            <div className="mt-3 rounded-lg border border-[#2a2a3d] bg-[#0f0f18] p-3 text-xs text-[#8a87a3]">
+            <div className="mt-3 rounded-lg border border-[#2a2a3d] bg-[#0f0f18] p-3 text-xs text-[#9693b8]">
               <p className="font-medium text-white">
                 HLS Multi-Audio
               </p>
@@ -1953,7 +1953,7 @@ setForm({
                         }
                       </p>
 
-                      <p className="mt-1 text-xs text-[#8a87a3]">
+                      <p className="mt-1 text-xs text-[#9693b8]">
                         {(
                           selectedVideo.size /
                           1024 /
@@ -1997,7 +1997,7 @@ setForm({
                         <div
                           className="
                             h-full
-                            bg-[#ff5d73]
+                            bg-[#8b5cf6]
                             transition-all
                             duration-300
                           "
@@ -2030,7 +2030,7 @@ setForm({
                       HLS Multi-Audio
                     </p>
 
-                    <p className="mt-1 text-xs text-[#8a87a3]">
+                    <p className="mt-1 text-xs text-[#9693b8]">
                       {selectedHlsFiles.length} ไฟล์
                     </p>
                   </div>
@@ -2071,7 +2071,7 @@ setForm({
                     <div
                       className="
                         h-full
-                        bg-[#ff5d73]
+                        bg-[#8b5cf6]
                         transition-all
                         duration-300
                       "
@@ -2090,7 +2090,7 @@ setForm({
                 .toLowerCase()
                 .includes(".m3u8") && (
               <div className="mt-5 rounded-xl border border-[#2a2a3d] bg-[#0f0f18] p-4">
-                <p className="text-xs text-[#8a87a3]">
+                <p className="text-xs text-[#9693b8]">
                   HLS Master URL
                 </p>
 
@@ -2110,7 +2110,7 @@ setForm({
                 .toLowerCase()
                 .includes(".m3u8") && (
               <div className="mt-5">
-                <label className="mb-2 block text-xs text-[#8a87a3]">
+                <label className="mb-2 block text-xs text-[#9693b8]">
                   ตัวอย่างวิดีโอ
                 </label>
 
@@ -2140,14 +2140,14 @@ setForm({
               🔊 เสียงพากย์
             </h3>
 
-            <p className="mb-4 text-xs text-[#8a87a3]">
+            <p className="mb-4 text-xs text-[#9693b8]">
               ใส่ URL ของ Audio Track สำหรับตอนนี้
               หากยังไม่มี สามารถเว้นว่างไว้ก่อนได้
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-xs text-[#8a87a3]">
+                <label className="mb-1 block text-xs text-[#9693b8]">
                   🇹🇭 พากย์ไทย
                 </label>
 
@@ -2162,15 +2162,15 @@ setForm({
                   }
                   className="
                     w-full rounded-lg border border-[#2a2a3d]
-                    bg-[#0b0b12] px-3 py-2 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                    bg-[#080914] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                   "
                   placeholder="https://.../thai.m3u8"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs text-[#8a87a3]">
+                <label className="mb-1 block text-xs text-[#9693b8]">
                   🇯🇵 พากย์ญี่ปุ่น
                 </label>
 
@@ -2185,8 +2185,8 @@ setForm({
                   }
                   className="
                     w-full rounded-lg border border-[#2a2a3d]
-                    bg-[#0b0b12] px-3 py-2 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                    bg-[#080914] px-3 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                   "
                   placeholder="https://.../japanese.m3u8"
                 />
@@ -2199,12 +2199,12 @@ setForm({
               💬 คำบรรยาย
             </h3>
 
-            <p className="mb-4 text-xs text-[#8a87a3]">
+            <p className="mb-4 text-xs text-[#9693b8]">
               ตอนนี้รองรับซับไทยก่อน สามารถเว้นว่างไว้ได้
             </p>
 
             <div>
-              <label className="mb-1 block text-xs text-[#8a87a3]">
+              <label className="mb-1 block text-xs text-[#9693b8]">
                 🇹🇭 ซับไทย
               </label>
 
@@ -2219,8 +2219,8 @@ setForm({
                 }
                 className="
                   w-full rounded-lg border border-[#2a2a3d]
-                  bg-[#0b0b12] px-3 py-2 text-sm
-                  focus:outline-none focus:ring-2 focus:ring-[#ff5d73]
+                  bg-[#080914] px-3 py-2 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]
                 "
                 placeholder="https://.../thai.vtt"
               />
@@ -2232,7 +2232,7 @@ setForm({
           ========================== */}
 
           <div className="mb-4">
-            <label className="mb-1 block text-xs text-[#8a87a3]">
+            <label className="mb-1 block text-xs text-[#9693b8]">
               รูปปกตอน (Thumbnail)
             </label>
 
@@ -2260,14 +2260,14 @@ setForm({
               className="
                 w-full
                 rounded-lg
-                bg-[#ff5d73]
+                bg-[#8b5cf6]
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
                 text-black
                 transition
-                hover:bg-[#ff738a]
+                hover:bg-[#a78bfa]
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "
@@ -2278,7 +2278,7 @@ setForm({
             </button>
 
             {form.thumbnail && (
-              <div className="mt-3 overflow-hidden rounded-xl border border-[#2a2a3d] bg-[#0b0b12]">
+              <div className="mt-3 overflow-hidden rounded-xl border border-[#2a2a3d] bg-[#080914]">
                 <img
                   src={form.thumbnail}
                   alt="Thumbnail Preview"
@@ -2290,7 +2290,7 @@ setForm({
                 />
 
                 <div className="flex items-center justify-between gap-3 p-3">
-                  <span className="truncate text-xs text-[#8a87a3]">
+                  <span className="truncate text-xs text-[#9693b8]">
                     อัปโหลดแล้ว
                   </span>
 
@@ -2305,12 +2305,12 @@ setForm({
                     className="
                       rounded-lg
                       border
-                      border-[#ff5d73]/30
+                      border-[#8b5cf6]/30
                       px-3
                       py-1.5
                       text-xs
-                      text-[#ff5d73]
-                      hover:bg-[#ff5d73]/10
+                      text-[#8b5cf6]
+                      hover:bg-[#8b5cf6]/10
                     "
                   >
                     ลบรูป
@@ -2341,13 +2341,13 @@ setForm({
               className="
                 flex-1
                 rounded-lg
-                bg-[#ff5d73]
+                bg-[#8b5cf6]
                 py-2
                 text-sm
                 font-semibold
-                text-[#0b0b12]
+                text-[#080914]
                 transition
-                hover:bg-[#ff738a]
+                hover:bg-[#a78bfa]
                 disabled:opacity-50
               "
             >
@@ -2370,7 +2370,7 @@ setForm({
                   border-[#2a2a3d]
                   px-4
                   text-sm
-                  text-[#8a87a3]
+                  text-[#9693b8]
                   hover:text-white
                 "
               >
@@ -2429,7 +2429,7 @@ setForm({
 
         ) : episodes.length === 0 ? (
 
-          <p className="text-sm text-[#8a87a3]">
+          <p className="text-sm text-[#9693b8]">
             ยังไม่มีตอนในเรื่องนี้
           </p>
 
@@ -2460,7 +2460,7 @@ setForm({
                       flex-shrink-0
                       text-sm
                       font-bold
-                      text-[#ff5d73]
+                      text-[#8b5cf6]
                     "
                   >
                     EP
@@ -2476,7 +2476,7 @@ setForm({
                         "(ไม่มีชื่อตอน)"}
                     </div>
 
-                    <div className="mt-1 truncate text-xs text-[#8a87a3]">
+                    <div className="mt-1 truncate text-xs text-[#9693b8]">
                       {
                         ep.videoUrl
                       }
@@ -2512,12 +2512,12 @@ setForm({
                     className="
                       rounded-lg
                       border
-                      border-[#ff5d73]/30
+                      border-[#8b5cf6]/30
                       px-3
                       py-1.5
                       text-xs
-                      text-[#ff5d73]
-                      hover:bg-[#ff5d73]/10
+                      text-[#8b5cf6]
+                      hover:bg-[#8b5cf6]/10
                     "
                   >
                     ลบ

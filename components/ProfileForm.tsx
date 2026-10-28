@@ -233,9 +233,9 @@ console.log("RESPONSE:", data);
 
       {/* ================= HERO ================= */}
 
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#171723] via-[#13131d] to-[#0b0b12] shadow-2xl">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#171723] via-[#13131d] to-[#080914] shadow-2xl">
 
-        <div className="h-36 bg-gradient-to-r from-[#ff5d73] via-pink-500 to-fuchsia-500" />
+        <div className="h-36 bg-gradient-to-r from-[#8b5cf6] via-violet-500 to-indigo-500" />
 
         <div className="-mt-16 flex flex-col items-center px-8 pb-8">
 
@@ -287,7 +287,7 @@ console.log("RESPONSE:", data);
               onClick={() =>
                 fileRef.current?.click()
               }
-              className="absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#ff5d73] shadow-lg transition hover:scale-110 disabled:opacity-50"
+              className="absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#8b5cf6] shadow-lg transition hover:scale-110 disabled:opacity-50"
             >
               {uploading ? "..." : "📷"}
             </button>
@@ -306,7 +306,7 @@ console.log("RESPONSE:", data);
 
           </p>
 
-          <div className="mt-4 rounded-full border border-[#ff5d73]/30 bg-[#ff5d73]/10 px-5 py-1 text-xs font-bold uppercase tracking-[0.2em] text-[#ff91a2]">
+          <div className="mt-4 rounded-full border border-[#8b5cf6]/30 bg-[#8b5cf6]/10 px-5 py-1 text-xs font-bold uppercase tracking-[0.2em] text-[#c4b5fd]">
 
             Member
 
@@ -314,37 +314,37 @@ console.log("RESPONSE:", data);
 
           <div className="mt-8 grid w-full gap-4 sm:grid-cols-3">
 
-            <div className="rounded-2xl bg-[#0b0b12]/80 p-5">
+            <div className="rounded-2xl bg-[#080914]/80 p-5">
 
-              <div className="text-3xl font-black text-[#ff5d73]">
+              <div className="text-3xl font-black text-[#8b5cf6]">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 Favorites
               </div>
 
             </div>
 
-            <div className="rounded-2xl bg-[#0b0b12]/80 p-5">
+            <div className="rounded-2xl bg-[#080914]/80 p-5">
 
-              <div className="text-3xl font-black text-[#ff5d73]">
+              <div className="text-3xl font-black text-[#8b5cf6]">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 Episodes
               </div>
 
             </div>
 
-            <div className="rounded-2xl bg-[#0b0b12]/80 p-5">
+            <div className="rounded-2xl bg-[#080914]/80 p-5">
 
-              <div className="text-3xl font-black text-[#ff5d73]">
+              <div className="text-3xl font-black text-[#8b5cf6]">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 Reviews
               </div>
 
@@ -384,7 +384,7 @@ console.log("RESPONSE:", data);
               👤 ข้อมูลส่วนตัว
             </h3>
 
-            <p className="mt-2 text-sm text-[#8a87a3]">
+            <p className="mt-2 text-sm text-[#9693b8]">
               แก้ไขข้อมูลพื้นฐานของบัญชีผู้ใช้
             </p>
 
@@ -406,7 +406,7 @@ console.log("RESPONSE:", data);
                   setName(e.target.value)
                 }
                 placeholder="ชื่อผู้ใช้"
-                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#0b0b12] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#080914] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
               />
 
             </div>
@@ -422,7 +422,7 @@ console.log("RESPONSE:", data);
               <input
                 value={email}
                 disabled
-                className="w-full cursor-not-allowed rounded-2xl border border-[#2a2a3d] bg-[#09090f] px-5 py-3 text-[#7d7b92]"
+                className="w-full cursor-not-allowed rounded-2xl border border-[#2a2a3d] bg-[#080914] px-5 py-3 text-[#7d7b92]"
               />
 
               <p className="mt-2 text-xs text-[#6b697e]">
@@ -447,7 +447,7 @@ console.log("RESPONSE:", data);
                 }
                 maxLength={300}
                 placeholder="แนะนำตัว เช่น ชอบดูอนิเมะแนว Fantasy, Isekai, Romance..."
-                className="w-full resize-none rounded-2xl border border-[#2a2a3d] bg-[#0b0b12] px-5 py-4 text-white outline-none transition-all duration-300 focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+                className="w-full resize-none rounded-2xl border border-[#2a2a3d] bg-[#080914] px-5 py-4 text-white outline-none transition-all duration-300 focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
               />
 
               <div className="mt-2 flex justify-between text-xs">
@@ -456,7 +456,7 @@ console.log("RESPONSE:", data);
                   Bio ของคุณจะแสดงบนหน้าโปรไฟล์
                 </span>
 
-                <span className="text-[#8a87a3]">
+                <span className="text-[#9693b8]">
                   {about.length}/300
                 </span>
 
@@ -474,7 +474,7 @@ console.log("RESPONSE:", data);
 
           <div className="rounded-3xl border border-white/10 bg-[#11111b] p-6">
 
-            <div className="text-sm text-[#8a87a3]">
+            <div className="text-sm text-[#9693b8]">
               สถานะบัญชี
             </div>
 
@@ -490,7 +490,7 @@ console.log("RESPONSE:", data);
 
           <div className="rounded-3xl border border-white/10 bg-[#11111b] p-6">
 
-            <div className="text-sm text-[#8a87a3]">
+            <div className="text-sm text-[#9693b8]">
               รูปโปรไฟล์
             </div>
 
@@ -515,7 +515,7 @@ console.log("RESPONSE:", data);
               🔐 ความปลอดภัย
             </h3>
 
-            <p className="mt-2 text-sm text-[#8a87a3]">
+            <p className="mt-2 text-sm text-[#9693b8]">
               เปลี่ยนรหัสผ่านเพื่อเพิ่มความปลอดภัยให้บัญชีของคุณ
             </p>
 
@@ -538,7 +538,7 @@ console.log("RESPONSE:", data);
                   setCurrentPassword(e.target.value)
                 }
                 placeholder="กรอกรหัสผ่านปัจจุบัน"
-                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#0b0b12] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#080914] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
               />
 
             </div>
@@ -558,7 +558,7 @@ console.log("RESPONSE:", data);
                   setNewPassword(e.target.value)
                 }
                 placeholder="อย่างน้อย 6 ตัวอักษร"
-                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#0b0b12] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+                className="w-full rounded-2xl border border-[#2a2a3d] bg-[#080914] px-5 py-3 text-white outline-none transition-all duration-300 focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
               />
 
             </div>
@@ -569,14 +569,14 @@ console.log("RESPONSE:", data);
 
               <div className="mb-3 flex items-center justify-between">
 
-                <span className="text-sm text-[#8a87a3]">
+                <span className="text-sm text-[#9693b8]">
                   ความแข็งแรงของรหัสผ่าน
                 </span>
 
                 <span
                   className={`text-sm font-bold ${
                     passwordStrength === 0
-                      ? "text-[#8a87a3]"
+                      ? "text-[#9693b8]"
                       : passwordStrength < 50
                       ? "text-red-400"
                       : passwordStrength < 100
@@ -652,7 +652,7 @@ console.log("RESPONSE:", data);
 
           <div className="rounded-3xl border border-white/10 bg-[#11111b] p-6 shadow-xl">
 
-            <div className="text-sm text-[#8a87a3]">
+            <div className="text-sm text-[#9693b8]">
               สมาชิกตั้งแต่
             </div>
 
@@ -672,23 +672,23 @@ console.log("RESPONSE:", data);
 
             <div className="flex items-center justify-between">
 
-              <span className="text-sm text-[#8a87a3]">
+              <span className="text-sm text-[#9693b8]">
                 ❤️ Favorites
               </span>
 
-              <span className="rounded-full bg-[#ff5d73]/10 px-3 py-1 text-xs font-semibold text-[#ff5d73]">
+              <span className="rounded-full bg-[#8b5cf6]/10 px-3 py-1 text-xs font-semibold text-[#8b5cf6]">
                 Anime
               </span>
 
             </div>
 
-            <div className="mt-4 text-4xl font-black text-[#ff5d73]">
+            <div className="mt-4 text-4xl font-black text-[#8b5cf6]">
               0
             </div>
 
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#1d1d2b]">
 
-              <div className="h-full w-0 rounded-full bg-[#ff5d73]" />
+              <div className="h-full w-0 rounded-full bg-[#8b5cf6]" />
 
             </div>
 
@@ -700,7 +700,7 @@ console.log("RESPONSE:", data);
 
             <div className="flex items-center justify-between">
 
-              <span className="text-sm text-[#8a87a3]">
+              <span className="text-sm text-[#9693b8]">
                 ⭐ Reviews
               </span>
 
@@ -736,7 +736,7 @@ console.log("RESPONSE:", data);
                 📈 กิจกรรม
               </h3>
 
-              <p className="mt-2 text-sm text-[#8a87a3]">
+              <p className="mt-2 text-sm text-[#9693b8]">
                 สถิติการใช้งานบัญชีของคุณ
               </p>
 
@@ -752,49 +752,49 @@ console.log("RESPONSE:", data);
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-            <div className="rounded-2xl bg-[#0b0b12] p-5">
+            <div className="rounded-2xl bg-[#080914] p-5">
 
-              <div className="text-3xl font-black text-[#ff5d73]">
+              <div className="text-3xl font-black text-[#8b5cf6]">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 Anime ที่ดู
               </div>
 
             </div>
 
-            <div className="rounded-2xl bg-[#0b0b12] p-5">
+            <div className="rounded-2xl bg-[#080914] p-5">
 
               <div className="text-3xl font-black text-cyan-400">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 ชั่วโมงรับชม
               </div>
 
             </div>
 
-            <div className="rounded-2xl bg-[#0b0b12] p-5">
+            <div className="rounded-2xl bg-[#080914] p-5">
 
               <div className="text-3xl font-black text-yellow-400">
                 0
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 รีวิวทั้งหมด
               </div>
 
             </div>
 
-            <div className="rounded-2xl bg-[#0b0b12] p-5">
+            <div className="rounded-2xl bg-[#080914] p-5">
 
               <div className="text-3xl font-black text-green-400">
                 100%
               </div>
 
-              <div className="mt-2 text-sm text-[#8a87a3]">
+              <div className="mt-2 text-sm text-[#9693b8]">
                 Account Health
               </div>
 
@@ -819,7 +819,7 @@ console.log("RESPONSE:", data);
                 setError("");
                 setSuccess("");
               }}
-              className="rounded-2xl border border-[#2a2a3d] bg-[#0b0b12] px-8 py-3 font-semibold text-[#b8b6cb] transition-all duration-300 hover:border-[#ff5d73] hover:text-white"
+              className="rounded-2xl border border-[#2a2a3d] bg-[#080914] px-8 py-3 font-semibold text-[#b8b6cb] transition-all duration-300 hover:border-[#8b5cf6] hover:text-white"
             >
               รีเซ็ต
             </button>
@@ -827,7 +827,7 @@ console.log("RESPONSE:", data);
             <button
               type="submit"
               disabled={saving}
-              className="group relative overflow-hidden rounded-2xl bg-[#ff5d73] px-10 py-3 font-bold text-[#0b0b12] transition-all duration-300 hover:scale-[1.02] hover:bg-[#ff738a] disabled:cursor-not-allowed disabled:opacity-50"
+              className="group relative overflow-hidden rounded-2xl bg-[#8b5cf6] px-10 py-3 font-bold text-[#080914] transition-all duration-300 hover:scale-[1.02] hover:bg-[#a78bfa] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <span className="relative z-10 flex items-center gap-2">
 

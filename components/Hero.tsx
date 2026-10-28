@@ -206,7 +206,7 @@ export default function Hero({ heroes }: Props) {
 
       <section
         ref={heroRef}
-        className="relative h-[82vh] min-h-[620px] w-full overflow-hidden"
+        className="hero-cinematic relative h-[76svh] min-h-[570px] w-full overflow-hidden sm:h-[80svh] sm:min-h-[620px] lg:h-[88svh] lg:min-h-[690px]"
       >
         {trailer && playTrailer ? (
           <video
@@ -257,14 +257,14 @@ export default function Hero({ heroes }: Props) {
           />
         )}
 
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b12] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[#070816]/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060711]/95 via-[#080918]/72 to-[#080918]/5" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090a17] via-[#090a17]/10 to-[#090a17]/10" />
 
         {list.length > 1 && (
           <button
             onClick={prevHero}
-            className="absolute left-6 top-1/2 z-40 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-black/40 text-2xl text-white backdrop-blur hover:bg-black/70 transition"
+            className="absolute left-3 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/45 text-xl text-white shadow-lg backdrop-blur-xl transition hover:border-violet-300/50 hover:bg-indigo-950/80 sm:left-6 sm:h-12 sm:w-12"
           >
             ❮
           </button>
@@ -273,7 +273,7 @@ export default function Hero({ heroes }: Props) {
         {list.length > 1 && (
           <button
             onClick={nextHero}
-            className="absolute right-6 top-1/2 z-40 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-black/40 text-2xl text-white backdrop-blur hover:bg-black/70 transition"
+            className="absolute right-3 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/45 text-xl text-white shadow-lg backdrop-blur-xl transition hover:border-violet-300/50 hover:bg-indigo-950/80 sm:right-6 sm:h-12 sm:w-12"
           >
             ❯
           </button>
@@ -298,8 +298,12 @@ export default function Hero({ heroes }: Props) {
             }
           `}
         >
-          <div className="max-w-[680px]">
-                        {(anime.rating || anime.releaseYear) && (
+          <div className="max-w-[720px] pb-10 pt-20 sm:pb-14">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-200/20 bg-violet-300/[0.08] px-3.5 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-violet-100/90 shadow-lg shadow-violet-950/10 backdrop-blur-xl sm:text-[10px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-300 shadow-[0_0_10px_rgba(125,211,252,.8)]" />
+              Discover your next obsession
+            </div>
+            {(anime.rating || anime.releaseYear) && (
               <div className="mb-5 flex items-center gap-3 text-base">
                 {anime.rating && anime.rating > 0 && (
                   <>
@@ -329,10 +333,10 @@ export default function Hero({ heroes }: Props) {
               <img
                 src={anime.heroLogo}
                 alt={anime.title}
-                className="mb-6 max-h-56 w-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,.9)]"
+                className="mb-6 max-h-36 max-w-full object-contain object-left drop-shadow-[0_20px_40px_rgba(0,0,0,.9)] sm:max-h-44 lg:max-h-56"
               />
             ) : (
-              <h1 className="text-5xl lg:text-7xl font-black leading-tight text-white">
+              <h1 className="max-w-[680px] text-4xl font-black leading-[1.04] tracking-[-0.045em] text-white drop-shadow-[0_8px_32px_rgba(0,0,0,.65)] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[84px]">
                 {anime.title}
               </h1>
             )}
@@ -353,22 +357,22 @@ export default function Hero({ heroes }: Props) {
             )}
 
             {anime.description && (
-              <p className="mt-7 max-w-[620px] text-lg leading-8 text-white/80 line-clamp-3">
+              <p className="mt-5 line-clamp-3 max-w-[620px] text-sm leading-7 text-white/80 sm:mt-7 sm:text-lg sm:leading-8">
                 {anime.description}
               </p>
             )}
 
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-7 flex flex-wrap gap-3 sm:mt-10 sm:gap-4">
               <Link
                 href={`/anime/${anime.slug}`}
-                className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
+                className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-violet-500 via-indigo-500 to-blue-500 px-6 py-3.5 font-bold text-white shadow-[0_12px_36px_rgba(79,70,229,.28)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_44px_rgba(99,102,241,.38)] sm:px-8 sm:py-4"
               >
-                ▶ ดูเลย
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-xs" aria-hidden="true">▶</span> ดูเลย
               </Link>
 
               <Link
                 href={`/anime/${anime.slug}`}
-                className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur transition hover:bg-white/20"
+                className="rounded-full border border-white/15 bg-white/[0.06] px-6 py-3.5 font-semibold text-white/90 backdrop-blur-xl transition hover:border-violet-200/40 hover:bg-white/[0.11] sm:px-8 sm:py-4"
               >
                 รายละเอียด
               </Link>
@@ -391,7 +395,7 @@ export default function Hero({ heroes }: Props) {
                 }}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   i === index
-                    ? "w-10 bg-[#ff5d73]"
+                    ? "w-10 bg-gradient-to-r from-violet-400 to-sky-400"
                     : "w-2.5 bg-white/40 hover:bg-white/70"
                 }`}
               />

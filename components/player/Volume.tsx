@@ -94,8 +94,8 @@ export default function Volume({
           style={{
             background: `linear-gradient(
               to right,
-              #ff3355 0%,
-              #ff3355 ${percent}%,
+              #7c3aed 0%,
+              #7c3aed ${percent}%,
               rgba(255,255,255,.15) ${percent}%,
               rgba(255,255,255,.15) 100%
             )`,

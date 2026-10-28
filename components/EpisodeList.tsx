@@ -274,8 +274,8 @@ export default function EpisodeList({
                   duration-300
                   ${
                     active
-                      ? "border-[#ff5d73] shadow-[0_0_25px_rgba(255,93,115,.18)]"
-                      : "border-transparent group-hover:border-[#ff5d73]/60"
+                      ? "border-[#8b5cf6] shadow-[0_0_25px_rgba(255,93,115,.18)]"
+                      : "border-transparent group-hover:border-[#8b5cf6]/60"
                   }
                 `}
               >
@@ -312,7 +312,7 @@ export default function EpisodeList({
 
                 {/* Active indicator */}
                 {active && (
-                  <div className="absolute bottom-3 left-3 rounded-md bg-[#ff5d73] px-2.5 py-1 text-xs font-bold text-black">
+                  <div className="absolute bottom-3 left-3 rounded-md bg-[#8b5cf6] px-2.5 py-1 text-xs font-bold text-black">
                     กำลังดู
                   </div>
                 )}
@@ -378,8 +378,8 @@ export default function EpisodeList({
                     transition-colors
                     ${
                       active
-                        ? "text-[#ff5d73]"
-                        : "text-white group-hover:text-[#ff5d73]"
+                        ? "text-[#8b5cf6]"
+                        : "text-white group-hover:text-[#8b5cf6]"
                     }
                   `}
                 >
@@ -427,8 +427,8 @@ export default function EpisodeList({
                       transition-all
                       ${
                         likeState.liked
-                          ? "text-[#ff5d73]"
-                          : "text-white/40 hover:bg-white/5 hover:text-[#ff5d73]"
+                          ? "text-[#8b5cf6]"
+                          : "text-white/40 hover:bg-white/5 hover:text-[#8b5cf6]"
                       }
                       ${
                         isLiking

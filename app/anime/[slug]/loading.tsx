@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
       <Navbar />
       <main className="max-w-6xl mx-auto px-6 pt-24 pb-16 animate-pulse">
         <div className="w-full aspect-video rounded-xl bg-[#131320] border border-[#232335] mb-6" />

@@ -26,7 +26,7 @@ export default function Loading() {
             w-24
             animate-ping
             rounded-full
-            bg-[#ff3355]/20
+            bg-[#7c3aed]/20
           "
         />
 
@@ -38,7 +38,7 @@ export default function Loading() {
             h-16
             w-16
             rounded-full
-            bg-[#ff3355]/20
+            bg-[#7c3aed]/20
             blur-2xl
           "
         />
@@ -53,7 +53,7 @@ export default function Loading() {
             rounded-full
             border-[3px]
             border-white/20
-            border-t-[#ff3355]
+            border-t-[#7c3aed]
           "
         />
 

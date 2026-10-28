@@ -96,9 +96,12 @@ export default function Controls({
         from-black/95
         via-black/60
         to-transparent
-        px-6
-        pb-5
-        pt-12
+        px-3
+        pb-3
+        pt-10
+        sm:px-6
+        sm:pb-5
+        sm:pt-12
       "
     >
       <Progress
@@ -108,15 +111,15 @@ export default function Controls({
         onSeek={onSeek}
       />
 
-      <div className="mt-5 flex items-center justify-between">
-        <div className="flex items-center gap-5">
+      <div className="mt-2 flex items-center justify-between gap-2 sm:mt-5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-5">
           <Time
             currentTime={currentTime}
             duration={duration}
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <Volume
             muted={muted}
             volume={volume}

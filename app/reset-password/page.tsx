@@ -105,7 +105,7 @@ body: JSON.stringify({
 
   return (
 
-    <div className="relative min-h-screen overflow-hidden bg-[#07070d] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#070711] text-white">
 
       <div className="absolute inset-0">
 
@@ -115,7 +115,7 @@ body: JSON.stringify({
           alt=""
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#07070d]/70 to-[#07070d]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#070711]/70 to-[#070711]" />
 
       </div>
 
@@ -129,7 +129,7 @@ body: JSON.stringify({
 
             <h1 className="text-4xl font-black tracking-tight">
               ANI
-              <span className="text-[#ff5d73]">/VERSE</span>
+              <span className="text-[#8b5cf6]">/VERSE</span>
             </h1>
 
             <div className="mt-6 text-6xl">
@@ -169,7 +169,7 @@ body: JSON.stringify({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="อย่างน้อย 6 ตัวอักษร"
-              className="w-full rounded-xl border border-[#2a2a3d] bg-[#0b0b12]/80 px-4 py-3 outline-none transition focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+              className="w-full rounded-xl border border-[#2a2a3d] bg-[#080914]/80 px-4 py-3 outline-none transition focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
             />
 
           </div>
@@ -187,7 +187,7 @@ body: JSON.stringify({
                 setConfirmPassword(e.target.value)
               }
               placeholder="กรอกรหัสผ่านอีกครั้ง"
-              className="w-full rounded-xl border border-[#2a2a3d] bg-[#0b0b12]/80 px-4 py-3 outline-none transition focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+              className="w-full rounded-xl border border-[#2a2a3d] bg-[#080914]/80 px-4 py-3 outline-none transition focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
             />
 
           </div>
@@ -196,7 +196,7 @@ body: JSON.stringify({
 
           <div className="mb-6">
 
-            <div className="mb-2 flex justify-between text-xs text-[#8a87a3]">
+            <div className="mb-2 flex justify-between text-xs text-[#9693b8]">
 
               <span>ความแข็งแรงของรหัสผ่าน</span>
 
@@ -231,7 +231,7 @@ body: JSON.stringify({
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full overflow-hidden rounded-xl bg-[#ff5d73] py-3 font-bold text-[#0b0b12] transition-all duration-300 hover:scale-[1.02] hover:bg-[#ff738a] disabled:opacity-50"
+            className="group relative w-full overflow-hidden rounded-xl bg-[#8b5cf6] py-3 font-bold text-[#080914] transition-all duration-300 hover:scale-[1.02] hover:bg-[#a78bfa] disabled:opacity-50"
           >
 
             <span className="relative z-10">
@@ -260,7 +260,7 @@ body: JSON.stringify({
 
           <Link
             href="/login"
-            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#0b0b12]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#ff5d73] hover:text-white"
+            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#080914]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#8b5cf6] hover:text-white"
           >
             ← กลับหน้าเข้าสู่ระบบ
           </Link>
@@ -274,15 +274,15 @@ body: JSON.stringify({
       </div>
 
       {/* Bottom Glow */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#ff5d73]/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#8b5cf6]/10 to-transparent" />
 
       {/* Top Glow */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-[#ff5d73]/10 blur-[160px]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-[#8b5cf6]/10 blur-[160px]" />
 
       {/* Side Glow */}
-      <div className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-[#ff5d73]/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-[#8b5cf6]/10 blur-[120px]" />
 
-      <div className="pointer-events-none absolute -right-24 bottom-1/4 h-72 w-72 rounded-full bg-pink-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -right-24 bottom-1/4 h-72 w-72 rounded-full bg-violet-500/10 blur-[120px]" />
 
     </div>
   );

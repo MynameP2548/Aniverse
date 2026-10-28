@@ -7,6 +7,7 @@ import ReviewSection from "@/components/ReviewSection";
 import SeasonSelector from "@/components/SeasonSelector";
 import Player from "@/components/player";
 import AnimeWatch from "@/components/AnimeWatch";
+import FavoriteButton from "@/components/FavoriteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -212,13 +213,13 @@ return (
       }}
     />
 
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="anime-detail-page min-h-screen text-[#e8e6f0]">
       <Navbar />
 
     <main className="pt-16">
 
   {/* HERO */}
-  <section className="relative h-[75vh] min-h-[650px] overflow-hidden">
+  <section className="anime-detail-hero relative min-h-[620px] overflow-hidden sm:min-h-[680px] lg:min-h-[720px]">
 
     {(anime.bannerImage || anime.coverImage) && (
       <>
@@ -229,17 +230,21 @@ return (
           className="absolute inset-0 h-full w-full object-cover"
         />
 
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-[#070815]/20" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#09090f] via-[#09090f]/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080914] via-[#080914]/75 to-[#080914]/10" />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09090f] via-[#09090f]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080914] via-[#080914]/35 to-transparent" />
+        <div className="anime-detail-aurora absolute inset-0" />
       </>
     )}
 
-    <div className="relative z-20 mx-auto flex h-full max-w-7xl items-center px-6">
+    <div className="relative z-20 mx-auto flex min-h-[620px] max-w-7xl items-end px-5 pb-16 pt-28 sm:min-h-[680px] sm:px-8 sm:pb-20 lg:min-h-[720px] lg:items-center lg:px-10 lg:py-24">
 
-      <div className="max-w-[700px]">
+      <div className="anime-detail-copy max-w-[720px]">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-[#101126]/70 px-3 py-1.5 text-xs font-bold uppercase tracking-[.18em] text-violet-200 shadow-lg shadow-violet-950/20 backdrop-blur-xl">
+          <span className="h-1.5 w-1.5 rounded-full bg-sky-300 shadow-[0_0_12px_rgba(125,211,252,.9)]" /> ANIVERSE ORIGINAL EXPERIENCE
+        </div>
         {/* Silently records that the logged-in user watched this episode */}
 
 {/* Title + Meta */}
@@ -249,22 +254,22 @@ return (
     <img
       src={anime.heroLogo}
       alt={anime.title}
-      className="mb-8 max-h-48 object-contain"
+      className="mb-7 max-h-32 max-w-full object-contain object-left sm:max-h-40 lg:max-h-48"
     />
   ) : (
-    <h1 className="mb-6 text-6xl font-black text-white">
+    <h1 className="anime-detail-title mb-5 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-7xl">
       {anime.title}
     </h1>
   )}
 
   {currentEpisode && (
-    <p className="mb-5 text-base font-semibold text-[#ff5d73]">
+    <p className="mb-5 text-base font-semibold text-[#8b5cf6]">
       กำลังดู EP {currentEpisode.episodeNumber}
       {currentEpisode.title && ` • ${currentEpisode.title}`}
     </p>
   )}
 
-  <div className="mb-6 flex flex-wrap items-center gap-4">
+  <div className="mb-6 flex flex-wrap items-center gap-3">
     {anime.rating && (
       <div className="flex items-center gap-2">
         <span className="text-xl text-yellow-400">★</span>
@@ -291,11 +296,11 @@ return (
     </span>
   </div>
 
-  <div className="mb-8 flex flex-wrap gap-3">
+  <div className="mb-7 flex flex-wrap gap-2">
     {anime.genres.map((genre) => (
       <span
         key={genre}
-        className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white backdrop-blur"
+        className="rounded-full border border-violet-200/15 bg-[#15162b]/75 px-3.5 py-1.5 text-xs font-semibold text-violet-100 shadow-sm backdrop-blur-xl sm:text-sm"
       >
         {genre}
       </span>
@@ -303,26 +308,22 @@ return (
   </div>
 
   {anime.description && (
-    <p className="mb-8 max-w-[650px] text-lg leading-9 text-white/80">
+    <p className="mb-8 max-w-[620px] text-base leading-8 text-slate-200/85 sm:text-lg sm:leading-9">
       {anime.description}
     </p>
   )}
 
-  <div className="flex flex-wrap gap-4">
+  <div className="flex flex-wrap gap-3">
     <Link
   href={`/anime/${anime.slug}?season=${activeSeason?.id}&ep=${
     seasonEpisodes[0]?.episodeNumber ?? 1
   }`}
-      className="rounded-xl bg-white px-8 py-4 font-bold text-black transition hover:bg-neutral-200"
+      className="inline-flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-500 via-violet-500 to-blue-500 px-6 py-3.5 font-bold text-white shadow-xl shadow-violet-950/40 transition duration-300 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 sm:px-8 sm:py-4"
     >
       ▶ ดูตอนแรก
     </Link>
 
-    <button
-      className="rounded-xl border border-white/15 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur transition hover:bg-white/20"
-    >
-      + เพิ่มรายการ
-    </button>
+    <FavoriteButton animeId={anime.slug} isLoggedIn={!!session?.user} />
   </div>
 </div>
 
@@ -332,8 +333,8 @@ return (
 
 </section>
 
-  <div className="max-w-7xl mx-auto px-6 py-12">
-    <div className="mb-6 flex items-center justify-between">
+  <div className="anime-detail-content mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 sm:pb-20 sm:pt-10 lg:px-8">
+    <div className="anime-season-heading mb-6 flex flex-col gap-4 rounded-2xl border border-white/[0.07] bg-gradient-to-r from-white/[0.035] to-violet-500/[0.035] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
   <div>
     <h2 className="text-2xl font-bold text-white">
       {activeSeason?.title ??
@@ -351,8 +352,8 @@ return (
   selected={activeSeason?.id}
 />
 </div>
-    <section className="mb-14">
-  <h2 className="mb-5 text-2xl font-bold text-white">
+    <section className="anime-watch-panel mb-10 rounded-3xl border border-violet-300/[0.12] bg-gradient-to-br from-[#111226]/95 via-[#0d0e1c]/95 to-[#10152a]/90 p-3 shadow-2xl shadow-black/20 sm:mb-14 sm:p-5 lg:p-6">
+  <h2 className="anime-section-title mb-5 text-xl font-bold text-white sm:text-2xl">
     กำลังรับชม
   </h2>
 

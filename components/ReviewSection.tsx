@@ -116,7 +116,7 @@ async function load() {
       <div className="flex items-center gap-3 mb-4">
         <h2 className="text-lg font-bold">รีวิวจากผู้ชม</h2>
         {average !== null && (
-          <span className="text-sm text-[#ffc857] font-semibold">
+          <span className="text-sm text-[#f6cc7a] font-semibold">
             ★ {average.toFixed(1)} ({reviews.length} รีวิว)
           </span>
         )}
@@ -127,7 +127,7 @@ async function load() {
         onSubmit={handleSubmit}
         className="bg-[#131320] border border-[#232335] rounded-xl p-4 mb-6"
       >
-        <p className="text-xs text-[#8a87a3] mb-2">
+        <p className="text-xs text-[#9693b8] mb-2">
           {isLoggedIn ? (myReview ? "แก้ไขรีวิวของคุณ" : "ให้คะแนนเรื่องนี้") : "เข้าสู่ระบบเพื่อรีวิว"}
         </p>
 
@@ -143,7 +143,7 @@ async function load() {
             >
               <span
                 className={
-                  (hoverRating || rating) >= star ? "text-[#ffc857]" : "text-[#2a2a3d]"
+                  (hoverRating || rating) >= star ? "text-[#f6cc7a]" : "text-[#2a2a3d]"
                 }
               >
                 ★
@@ -152,7 +152,7 @@ async function load() {
           ))}
         </div>
 
-        {error && <p className="text-[#ff9aa8] text-xs mb-2">{error}</p>}
+        {error && <p className="text-[#c4b5fd] text-xs mb-2">{error}</p>}
 
         <textarea
           value={comment}
@@ -160,14 +160,14 @@ async function load() {
           disabled={!isLoggedIn}
           rows={2}
           placeholder={isLoggedIn ? "เขียนความเห็นของคุณ (ไม่บังคับ)" : ""}
-          className="w-full bg-[#0b0b12] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5d73] resize-none mb-3 disabled:opacity-50"
+          className="w-full bg-[#080914] border border-[#2a2a3d] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] resize-none mb-3 disabled:opacity-50"
         />
 
         <div className="flex gap-2">
           <button
             type="submit"
             disabled={saving}
-            className="bg-[#ff5d73] hover:bg-[#ff738a] transition text-[#0b0b12] font-semibold rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+            className="bg-[#8b5cf6] hover:bg-[#a78bfa] transition text-[#080914] font-semibold rounded-lg px-4 py-2 text-sm disabled:opacity-50"
           >
             {!isLoggedIn ? "เข้าสู่ระบบเพื่อรีวิว" : saving ? "กำลังบันทึก..." : myReview ? "บันทึกการแก้ไข" : "ส่งรีวิว"}
           </button>
@@ -175,7 +175,7 @@ async function load() {
             <button
               type="button"
               onClick={handleDelete}
-              className="px-4 py-2 rounded-lg text-sm border border-[#2a2a3d] text-[#8a87a3] hover:text-[#e8e6f0]"
+              className="px-4 py-2 rounded-lg text-sm border border-[#2a2a3d] text-[#9693b8] hover:text-[#e8e6f0]"
             >
               ลบรีวิว
             </button>
@@ -185,9 +185,9 @@ async function load() {
 
       {/* Review list */}
       {loading ? (
-        <p className="text-[#8a87a3] text-sm">กำลังโหลดรีวิว...</p>
+        <p className="text-[#9693b8] text-sm">กำลังโหลดรีวิว...</p>
       ) : reviews.length === 0 ? (
-        <p className="text-[#8a87a3] text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวเรื่องนี้สิ</p>
+        <p className="text-[#9693b8] text-sm">ยังไม่มีรีวิว เป็นคนแรกที่รีวิวเรื่องนี้สิ</p>
       ) : (
         <div className="space-y-3">
           {reviews.map((r) => (
@@ -197,7 +197,7 @@ async function load() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-semibold">{r.user.name}</span>
-                <span className="text-[#ffc857] text-xs">
+                <span className="text-[#f6cc7a] text-xs">
                   {"★".repeat(r.rating)}
                   <span className="text-[#2a2a3d]">{"★".repeat(5 - r.rating)}</span>
                 </span>

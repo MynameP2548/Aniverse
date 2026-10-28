@@ -142,7 +142,7 @@ router.push(
 
   return (
 
-    <div className="relative min-h-screen overflow-hidden bg-[#07070d] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#070711] text-white">
 
       <div className="absolute inset-0">
 
@@ -152,7 +152,7 @@ router.push(
           alt=""
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#07070d]/70 to-[#07070d]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#070711]/70 to-[#070711]" />
 
       </div>
 
@@ -169,7 +169,7 @@ router.push(
 
             <h1 className="text-4xl font-black tracking-tight">
               ANI
-              <span className="text-[#ff5d73]">/VERSE</span>
+              <span className="text-[#8b5cf6]">/VERSE</span>
             </h1>
 
             <div className="mt-6 text-6xl">
@@ -217,15 +217,15 @@ router.push(
                   rounded-2xl
                   border
                   border-[#2a2a3d]
-                  bg-[#0b0b12]
+                  bg-[#080914]
                   text-center
                   text-2xl
                   font-bold
                   outline-none
                   transition
-                  focus:border-[#ff5d73]
+                  focus:border-[#8b5cf6]
                   focus:ring-2
-                  focus:ring-[#ff5d73]/40
+                  focus:ring-[#8b5cf6]/40
                 "
               />
 
@@ -236,7 +236,7 @@ router.push(
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full overflow-hidden rounded-xl bg-[#ff5d73] py-3 font-bold text-[#0b0b12] transition-all duration-300 hover:scale-[1.02] hover:bg-[#ff738a] disabled:opacity-50"
+            className="group relative w-full overflow-hidden rounded-xl bg-[#8b5cf6] py-3 font-bold text-[#080914] transition-all duration-300 hover:scale-[1.02] hover:bg-[#a78bfa] disabled:opacity-50"
           >
 
             <span className="relative z-10">
@@ -259,7 +259,7 @@ router.push(
 
                 ส่งรหัสใหม่ได้ใน{" "}
 
-                <span className="font-semibold text-[#ff5d73]">
+                <span className="font-semibold text-[#8b5cf6]">
                   {seconds}
                 </span>{" "}
 
@@ -272,7 +272,7 @@ router.push(
               <button
                 type="button"
                 onClick={() => setSeconds(60)}
-                className="text-[#ff5d73] hover:text-[#ff738a]"
+                className="text-[#8b5cf6] hover:text-[#a78bfa]"
               >
                 ส่งรหัสอีกครั้ง
               </button>
@@ -295,7 +295,7 @@ router.push(
 
           <Link
             href="/forgot-password"
-            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#0b0b12]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#ff5d73] hover:text-white"
+            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#080914]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#8b5cf6] hover:text-white"
           >
             ← กลับ
           </Link>
@@ -303,9 +303,9 @@ router.push(
       </div>
 
       {/* Background Glow */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#ff5d73]/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#8b5cf6]/10 to-transparent" />
 
-      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-[#ff5d73]/10 blur-[160px]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-[#8b5cf6]/10 blur-[160px]" />
 
     </div>
   );

@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-6 pt-24 pb-16">

@@ -79,7 +79,7 @@ export default function Progress({
   ]);
   return (
   <div
-    className="relative w-full select-none py-3"
+    className="relative w-full touch-manipulation select-none py-2 sm:py-3"
     ref={barRef}
     onMouseEnter={() => setHover(true)}
     onMouseLeave={() => setHover(false)}
@@ -227,8 +227,8 @@ export default function Progress({
           top-0
           h-full
           rounded-full
-          bg-[#ff3355]
-          shadow-[0_0_15px_rgba(255,51,85,.8)]
+          bg-gradient-to-r from-violet-500 via-violet-400 to-sky-400
+          shadow-[0_0_15px_rgba(139,92,246,.55)]
         "
         style={{
           width: `${progress}%`,
@@ -242,8 +242,8 @@ export default function Progress({
           absolute
           top-1/2
           rounded-full
-          bg-[#ff3355]
-          shadow-[0_0_20px_rgba(255,51,85,.9)]
+          bg-white
+          shadow-[0_0_20px_rgba(139,92,246,.75)]
           transition-all
           duration-200
           -translate-y-1/2

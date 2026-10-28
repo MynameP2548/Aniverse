@@ -71,7 +71,7 @@ return;
 
   return (
 
-    <div className="relative min-h-screen overflow-hidden bg-[#07070d] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#070711] text-white">
 
       <div className="absolute inset-0">
 
@@ -85,11 +85,11 @@ return;
 
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#07070d]/70 to-[#07070d]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#070711]/70 to-[#070711]" />
 
-        <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#ff5d73]/20 blur-[120px]" />
+        <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#8b5cf6]/20 blur-[120px]" />
 
-        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-pink-500/10 blur-[150px]" />
+        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-violet-500/10 blur-[150px]" />
 
       </div>
 
@@ -109,7 +109,7 @@ return;
 
               ANI
 
-              <span className="text-[#ff5d73]">/VERSE</span>
+              <span className="text-[#8b5cf6]">/VERSE</span>
 
             </h1>
 
@@ -150,7 +150,7 @@ return;
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-[#2a2a3d] bg-[#0b0b12]/80 px-4 py-3 outline-none transition focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+              className="w-full rounded-xl border border-[#2a2a3d] bg-[#080914]/80 px-4 py-3 outline-none transition focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
             />
 
           </div>
@@ -158,7 +158,7 @@ return;
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full overflow-hidden rounded-xl bg-[#ff5d73] py-3 font-bold text-[#0b0b12] transition-all duration-300 hover:scale-[1.02] hover:bg-[#ff738a] disabled:cursor-not-allowed disabled:opacity-50"
+            className="group relative w-full overflow-hidden rounded-xl bg-[#8b5cf6] py-3 font-bold text-[#080914] transition-all duration-300 hover:scale-[1.02] hover:bg-[#a78bfa] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="relative z-10">
               {loading
@@ -183,7 +183,7 @@ return;
 
           <Link
             href="/login"
-            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#0b0b12]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#ff5d73] hover:text-white"
+            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#232335] bg-[#080914]/70 text-sm font-semibold text-[#b8b6cb] transition hover:border-[#8b5cf6] hover:text-white"
           >
             ← กลับเข้าสู่ระบบ
           </Link>
@@ -197,7 +197,7 @@ return;
       </div>
 
       {/* Bottom Glow */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#ff5d73]/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#8b5cf6]/10 to-transparent" />
 
     </div>
   );

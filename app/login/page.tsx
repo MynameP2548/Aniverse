@@ -45,7 +45,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#07070d] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#070711] text-white">
 
       {/* Background */}
       <div className="absolute inset-0">
@@ -55,11 +55,11 @@ export default function LoginPage() {
           className="h-full w-full object-cover opacity-20"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#07070d]/70 to-[#07070d]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#070711]/70 to-[#070711]" />
 
-        <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#ff5d73]/20 blur-[120px]" />
+        <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#8b5cf6]/20 blur-[120px]" />
 
-        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-pink-500/10 blur-[150px]" />
+        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-violet-500/10 blur-[150px]" />
       </div>
 
       <div className="relative flex min-h-screen items-center justify-center px-6">
@@ -72,7 +72,7 @@ export default function LoginPage() {
 
             <h1 className="text-4xl font-black tracking-tight">
               ANI
-              <span className="text-[#ff5d73]">/VERSE</span>
+              <span className="text-[#8b5cf6]">/VERSE</span>
             </h1>
 
             <p className="mt-3 text-sm text-[#9c9ab3]">
@@ -99,7 +99,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-[#2a2a3d] bg-[#0b0b12]/80 px-4 py-3 outline-none transition focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+              className="w-full rounded-xl border border-[#2a2a3d] bg-[#080914]/80 px-4 py-3 outline-none transition focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
             />
 
           </div>
@@ -116,14 +116,14 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-xl border border-[#2a2a3d] bg-[#0b0b12]/80 px-4 py-3 outline-none transition focus:border-[#ff5d73] focus:ring-2 focus:ring-[#ff5d73]/30"
+              className="w-full rounded-xl border border-[#2a2a3d] bg-[#080914]/80 px-4 py-3 outline-none transition focus:border-[#8b5cf6] focus:ring-2 focus:ring-[#8b5cf6]/30"
             />
 
           </div>
                     <button
             type="submit"
             disabled={loading}
-            className="group relative w-full overflow-hidden rounded-xl bg-[#ff5d73] py-3 font-bold text-[#0b0b12] transition-all duration-300 hover:scale-[1.02] hover:bg-[#ff738a] disabled:cursor-not-allowed disabled:opacity-50"
+            className="group relative w-full overflow-hidden rounded-xl bg-[#8b5cf6] py-3 font-bold text-[#080914] transition-all duration-300 hover:scale-[1.02] hover:bg-[#a78bfa] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="relative z-10">
               {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
@@ -138,7 +138,7 @@ export default function LoginPage() {
 
               <input
                 type="checkbox"
-                className="rounded border-[#2a2a3d] bg-[#0b0b12]"
+                className="rounded border-[#2a2a3d] bg-[#080914]"
               />
 
               จดจำฉัน
@@ -147,7 +147,7 @@ export default function LoginPage() {
 
             <Link
               href="/forgot-password"
-              className="font-medium text-[#ff5d73] transition hover:text-[#ff738a]"
+              className="font-medium text-[#8b5cf6] transition hover:text-[#a78bfa]"
             >
               ลืมรหัสผ่าน?
             </Link>
@@ -166,7 +166,7 @@ export default function LoginPage() {
 
           </div>
 
-          <div className="rounded-2xl border border-[#232335] bg-[#0b0b12]/70 p-4">
+          <div className="rounded-2xl border border-[#232335] bg-[#080914]/70 p-4">
 
             <p className="text-center text-sm text-[#9c9ab3]">
               ยังไม่มีบัญชี?
@@ -174,7 +174,7 @@ export default function LoginPage() {
 
             <Link
               href="/register"
-              className="mt-3 flex h-11 w-full items-center justify-center rounded-xl border border-[#ff5d73]/40 bg-[#ff5d73]/10 font-semibold text-[#ff5d73] transition hover:bg-[#ff5d73] hover:text-[#0b0b12]"
+              className="mt-3 flex h-11 w-full items-center justify-center rounded-xl border border-[#8b5cf6]/40 bg-[#8b5cf6]/10 font-semibold text-[#8b5cf6] transition hover:bg-[#8b5cf6] hover:text-[#080914]"
             >
               สมัครสมาชิก
             </Link>
@@ -190,7 +190,7 @@ export default function LoginPage() {
       </div>
 
       {/* Bottom Glow */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#ff5d73]/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#8b5cf6]/10 to-transparent" />
 
     </div>
   );

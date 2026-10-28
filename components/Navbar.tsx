@@ -60,7 +60,7 @@ const user = session?.user?.id
             className="
             ml-1
             rounded-md
-            bg-[#ff5d73]
+            bg-[#8b5cf6]
             px-2
             py-0.5
             text-2xl
@@ -69,7 +69,7 @@ const user = session?.user?.id
             text-white
             transition-all
             duration-300
-            group-hover:bg-[#ff738a]
+            group-hover:bg-[#a78bfa]
             md:text-3xl
           "
           >
@@ -83,21 +83,21 @@ const user = session?.user?.id
 
           <Link
             href="/"
-            className="text-white transition hover:text-[#ff5d73]"
+            className="text-white transition hover:text-[#8b5cf6]"
           >
             หน้าแรก
           </Link>
 
           <Link
             href="/browse?status=ongoing"
-            className="text-white/70 transition hover:text-[#ff5d73]"
+            className="text-white/70 transition hover:text-[#8b5cf6]"
           >
             กำลังฉาย
           </Link>
 
           <Link
             href="/browse?status=completed"
-            className="text-white/70 transition hover:text-[#ff5d73]"
+            className="text-white/70 transition hover:text-[#8b5cf6]"
           >
             จบแล้ว
           </Link>
@@ -106,7 +106,7 @@ const user = session?.user?.id
 
             <Link
               href="/favorites"
-              className="text-white/70 transition hover:text-[#ff5d73]"
+              className="text-white/70 transition hover:text-[#8b5cf6]"
             >
               รายการโปรด
             </Link>
@@ -117,7 +117,18 @@ const user = session?.user?.id
 
         {/* ================= Right ================= */}
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+
+          <Link
+            href="/search"
+            aria-label="ค้นหาอนิเมะ"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/75 hover:border-violet-300/40 hover:bg-violet-500/10 hover:text-white md:hidden"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <circle cx="10.8" cy="10.8" r="6.8" strokeWidth="1.8" />
+              <path d="m16 16 4.2 4.2" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </Link>
 
           <form
             action="/search"
@@ -141,7 +152,9 @@ const user = session?.user?.id
                 placeholder:text-white/40
                 outline-none
                 transition
-                focus:border-[#ff5d73]
+                focus:border-[#a78bfa]
+                focus:ring-4
+                focus:ring-violet-500/10
                 focus:w-72
               "
             />
@@ -181,7 +194,7 @@ const user = session?.user?.id
                   backdrop-blur-xl
                   transition-all
                   duration-300
-                  hover:border-[#ff5d73]
+                  hover:border-[#8b5cf6]
                   hover:bg-white/10
                 "
               >
@@ -202,7 +215,7 @@ const user = session?.user?.id
 
                   ) : (
 
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#ff5d73] to-pink-500 text-sm font-black text-white">
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#8b5cf6] to-violet-500 text-sm font-black text-white">
 
                       {initials}
 
@@ -286,7 +299,7 @@ const user = session?.user?.id
 
                     ) : (
 
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#ff5d73] to-pink-500 text-lg font-black text-white">
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#8b5cf6] to-violet-500 text-lg font-black text-white">
 
                         {initials}
 
@@ -377,7 +390,7 @@ const user = session?.user?.id
               href="/login"
               className="
                 rounded-xl
-                bg-[#ff5d73]
+                bg-[#8b5cf6]
                 px-5
                 py-2.5
                 text-sm
@@ -386,7 +399,7 @@ const user = session?.user?.id
                 transition-all
                 duration-300
                 hover:scale-105
-                hover:bg-[#ff738a]
+                hover:bg-[#a78bfa]
               "
             >
               เข้าสู่ระบบ

@@ -28,7 +28,7 @@ export default async function BrowsePage({ searchParams }: Props) {
   );
 
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 pt-24 pb-16">
@@ -36,7 +36,7 @@ export default async function BrowsePage({ searchParams }: Props) {
           {normalizedStatus === "ONGOING" ? "กำลังฉาย" : "จบแล้ว"}
         </h1>
 
-        <p className="text-sm text-[#8a87a3] mb-6">
+        <p className="text-sm text-[#9693b8] mb-6">
           พบ {animeList.length} เรื่อง
         </p>
 

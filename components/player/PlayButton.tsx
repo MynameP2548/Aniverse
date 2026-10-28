@@ -27,9 +27,16 @@ export default function PlayButton({
         -translate-y-1/2
         transition-all
         duration-300
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-violet-300
+        focus-visible:ring-offset-4
+        focus-visible:ring-offset-black
         hover:scale-110
         active:scale-95
       "
+      aria-label="เล่นวิดีโอ"
+      title="เล่นวิดีโอ"
     >
       {/* Glow */}
       <div
@@ -37,7 +44,7 @@ export default function PlayButton({
           absolute
           inset-0
           rounded-full
-          bg-[#ff3355]/25
+          bg-[#7c3aed]/25
           blur-2xl
           scale-125
         "
@@ -60,8 +67,10 @@ export default function PlayButton({
         className="
           relative
           flex
-          h-24
-          w-24
+          h-16
+          w-16
+          sm:h-24
+          sm:w-24
           items-center
           justify-center
           rounded-full
@@ -77,8 +86,10 @@ export default function PlayButton({
           fill="currentColor"
           className="
             ml-1
-            h-11
-            w-11
+            h-8
+            w-8
+            sm:h-11
+            sm:w-11
             text-white
             drop-shadow-lg
           "

@@ -47,7 +47,7 @@ export default function FavoriteButton({ animeId, isLoggedIn }: Props) {
       disabled={loading}
       className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold border transition disabled:opacity-50 ${
         isFavorite
-          ? "bg-[#ff5d73]/10 border-[#ff5d73] text-[#ff5d73]"
+          ? "bg-[#8b5cf6]/10 border-[#8b5cf6] text-[#8b5cf6]"
           : "bg-[#131320]/80 border-[#2a2a3d] text-[#e8e6f0] hover:border-[#3a3a52]"
       }`}
     >

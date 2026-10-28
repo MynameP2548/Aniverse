@@ -3,7 +3,7 @@ import AnimeRowSkeleton from "@/components/AnimeRowSkeleton";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-[#0b0b12] text-[#e8e6f0]">
+    <div className="min-h-screen bg-[#080914] text-[#e8e6f0]">
       <Navbar />
 
       {/* Hero skeleton */}
